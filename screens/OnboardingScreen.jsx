@@ -1,12 +1,121 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, Image, Button, TouchableOpacity } from "react-native";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
+import Onboarding from "react-native-onboarding-swiper";
 
 const OnboardingScreen = () => {
-  return (
-    <View>
-      <Text className="text-orange-600 text-3xl">OnboardingScreen</Text>
-    </View>
-  )
-}
+  const navigation = useNavigation();
 
-export default OnboardingScreen
+  const DotComponent = ({ selected }) => {
+    return (
+      <View
+        className={`w-3 h-3 mx-1 flex items-center justify-center rounded-full ${
+          selected ? "border border-orange-500" : ""
+        }`}
+      >
+        <View
+          className={`w-2 h-2 ${
+            selected ? "bg-orange-500" : "bg-orange-100"
+          } rounded-full`}
+        ></View>
+      </View>
+    );
+  };
+
+  const Next = ({ isLight, ...props }) => (
+    <TouchableOpacity
+      className="bg-orange-200 mr-3 w-10 h-10 flex items-center justify-center rounded-full"
+      {...props}
+    >
+      <View>
+        <AntDesign name="arrowright" size={24} color="black" />
+      </View>
+    </TouchableOpacity>
+  );
+
+  const backgroundColor = (isLight) => (isLight ? "blue" : "lightblue");
+  const color = (isLight) => backgroundColor(!isLight);
+
+  const Done = ({ isLight, ...props }) => (
+    <Button
+      title={"Done"}
+      buttonStyle={{
+        backgroundColor: backgroundColor(isLight),
+      }}
+      containerViewStyle={{
+        marginVertical: 10,
+        width: 70,
+        backgroundColor: backgroundColor(isLight),
+      }}
+      textStyle={{ color: color(isLight) }}
+      {...props}
+    />
+  );
+
+  return (
+    <Onboarding
+      onSkip={() => navigation.replace("LoginScreen")}
+      onDone={() => navigation.replace("LoginScreen")}
+      DotComponent={DotComponent}
+      NextButtonComponent={Next}
+      DoneButtonComponent={Done}
+      pages={[
+        {
+          backgroundColor: "#fff",
+          image: (
+            <Image
+              source={require("../assets/splitbill.png")}
+              className="w-38 h-35 object-contain"
+            />
+          ),
+          title: "Bill - Splitting",
+          subtitle:
+            "Share expenses with friends effortlessly, divide payments and become a part of vibrant communities.",
+        },
+
+        {
+          backgroundColor: "#fff",
+          image: (
+            <Image
+              source={require("../assets/socialnetwork1.png")}
+              className="w-38 h-35 object-contain"
+            />
+          ),
+          title: "Social Networking",
+          subtitle:
+            "Connect with other users, create and share events without financial complexities.",
+        },
+
+        {
+          backgroundColor: "#fff",
+          image: (
+            <Image
+              source={require("../assets/membership1.png")}
+              className="w-38 h-35 object-contain"
+            />
+          ),
+          title: "Membership",
+          subtitle:
+            "Upgrade your subscription options to unlock all of our premium features  for a better app experience",
+          // add call to action button
+          subtitle: (
+            <Button
+              title={"Get Started"}
+              containerViewStyle={{ marginTop: 20 }}
+              backgroundColor={"white"}
+              borderRadius={5}
+              textStyle={{ color: "#003c8f" }}
+              onPress={() => {
+                Alert.alert("done");
+                StatusBar.setBarStyle("default");
+              }}
+            />
+          ),
+        },
+      ]}
+    />
+  );
+};
+
+export default OnboardingScreen;
