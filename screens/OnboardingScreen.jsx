@@ -36,8 +36,7 @@ const OnboardingScreen = () => {
   );
   
   const handleGetStarted = () => { 
-    Alert.alert("Get Started");
-    // navigation.replace("LoginScreen");
+    navigation.replace("LoginScreen");
   };
 
   return (
@@ -101,7 +100,7 @@ const OnboardingScreen = () => {
 const styles = StyleSheet.create({
   text: {
     fontSize: 16,
-    fontFamily: "Poppins_400Regular",
+    fontFamily: "sans-serif",
     fontWeight: "400",
     lineHeight: 24,
     textAlign: "center",

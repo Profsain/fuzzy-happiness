@@ -11,11 +11,11 @@ const CustomButton = ({ buttonFunc, backgroundColor = "#f9784b", label="Click me
         alignItems: "center",
         justifyContent: "center",
         marginTop: 5,
-        marginBottom: 5,
+        marginBottom: 15,
       },
       label: {
         fontSize: 18,
-        fontFamily: "Poppins_400Regular",
+        fontFamily: "sans-serif",
         fontWeight: "500",
         lineHeight: 26,
         textAlign: "center",
