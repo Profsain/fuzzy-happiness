@@ -1,8 +1,9 @@
-import { View, Text, Image, Button, TouchableOpacity } from "react-native";
+import {StyleSheet, View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import Onboarding from "react-native-onboarding-swiper";
+import CustomButton from "../components/CustomButton";
 
 const OnboardingScreen = () => {
   const navigation = useNavigation();
@@ -33,33 +34,19 @@ const OnboardingScreen = () => {
       </View>
     </TouchableOpacity>
   );
-
-  const backgroundColor = (isLight) => (isLight ? "blue" : "lightblue");
-  const color = (isLight) => backgroundColor(!isLight);
-
-  const Done = ({ isLight, ...props }) => (
-    <Button
-      title={"Done"}
-      buttonStyle={{
-        backgroundColor: backgroundColor(isLight),
-      }}
-      containerViewStyle={{
-        marginVertical: 10,
-        width: 70,
-        backgroundColor: backgroundColor(isLight),
-      }}
-      textStyle={{ color: color(isLight) }}
-      {...props}
-    />
-  );
+  
+  const handleGetStarted = () => { 
+    Alert.alert("Get Started");
+    // navigation.replace("LoginScreen");
+  };
 
   return (
     <Onboarding
       onSkip={() => navigation.replace("LoginScreen")}
       onDone={() => navigation.replace("LoginScreen")}
+      showDone={false}
       DotComponent={DotComponent}
       NextButtonComponent={Next}
-      DoneButtonComponent={Done}
       pages={[
         {
           backgroundColor: "#fff",
@@ -96,21 +83,14 @@ const OnboardingScreen = () => {
             />
           ),
           title: "Membership",
-          subtitle:
-            "Upgrade your subscription options to unlock all of our premium features  for a better app experience",
-          // add call to action button
           subtitle: (
-            <Button
-              title={"Get Started"}
-              containerViewStyle={{ marginTop: 20 }}
-              backgroundColor={"white"}
-              borderRadius={5}
-              textStyle={{ color: "#003c8f" }}
-              onPress={() => {
-                Alert.alert("done");
-                StatusBar.setBarStyle("default");
-              }}
-            />
+            <View className="p-4">
+              <Text style={ styles.text }>
+                Upgrade your subscription options to unlock all of our premium
+                features for a better app experience.
+              </Text>
+              <CustomButton label="Get Started" buttonFunc={handleGetStarted}/>
+            </View>
           ),
         },
       ]}
@@ -118,4 +98,15 @@ const OnboardingScreen = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 16,
+    fontFamily: "Poppins_400Regular",
+    fontWeight: "400",
+    lineHeight: 24,
+    textAlign: "center",
+    color: "#333",
+    paddingBottom: 20,
+  },
+});
 export default OnboardingScreen;
