@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import { fonts, primeryColor } from "../utils/appstyle";
 
 const CustomButton = ({
+  width = 300,
   buttonFunc,
   backgroundColor = primeryColor,
   label = "Click me",
@@ -13,7 +14,7 @@ const CustomButton = ({
     button: {
       backgroundColor: backgroundColor,
       borderRadius: 25,
-      width: 353,
+      width: width,
       height: 46,
       alignItems: "center",
       justifyContent: "center",

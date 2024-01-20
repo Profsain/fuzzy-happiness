@@ -1,19 +1,25 @@
-import React from 'react'
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView, StyleSheet, View, Text, Image, Alert } from 'react-native'
-import CustomButton from '../components/CustomButton';
-import { secondaryColor } from '../utils/appstyle';
+import React from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Alert,
+} from "react-native";
+import CustomButton from "../components/CustomButton";
+import { secondaryColor } from "../utils/appstyle";
+import navigationToScreen from "../utils/navigationUtil";
 
-const LoginScreen = () => {
-  const navigation = useNavigation();
+const LoginScreen = ({ navigation }) => {
   // handle login
   const handleLogin = () => {
-    navigation.navigate("LoginUser");
-  }
+    navigationToScreen(navigation, "LoginUser");
+  };
   // handle signup
   const handleSignUp = () => {
-    Alert.alert("Get Ready to Sign Up");
-  }
+    navigationToScreen(navigation, "SignUpUser");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,17 +29,22 @@ const LoginScreen = () => {
       />
 
       <View style={styles.btnContainer}>
-        <CustomButton label='Log in' buttonFunc={handleLogin}/>
-        <CustomButton label='Sign up' backgroundColor={secondaryColor} color='#000' buttonFunc={handleSignUp}/>
+        <CustomButton label="Log in" buttonFunc={handleLogin} />
+        <CustomButton
+          label="Sign up"
+          backgroundColor={secondaryColor}
+          color="#000"
+          buttonFunc={handleSignUp}
+        />
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -43,6 +54,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 60,
   },
-})
+});
 
-export default LoginScreen
+export default LoginScreen;
