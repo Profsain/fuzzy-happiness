@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import { AntDesign } from "@expo/vector-icons";
 import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
+import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -95,6 +96,23 @@ const AuthStack = () => {
         }}
         name="ForgotPasswordScreen"
         component={ForgotPasswordScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="EnterNewPasswordScreen"
+        component={EnterNewPasswordScreen}
         navigation={navigation}
       />
     </Stack.Navigator>
