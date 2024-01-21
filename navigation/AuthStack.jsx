@@ -7,6 +7,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
+import { AddEmailScreen, BioScreen, CreatePasswordScreen, EmailVerificationCode, EnableNotificationsScreen, InviteFriendsScreen, TokenScreen, UserProfileScreen } from "../screens/signup";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +82,7 @@ const AuthStack = () => {
         component={SignUpScreen}
         navigation={navigation}
       />
+
       <Stack.Screen
         options={{
           headerShown: true,
@@ -113,6 +115,144 @@ const AuthStack = () => {
         }}
         name="EnterNewPasswordScreen"
         component={EnterNewPasswordScreen}
+        navigation={navigation}
+      />
+
+      {/* sign up screen */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="AddEmailScreen"
+        component={AddEmailScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="BioScreen"
+        component={BioScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="CreatePasswordScreen"
+        component={CreatePasswordScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="EmailVerificationCode"
+        component={EmailVerificationCode}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="EnableNotificationScreen"
+        component={EnableNotificationsScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="InviteFriendsScreen"
+        component={InviteFriendsScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="TokenScreen"
+        component={TokenScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="UserProfileScreen"
+        component={UserProfileScreen}
         navigation={navigation}
       />
     </Stack.Navigator>

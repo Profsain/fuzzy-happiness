@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, VStack, set } from "@gluestack-ui/themed";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,
   CustomHeadings,
@@ -8,7 +8,7 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
