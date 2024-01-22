@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
-import { Box, Text, VStack, set } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../components";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
+import { CustomButton, CustomHeadings } from "../components";
 import PhoneInput from "react-native-phone-number-input";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
@@ -70,7 +70,7 @@ const SignUpScreen = ({ navigation }) => {
             }}
             withDarkTheme
             withShadow
-            autoFocus
+            // autoFocus
           />
           {error && (
             <Text size="sm" style={{ color: "#ea9977" }}>
@@ -88,7 +88,7 @@ const SignUpScreen = ({ navigation }) => {
               color="#000"
             />
           ) : (
-            <CustomButton label="Get Toke" buttonFunc={handleGetToken} />
+            <CustomButton label="Get Token" buttonFunc={handleGetToken} />
           )}
         </Box>
 
