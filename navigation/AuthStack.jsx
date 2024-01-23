@@ -7,7 +7,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
-import { AddEmailScreen, BioScreen, CreatePasswordScreen, EmailVerificationCode, EnableNotificationsScreen, InviteFriendsScreen, TokenScreen, UserProfileScreen } from "../screens/signup";
+import { AddAddressScreen, AddEmailScreen, BioScreen, CreatePasswordScreen, EmailVerificationCode, EnableNotificationsScreen, InviteFriendsScreen, TokenScreen, UserProfileScreen } from "../screens/signup";
 
 const Stack = createNativeStackNavigator();
 
@@ -253,6 +253,23 @@ const AuthStack = () => {
         }}
         name="UserProfileScreen"
         component={UserProfileScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <AntDesign
+              onPress={handleGoBack}
+              name="left"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+        name="AddAddressScreen"
+        component={AddAddressScreen}
         navigation={navigation}
       />
     </Stack.Navigator>

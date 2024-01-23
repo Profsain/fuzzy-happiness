@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Box, Text, VStack } from "@gluestack-ui/themed";
+import React, { useState, useEffect, useRef } from "react";
+import { Box, Text, VStack, set } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
@@ -10,8 +10,32 @@ const TokenScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState("+447821456740");
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
-  const [confirmToken, setConfirmToken] = useState("123456")
+  const [confirmToken, setConfirmToken] = useState("123456");
   const [error, setError] = useState("");
+  const [mt, setMt] = useState(68); // margin top for resend text
+  const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
+  const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
+
+  // sent timeout for 3 minutes
+ useEffect(() => {
+   const interval = setInterval(() => {
+     setTimer((timer) => {
+       // Check if the timer is greater than 0 before decrementing
+       if (timer > 0) {
+         return timer - 1;
+       } else {
+         // If the timer is 0 or negative, show the resend text and clear the interval
+         setShowResend(true);
+         clearInterval(interval);
+         return 0; // Make sure to return 0 to stop further decrements
+       }
+     });
+   }, 1000);
+
+   // Cleanup the interval when the component unmounts
+   return () => clearInterval(interval);
+ }, []);
+
 
   const codeInputRef = useRef(null);
 
@@ -22,16 +46,20 @@ const TokenScreen = ({ navigation }) => {
     // handle error
     if (code.length === 0) {
       setError("Token Code is required");
+      setMt(18);
       return;
     } else if (code.length < 6) {
       setError("Token Code must be 6 digits");
+      setMt(18);
       return;
     } else if (code !== confirmToken) {
       setError("Token Code is incorrect");
+      setMt(18);
       return;
     } else {
       setError("");
       setIsValid(true);
+      setMt(68);
     }
   };
 
@@ -44,7 +72,7 @@ const TokenScreen = ({ navigation }) => {
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
-      <CustomHeadings title="Toke Code" />
+      <CustomHeadings title="Token Code" />
 
       {/* form section */}
       <VStack space="xl" mt={15}>
@@ -79,23 +107,45 @@ const TokenScreen = ({ navigation }) => {
               {error}
             </Text>
           )}
+
+          {/* resend token after 1 minute */}
+          <Box mt={mt}>
+            <Text
+              pl={16}
+              size="sm"
+              style={{ color: "#000", textAlign: "left" }}
+            >
+              Didn't receive the code?{" "}
+              {!showResend ? (
+                <Text>Resend in 0:{timer}</Text>
+              ) : (
+                <Text
+                  size="sm"
+                  style={{ color: "#000", textAlign: "center" }}
+                  onPress={() => Alert.alert("Resend Token")}
+                >
+                  Resend
+                </Text>
+              )}
+            </Text>
+          </Box>
         </Box>
 
         {/* next button */}
-        <Box mt={160}>
+        <Box mt={110}>
           {!isValid ? (
             <CustomButton
-              label="Get Token"
+              label="Next"
               backgroundColor={secondaryColor}
               color="#000"
             />
           ) : (
-            <CustomButton label="Get Toke" buttonFunc={handleConfirmToken} />
+            <CustomButton label="Next" buttonFunc={handleConfirmToken} />
           )}
         </Box>
 
         {/* remember password? Login */}
-        <Box mt={140}>
+        <Box mt={70}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >

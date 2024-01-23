@@ -93,7 +93,7 @@ const SignUpScreen = ({ navigation }) => {
         </Box>
 
         {/* remember password? Login */}
-        <Box mt={140}>
+        <Box mt={160}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >

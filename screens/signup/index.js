@@ -6,3 +6,4 @@ export { default as EmailVerificationCode } from './EmailVerificationCode';
 export { default as CreatePasswordScreen } from './CreatePasswordScreen';
 export { default as BioScreen } from './BioScreen';
 export { default as AddEmailScreen } from './AddEmailScreen';
+export { default as AddAddressScreen } from './AddAddressScreen';
