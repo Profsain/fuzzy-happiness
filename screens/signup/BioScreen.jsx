@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,
+  CustomDatePicker,
   CustomHeadings,
   CustomInput,
 } from "../../components";
-import { DatePickerInput } from "react-native-paper-dates";
+
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import { Alert, StyleSheet } from "react-native";
 
 const BioScreen = ({ navigation }) => {
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
@@ -54,9 +56,14 @@ const BioScreen = ({ navigation }) => {
 
   const handleProceed = () => {
     // persist data in local storage
-   
+    const data = {
+      firstName,
+      lastName,
+      dateOfBirth,
+    };
+    // Alert.alert("Data", JSON.stringify(data));
     // navigate to EnableNotification screen
-    navigationToScreen(navigation, "EnableNotificationScreen");
+    navigationToScreen(navigation, "CreatePasswordScreen");
   };
 
   return (
@@ -83,24 +90,8 @@ const BioScreen = ({ navigation }) => {
           handleTextChange={handleLastNameChange}
           error={lastNameError}
         />
-        {/* <CustomInput
-          placeholder="Date of Birth"
-          type="date"
-          inputValue={dateOfBirth}
-          handleTextChange={handleDateOfBirthChange}
-          error={dateOfBirthError}
-        /> */}
-        <Box>
-          <DatePickerInput
-            value={dateOfBirth}
-            onChange={(date) => handleDateOfBirthChange(date)}
-            label="Date of Birth"
-            leftIcon="calendar"
-            inputMode="start"
-            mode="outlined"
-            style={{ width: "100%" }}
-            error={dateOfBirthError}
-          />
+        <Box mt={18}>
+          <CustomDatePicker dateOfBirth={dateOfBirth } setDate={setDateOfBirth} dateError={dateOfBirthError} handleDateChange={handleDateOfBirthChange} label="Date of Birth"/>
         </Box>
 
         {/* next button */}
@@ -119,5 +110,19 @@ const BioScreen = ({ navigation }) => {
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: "transparent",
+    borderColor: "#000",
+    borderWidth: 1,
+    borderRadius: 4,
+    height: 48,
+    width: "100%",
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: "#000",
+  },
+});
 
 export default BioScreen

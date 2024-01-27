@@ -2,6 +2,8 @@ import { GluestackUIProvider } from '@gluestack-ui/themed'
 import { config } from '@gluestack-ui/config'
 import { NavigationContainer } from '@react-navigation/native';
 import AuthStack from './navigation/AuthStack';
+// react-native datepicker translation
+
 
 export default function App() {
 
