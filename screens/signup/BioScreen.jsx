@@ -90,7 +90,7 @@ const BioScreen = ({ navigation }) => {
           handleTextChange={handleLastNameChange}
           error={lastNameError}
         />
-        <Box mt={18}>
+        <Box mt={24}>
           <CustomDatePicker dateOfBirth={dateOfBirth } setDate={setDateOfBirth} dateError={dateOfBirthError} handleDateChange={handleDateOfBirthChange} label="Date of Birth"/>
         </Box>
 

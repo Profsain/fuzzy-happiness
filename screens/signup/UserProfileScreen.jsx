@@ -1,12 +1,176 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { useState } from "react";
+import {
+  Box,
+  Avatar,
+  AvatarBadge,
+  AvatarFallbackText,
+  AvatarImage,
+  HStack,
+  VStack,
+  Heading,
+  Text,
+} from "@gluestack-ui/themed";
+import { MaterialIcons } from "@expo/vector-icons";
+import { CustomButton, CustomHeadings, CustomInput } from "../../components";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import { secondaryColor, textColor } from "../../utils/appstyle";
+import initialToUpperCase from "../../utils/firstCharToUpperCase";
+import navigationToScreen from "../../utils/navigationUtil";
 
-const UserProfileScreen = () => {
+// data import
+import interestData from "../../mockdata/interest";
+import hashtagsData from "../../mockdata/hashtags";
+
+const UserProfileScreen = ({navigation}) => {
+  const [avatarUri, setAvatarUri] = useState(
+    "https://i.ibb.co/qg4nZz0/avataricon.png"
+  );
+  const [age, setAge] = useState("");
+  const [ageError, setAgeError] = useState("");
+  const [bio, setBio] = useState("");
+  const [bioError, setBioError] = useState("");
+
+  // render interest items
+  const [bgColor, setBgColor] = useState(secondaryColor);
+  const [color, setColor] = useState(textColor);
+  const [interestList, setInterestList] = useState([]);
+  // handle add and remove interest from interest list
+  const handleInterest = (id) => {
+    Alert.alert(`Interest Click ${id}`);
+  };
+  const renderInterest = ({ item }) => (
+    <CustomButton
+      fSize={14}
+      mr={8}
+      width={94}
+      label={initialToUpperCase(item.interest)}
+      color={color}
+      backgroundColor={bgColor}
+      buttonFunc={() => handleInterest(item.id)}
+    />
+  );
+
+  // render tags items
+  const [tagList, setTagList] = useState([]);
+  // handle add and remove interest from interest list
+  const handleTag = (id) => {
+    Alert.alert(`Interest Click ${id}`);
+  };
+  const renderTags = ({ item }) => (
+    <CustomButton
+      fSize={14}
+      mr={8}
+      width={94}
+      label={`#${initialToUpperCase(item.tag)}`}
+      color={color}
+      backgroundColor={bgColor}
+      buttonFunc={() => handleTag(item.id)}
+    />
+  );
+
+  const handleAgeChange = (text) => {
+    setAge(text);
+  };
+
+  const handleBioChange = (text) => {
+    setBio(text);
+  };
+
+  const handlePhoto = () => {
+    Alert.alert("Take a picture or upload");
+  };
+
+  const handleContinue = () => {
+    // send data to backend database
+    // navigate to inviteFriends Screen
+    navigationToScreen(navigation, "InviteFriendsScreen")
+  };
+
   return (
-    <View>
-      <Text>UserProfileScreen</Text>
-    </View>
-  )
-}
+    <ScrollView nestedScrollEnabled={true}>
+      <Box width="100%" justifyContent="center" p={24} pt={28}>
+        <VStack space="2xl">
+          {/* profile avatar */}
+          <HStack space="2xl">
+            <TouchableOpacity onPress={handlePhoto}>
+              <Avatar size="lg" bgColor="#E0E0E0">
+                <AvatarFallbackText>SS</AvatarFallbackText>
+                <AvatarImage
+                  source={{
+                    uri: avatarUri,
+                  }}
+                  alt="avatar"
+                />
+              </Avatar>
+            </TouchableOpacity>
+            <VStack>
+              <Heading size="sm">Ronald Richards</Heading>
+              <Text size="sm">Lagos Nigeria</Text>
+            </VStack>
+          </HStack>
+          {/* add age and bio */}
+          <Box>
+            <CustomInput
+              placeholder="Add age"
+              type="text"
+              inputValue={age}
+              handleTextChange={handleAgeChange}
+              error={ageError}
+              mb={24}
+            />
+            <CustomInput
+              placeholder="Bio"
+              type="text"
+              inputValue={bio}
+              handleTextChange={handleBioChange}
+              error={bioError}
+            />
+          </Box>
 
-export default UserProfileScreen
+          {/* interest section */}
+          <Box>
+            <CustomHeadings title="My Interests" />
+            <FlatList
+              data={interestData}
+              renderItem={renderInterest}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              columnWrapperStyle={StyleSheet.columnWrapper}
+            />
+          </Box>
+
+          {/* hash tags section */}
+          <Box>
+            <CustomHeadings title="Hashtags" />
+            <FlatList
+              data={hashtagsData}
+              renderItem={renderTags}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              columnWrapperStyle={StyleSheet.columnWrapper}
+            />
+          </Box>
+
+          {/* action button */}
+          <CustomButton label="Continue" buttonFunc={handleContinue} />
+        </VStack>
+      </Box>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  columnWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+});
+export default UserProfileScreen;

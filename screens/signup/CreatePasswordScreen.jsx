@@ -22,7 +22,7 @@ const CreatePasswordScreen = ({ navigation }) => {
   // handle password
   const handlePasswordChange = (text) => {
     setPassword(text);
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
 
     // validate password
     if (text.length === 0) {

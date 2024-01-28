@@ -8,8 +8,9 @@ const CustomButton = ({
   backgroundColor = primeryColor,
   label = "Click me",
   color = "#fff",
+  mr,
+  fSize = 18,
 }) => {
-
   const styles = StyleSheet.create({
     button: {
       backgroundColor: backgroundColor,
@@ -20,9 +21,10 @@ const CustomButton = ({
       justifyContent: "center",
       marginTop: 5,
       marginBottom: 15,
+      marginRight: mr,
     },
     label: {
-      fontSize: 18,
+      fontSize: fSize,
       fontFamily: fonts,
       fontWeight: "500",
       lineHeight: 26,

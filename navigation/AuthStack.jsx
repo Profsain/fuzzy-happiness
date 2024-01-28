@@ -2,12 +2,22 @@ import React, { useEffect, useState } from "react";
 // local storage
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
-import { AddAddressScreen, AddEmailScreen, BioScreen, CreatePasswordScreen, EmailVerificationCode, EnableNotificationsScreen, InviteFriendsScreen, TokenScreen, UserProfileScreen } from "../screens/signup";
+import {
+  AddAddressScreen,
+  AddEmailScreen,
+  BioScreen,
+  CreatePasswordScreen,
+  EmailVerificationCode,
+  EnableNotificationsScreen,
+  InviteFriendsScreen,
+  TokenScreen,
+  UserProfileScreen,
+} from "../screens/signup";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +38,7 @@ const AuthStack = () => {
 
   const handleGoBack = () => {
     navigation.goBack();
-  }
+  };
 
   return (
     <Stack.Navigator>
@@ -241,7 +251,8 @@ const AuthStack = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "",
+          headerTitle: "Profile",
+          headerTitleAlign: "center",
           headerLeft: () => (
             <AntDesign
               onPress={handleGoBack}
@@ -255,6 +266,7 @@ const AuthStack = () => {
         component={UserProfileScreen}
         navigation={navigation}
       />
+
       <Stack.Screen
         options={{
           headerShown: true,
@@ -274,6 +286,6 @@ const AuthStack = () => {
       />
     </Stack.Navigator>
   );
-}
+};
 
 export default AuthStack;

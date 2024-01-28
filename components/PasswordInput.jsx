@@ -11,6 +11,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react-native";
 import { errorColor } from "../utils/appstyle";
 
 const PasswordInput = ({
+  mb = 12,
   showPassword,
   handleState,
   placeholder,
@@ -19,7 +20,7 @@ const PasswordInput = ({
   error,
 }) => {
   return (
-    <Box>
+    <Box mb={mb}>
       <Input textAlign="center">
         <InputField
           type={showPassword ? "text" : "password"}
