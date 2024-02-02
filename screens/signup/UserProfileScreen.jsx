@@ -10,25 +10,24 @@ import {
   Heading,
   Text,
 } from "@gluestack-ui/themed";
-import { MaterialIcons } from "@expo/vector-icons";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import {
   Alert,
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
 } from "react-native";
-import { secondaryColor, textColor } from "../../utils/appstyle";
+import { ScrollView } from "react-native-virtualized-view";
+import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
+import handleListUpdate from "../../utils/handlyListUpdate";
 import navigationToScreen from "../../utils/navigationUtil";
 
 // data import
 import interestData from "../../mockdata/interest";
 import hashtagsData from "../../mockdata/hashtags";
 
-const UserProfileScreen = ({navigation}) => {
+const UserProfileScreen = ({ navigation }) => {
   const [avatarUri, setAvatarUri] = useState(
     "https://i.ibb.co/qg4nZz0/avataricon.png"
   );
@@ -40,10 +39,12 @@ const UserProfileScreen = ({navigation}) => {
   // render interest items
   const [bgColor, setBgColor] = useState(secondaryColor);
   const [color, setColor] = useState(textColor);
+  const selectedColor = "#e9e9e9";
   const [interestList, setInterestList] = useState([]);
+
   // handle add and remove interest from interest list
   const handleInterest = (id) => {
-    Alert.alert(`Interest Click ${id}`);
+    handleListUpdate(id, interestData, setInterestList);
   };
   const renderInterest = ({ item }) => (
     <CustomButton
@@ -52,7 +53,11 @@ const UserProfileScreen = ({navigation}) => {
       width={94}
       label={initialToUpperCase(item.interest)}
       color={color}
-      backgroundColor={bgColor}
+      backgroundColor={
+        interestList.some((interest) => interest.id === item.id)
+          ? secondBgColor
+          : secondaryColor
+      }
       buttonFunc={() => handleInterest(item.id)}
     />
   );
@@ -61,7 +66,7 @@ const UserProfileScreen = ({navigation}) => {
   const [tagList, setTagList] = useState([]);
   // handle add and remove interest from interest list
   const handleTag = (id) => {
-    Alert.alert(`Interest Click ${id}`);
+    handleListUpdate(id, hashtagsData, setTagList);
   };
   const renderTags = ({ item }) => (
     <CustomButton
@@ -70,7 +75,11 @@ const UserProfileScreen = ({navigation}) => {
       width={94}
       label={`#${initialToUpperCase(item.tag)}`}
       color={color}
-      backgroundColor={bgColor}
+      backgroundColor={
+        tagList.some((interest) => interest.id === item.id)
+          ? secondBgColor
+          : secondaryColor
+      }
       buttonFunc={() => handleTag(item.id)}
     />
   );
@@ -87,10 +96,10 @@ const UserProfileScreen = ({navigation}) => {
     Alert.alert("Take a picture or upload");
   };
 
-  const handleContinue = () => {
+  const handleCreateAccount = () => {
     // send data to backend database
     // navigate to inviteFriends Screen
-    navigationToScreen(navigation, "InviteFriendsScreen")
+    navigationToScreen(navigation, "InviteFriendsScreen");
   };
 
   return (
@@ -159,7 +168,7 @@ const UserProfileScreen = ({navigation}) => {
           </Box>
 
           {/* action button */}
-          <CustomButton label="Continue" buttonFunc={handleContinue} />
+          <CustomButton label="Create Account" buttonFunc={handleCreateAccount} />
         </VStack>
       </Box>
     </ScrollView>

@@ -50,6 +50,12 @@ const AuthStack = () => {
         />
       )}
 
+      {/* <Stack.Screen
+        options={{ headerShown: false }}
+        name="OnboardingScreen"
+        component={OnboardingScreen}
+      /> */}
+
       <Stack.Screen
         options={{ headerShown: false }}
         name="LoginScreen"
@@ -217,7 +223,8 @@ const AuthStack = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "",
+          headerTitle: "Invite Friends",
+          headerTitleAlign: "center",
           headerLeft: () => (
             <AntDesign
               onPress={handleGoBack}

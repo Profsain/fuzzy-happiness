@@ -1,51 +1,63 @@
 const interestData = [
     {
-        id: "1",
-        interest: "arts"
+        id: "1in",
+        interest: "arts",
+        isSelected: false
     },
     {
-        id: "2",
-        interest: "adventure"
+        id: "2in",
+        interest: "adventure",
+        isSelected: false
     },
     {
-        id: "3",
-        interest: "concerts"
+        id: "3in",
+        interest: "concerts",
+        isSelected: false
     },
     {
-        id: "4",
-        interest: "dance"
+        id: "4in",
+        interest: "dance",
+        isSelected: false
     },
     {
-        id: "5",
-        interest: "games"
+        id: "5in",
+        interest: "games",
+        isSelected: false
     },
     {
-        id: "6",
-        interest: "sports"
+        id: "6in",
+        interest: "sports",
+        isSelected: false
     },
     {
-        id: "7",
-        interest: "cinemas"
+        id: "7in",
+        interest: "cinemas",
+        isSelected: false
     },
     {
-        id: "8",
-        interest: "comedy"
+        id: "8in",
+        interest: "comedy",
+        isSelected: false
     },
     {
-        id: "9",
-        interest: "nightlife"
+        id: "9in",
+        interest: "nightlife",
+        isSelected: false
     },
     {
-        id: "10",
-        interest: "music"
+        id: "10in",
+        interest: "music",
+        isSelected: false
     },
     {
-        id: "11",
-        interest: "restaurants"
+        id: "11in",
+        interest: "restaurants",
+        isSelected: false
     },
     {
-        id: "12",
-        interest: "travel"
+        id: "12in",
+        interest: "travel",
+        isSelected: false
     },
 ];
 

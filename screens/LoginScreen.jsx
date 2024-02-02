@@ -37,7 +37,7 @@ const LoginScreen = ({ navigation }) => {
           backgroundColor={secondaryColor}
           color="#000"
           buttonFunc={() => navigationToScreen(navigation, "UserProfileScreen")}
-        />
+        /> 
       </View>
     </SafeAreaView>
   );
