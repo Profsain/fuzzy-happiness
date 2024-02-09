@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Text, VStack, set } from "@gluestack-ui/themed";
+import { useRoute } from "@react-navigation/native";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { Alert, TouchableOpacity } from "react-native";
+// hooks
+import useReceivedData from "../../hooks/useReceivedData";
 
 const TokenScreen = ({ navigation }) => {
-  const [phoneNumber, setPhoneNumber] = useState("+447821456740");
+  const receivedData = useReceivedData();
+  const phoneNumber = receivedData.phone;
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
   const [confirmToken, setConfirmToken] = useState("123456");

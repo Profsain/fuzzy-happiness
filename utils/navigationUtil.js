@@ -1,7 +1,7 @@
 
 
-const navigateToScreen = (navigation, screenName) => {
-    navigation.navigate(screenName);
+const navigateToScreen = (navigation, screenName, data) => {
+    navigation.navigate(screenName, {data});
 };
 
 export default navigateToScreen;
