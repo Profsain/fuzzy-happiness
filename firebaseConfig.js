@@ -1,6 +1,3 @@
-import { initializeApp} from 'firebase/app';
-import { getAuth } from "firebase/auth";
-
 const firebaseConfig = {
   apiKey: "AIzaSyAgSJ7UMiprch3nz_dvs22zTRmOrmWYBOc",
   authDomain: "splinx-auth.firebaseapp.com",
@@ -12,6 +9,4 @@ const firebaseConfig = {
   measurementId: "G-RXMSVJHVT3",
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-export default app;
+export default firebaseConfig;

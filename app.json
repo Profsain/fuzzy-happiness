@@ -4,34 +4,44 @@
     "slug": "Splinx-Planet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splinxicon.png",
+    "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splinxlogo2.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#fdccbb"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/splinxicon.png",
         "backgroundColor": "#fdccbb"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
+      ],
+      "package": "com.profsain.SplinxPlanet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization",
-     [
-       "expo-contacts",
-       {
-         "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
-       }
-     ]
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+        }
+      ]
     ]
   }
 }
