@@ -1,9 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import firebase from "../firebase";
-import auth from "@react-native-firebase/auth";
-
-// import { getAuth, PhoneAuthProvider } from "@firebase/auth";
+import { firebaseConfig } from "../config";
+import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings } from "../components";
 import PhoneInput from "react-native-phone-number-input";
@@ -37,43 +35,44 @@ const SignUpScreen = ({ navigation }) => {
 
   // send token to phone number
   const recaptchaVerifier = useRef(null);
-  const [verificationId, setVerificationId] = useState(null);
-  const [confirmation, setConfirmation] = useState(null);
 
-  // function to be called when requesting for token
-  // const sendVerification = async () => {
-  //   try {
-  //     const phoneProvider = new firebase.auth.PhoneAuthProvider();
-  //     const verificationId = await phoneProvider.verifyPhoneNumber(
-  //       formattedValue,
-  //       recaptchaVerifier.current
-  //     );
-  //     setVerificationId(verificationId);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //   } catch (err) {
-  //     Alert.alert("Error", err.message);
-  //   }
-  // };
-
-  // const sendVerification = () => {
-  //   const phoneProvider = new firebase.auth.PhoneAuthProvider();
-  //   phoneProvider
-  //     .verifyPhoneNumber(phoneNumber, recaptchaVerifier.current)
-  //     .then(setVerificationId);
-  // };
-
-  async function sendVerificationCode(phoneNumber) {
+  const sendVerificationCode = async (phoneNumber) => {
     try {
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      // Save confirmation to state or context for later use
-      setConfirmation(confirmation);
-      Alert.alert("Verification code has been sent to your phone.");
-      console.log("Confirmation", confirmation);
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const verificationToken = await phoneProvider.verifyPhoneNumber(
+        phoneNumber,
+        recaptchaVerifier.current
+      );
+      
+      if (verificationToken) {
+        setVerificationId(verificationToken);
+
+        // navigate to token screen
+         const data = {
+           phone: formattedValue,
+           verificationId: verificationToken,
+         };
+
+         navigationToScreen(navigation, "TokenScreen", data);
+      }
     } catch (error) {
-      console.error("Error sending verification code: ", error);
-      // Handle error
+      console.log("Error", error.message)
     }
-  }
+    
+  };
+
+  // async function sendVerificationCode(phoneNumber) {
+  //   try {
+  //     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+  //     // Save confirmation to state or context for later use
+  //     setConfirmation(confirmation);
+  //     Alert.alert("Verification code has been sent to your phone.");
+  //     console.log("Confirmation", confirmation);
+  //   } catch (error) {
+  //     console.error("Error sending verification code: ", error);
+  //     // Handle error
+  //   }
+  // }
 
 
 
@@ -81,24 +80,6 @@ const SignUpScreen = ({ navigation }) => {
   const handleGetToken = () => {
     // call sendVerificationCode function
     sendVerificationCode(formattedValue);
-    // call sendVerification function
-    // sendVerification();
-
-    // send data to next screen
-    const data = {
-      phone: formattedValue,
-    };
-
-    // send token to phone number
-    // const checkValid = phoneInput.current?.isValidNumber(phoneValue);
-
-    // if (verificationId) {
-    //   // navigationToScreen(navigation, "TokenScreen", data);
-
-    // }
-    // // sent token to formattedValue
-    // navigate to TokenScreen
-    // navigationToScreen(navigation, "TokenScreen", data);
   };
 
   return (
@@ -130,6 +111,10 @@ const SignUpScreen = ({ navigation }) => {
           )}
 
           {/* recaptcha component */}
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+          />
         
         </Box>
 

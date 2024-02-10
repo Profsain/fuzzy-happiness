@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useRoute } from "@react-navigation/native";
+import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
@@ -10,8 +10,10 @@ import { Alert, TouchableOpacity } from "react-native";
 import useReceivedData from "../../hooks/useReceivedData";
 
 const TokenScreen = ({ navigation }) => {
+  // data from signU  p screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
+  const verificationId = receivedData.verificationId;  
 
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
@@ -47,7 +49,6 @@ const TokenScreen = ({ navigation }) => {
   // handle token code change
   const handleTokenValue = (code) => {
     setTokenValue(code);
-
     // handle error
     if (code.length === 0) {
       setError("Token Code is required");
@@ -57,10 +58,6 @@ const TokenScreen = ({ navigation }) => {
       setError("Token Code must be 6 digits");
       setMt(18);
       return;
-    } else if (code !== confirmToken) {
-      setError("Token Code is incorrect");
-      setMt(18);
-      return;
     } else {
       setError("");
       setIsValid(true);
@@ -68,12 +65,37 @@ const TokenScreen = ({ navigation }) => {
     }
   };
 
-  // handle send token
-  const handleConfirmToken = () => {
-    // persist phone number in local storage
-    // navigate to Add Email Screen
-    navigationToScreen(navigation, "AddEmailScreen");
+  // handle confirm token
+   const handleConfirmToken = () => {
+     const credential = firebase.auth.PhoneAuthProvider.credential(
+       verificationId,
+       tokenValue
+     );
+     firebase
+       .auth()
+       .signInWithCredential(credential)
+       .then((result) => {
+         // do something with the result
+         if (result) {
+           console.log("Result", result);
+            const data = {
+              phoneNumber: phoneNumber
+            };
+           navigationToScreen(navigation, "AddEmailScreen", data);
+         }
+       })
+       .catch((error) => {
+         // do something with the error
+         setError(error.message);
+         console.log("Error", error);
+       });
   };
+  
+  // handle token resend
+  const handleResendToken = () => {
+    // navigate back to SignUpScreen
+    navigationToScreen(navigation, "SignUpScreen")
+  }
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
@@ -127,7 +149,7 @@ const TokenScreen = ({ navigation }) => {
                 <Text
                   size="sm"
                   style={{ color: "#000", textAlign: "center" }}
-                  onPress={() => Alert.alert("Resend Token")}
+                  onPress={handleResendToken}
                 >
                   Resend
                 </Text>
