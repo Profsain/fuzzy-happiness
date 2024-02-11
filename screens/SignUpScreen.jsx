@@ -45,8 +45,6 @@ const SignUpScreen = ({ navigation }) => {
       );
       
       if (verificationToken) {
-        setVerificationId(verificationToken);
-
         // navigate to token screen
          const data = {
            phone: formattedValue,

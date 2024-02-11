@@ -8,8 +8,12 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const AddEmailScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+  
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -30,10 +34,15 @@ const AddEmailScreen = ({ navigation }) => {
 
   const handleNext = () => {
     // persist email in local storage
+    const data = {
+      ...receivedData,
+      emailAddress: email,
+    };
     // send token to email
     // Alert.alert("Email", email);
     // navigate to EmailVerificationCode screen
-    navigationToScreen(navigation, "EmailVerificationCode");
+    // console.log(data);
+    navigationToScreen(navigation, "AddAddressScreen", data);
   };
 
   return (

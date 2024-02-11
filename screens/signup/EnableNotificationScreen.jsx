@@ -1,27 +1,35 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import {
-  CustomButton,
-  CustomHeadings,
-} from "../../components";
-
+import { CustomButton, CustomHeadings } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { Image, Alert, StyleSheet } from "react-native";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const EnableNotificationScreen = ({ navigation }) => {
-  const handlePushNotification = () => {
-    // persist data in local storage
-    Alert.alert("Push Notification Enabled");
+  // received data from previous screen
+  const receivedData = useReceivedData();
 
+  const handlePushNotification = () => {
+    // send data to next screen
+    const data = {
+      ...receivedData,
+      enableNotification: true,
+    };
+  
     // navigate to UserProfileScreen screen
-    navigationToScreen(navigation, "UserProfileScreen");
+    navigationToScreen(navigation, "UserProfileScreen", data);
   };
 
   const handleNotNow = () => {
+    // send data to next screen
+    const data = {
+      ...receivedData,
+      enableNotification: false,
+    };
 
     // navigate to UserProfileScreen screen
-    navigationToScreen(navigation, "UserProfileScreen");
+    navigationToScreen(navigation, "UserProfileScreen", data);
   };
 
   return (
@@ -36,7 +44,7 @@ const EnableNotificationScreen = ({ navigation }) => {
           moment.
         </Text>
 
-          <Image source={require("../../assets/stayconnected1.png")}/>
+        <Image source={require("../../assets/stayconnected1.png")} />
 
         {/* action button */}
         <Box mt={40}>

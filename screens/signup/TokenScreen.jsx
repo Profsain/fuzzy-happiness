@@ -77,7 +77,6 @@ const TokenScreen = ({ navigation }) => {
        .then((result) => {
          // do something with the result
          if (result) {
-           console.log("Result", result);
             const data = {
               phoneNumber: phoneNumber
             };

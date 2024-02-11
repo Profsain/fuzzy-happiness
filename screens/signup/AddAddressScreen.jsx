@@ -8,8 +8,12 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const AddAddressScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+  
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [country, setCountry] = useState("");
   const [countryError, setCountryError] = useState("");
@@ -42,10 +46,16 @@ const AddAddressScreen = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    // persist data in local storage
-  
+    // set data to be sent to the next screen
+    const data = {
+      ...receivedData,
+      country,
+      city,
+      homeAddress: address,
+    };
+
     // navigate to Bio screen
-    navigationToScreen(navigation, "BioScreen");
+    navigationToScreen(navigation, "BioScreen", data);
   };
 
   return (

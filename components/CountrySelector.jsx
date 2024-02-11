@@ -11,6 +11,11 @@ const CountrySelector = ({ country, setCountry }) => {
       const response = await fetch(
         "https://restcountries.com/v3.1/all?fields=name,flags"
       );
+
+      // handle network error
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
       const data = await response.json();
       if (data) {
         // console.log(data);

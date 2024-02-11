@@ -9,9 +9,13 @@ import {
 
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const BioScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [firstName, setFirstName] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -19,11 +23,12 @@ const BioScreen = ({ navigation }) => {
   const [lastNameError, setLastNameError] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [dateOfBirthError, setDateOfBirthError] = useState("");
+  
 
   // handle first name change
   const handleFirstNameChange = (text) => {
     setFirstName(text);
-    // validate city
+    // validate first name
     if (text.length === 0) {
       setFirstNameError("First name is required");
     } else {
@@ -34,10 +39,10 @@ const BioScreen = ({ navigation }) => {
   // handle last name change
   const handleLastNameChange = (text) => {
     setLastName(text);
-    // validate address
+    // validate last name
     if (text.length === 0) {
       setLastNameError("Last name is required");
-    } else if (text.length > 5) {
+    } else if (text.length > 3) {
       setLastNameError("");
     }
   };
@@ -45,7 +50,7 @@ const BioScreen = ({ navigation }) => {
   // handle date of birth change
   const handleDateOfBirthChange = (date) => {
     setDateOfBirth(date);
-    // validate address
+    // validate date
     if (date.length === 0) {
       setDateOfBirthError("Date of birth is required");
     } else {
@@ -55,15 +60,16 @@ const BioScreen = ({ navigation }) => {
   };
 
   const handleProceed = () => {
-    // persist data in local storage
+    // send data to next screen
     const data = {
+      ...receivedData,
       firstName,
       lastName,
-      dateOfBirth,
+      dob: dateOfBirth,
     };
-    // Alert.alert("Data", JSON.stringify(data));
+
     // navigate to EnableNotification screen
-    navigationToScreen(navigation, "CreatePasswordScreen");
+    navigationToScreen(navigation, "CreatePasswordScreen", data);
   };
 
   return (

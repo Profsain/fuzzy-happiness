@@ -22,12 +22,16 @@ import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
 import handleListUpdate from "../../utils/handlyListUpdate";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 // data import
 import interestData from "../../mockdata/interest";
 import hashtagsData from "../../mockdata/hashtags";
 
 const UserProfileScreen = ({ navigation }) => {
+  // received data from previous screen
+  const { data } = useReceivedData();
+  
   const [avatarUri, setAvatarUri] = useState(
     "https://i.ibb.co/qg4nZz0/avataricon.png"
   );

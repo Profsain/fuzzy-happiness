@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, PasswordInput } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const CreatePasswordScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+
   const [showPassword, setShowPassword] = useState(false);
   const handleState = () => {
     setShowPassword((showState) => {
@@ -54,13 +57,14 @@ const CreatePasswordScreen = ({ navigation }) => {
 
   // handle next btn
   const handleNext = () => {
-    // persist data in local storage
+    // send data to next screen
     const data = {
+      ...receivedData,
       password,
-      confirmPassword,
     };
-    // navigate to LoginUser
-    navigationToScreen(navigation, "EnableNotificationScreen");
+
+    // navigate to EnableNotificationScreen
+    navigationToScreen(navigation, "EnableNotificationScreen", data);
   };
 
   return (
