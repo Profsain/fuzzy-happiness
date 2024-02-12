@@ -1,8 +1,8 @@
 import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import {
   Box,
   Avatar,
-  AvatarBadge,
   AvatarFallbackText,
   AvatarImage,
   HStack,
@@ -96,8 +96,18 @@ const UserProfileScreen = ({ navigation }) => {
     setBio(text);
   };
 
-  const handlePhoto = () => {
-    Alert.alert("Take a picture or upload");
+  const handlePhoto = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    console.log(result);
+
+    if (!result.canceled) {
+      setAvatarUri(result.assets[0].uri);
+    }
   };
 
   const handleCreateAccount = () => {
@@ -113,7 +123,7 @@ const UserProfileScreen = ({ navigation }) => {
           {/* profile avatar */}
           <HStack space="2xl">
             <TouchableOpacity onPress={handlePhoto}>
-              <Avatar size="lg" bgColor="#E0E0E0">
+              <Avatar size="xl" bgColor="#E0E0E0">
                 <AvatarFallbackText>SS</AvatarFallbackText>
                 <AvatarImage
                   source={{
@@ -123,7 +133,7 @@ const UserProfileScreen = ({ navigation }) => {
                 />
               </Avatar>
             </TouchableOpacity>
-            <VStack>
+            <VStack mt={16}>
               <Heading size="sm">Ronald Richards</Heading>
               <Text size="sm">Lagos Nigeria</Text>
             </VStack>
