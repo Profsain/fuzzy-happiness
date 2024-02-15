@@ -16,6 +16,8 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  View,
+  TextInput,
 } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
@@ -23,6 +25,7 @@ import initialToUpperCase from "../../utils/firstCharToUpperCase";
 import handleListUpdate from "../../utils/handlyListUpdate";
 import navigationToScreen from "../../utils/navigationUtil";
 import useReceivedData from "../../hooks/useReceivedData";
+import client from "../../api/client";
 
 // data import
 import interestData from "../../mockdata/interest";
@@ -30,11 +33,11 @@ import hashtagsData from "../../mockdata/hashtags";
 
 const UserProfileScreen = ({ navigation }) => {
   // received data from previous screen
-  const { data } = useReceivedData();
+  const receivedData = useReceivedData();
+  const {firstName, lastName, country, city} = receivedData;
   
-  const [avatarUri, setAvatarUri] = useState(
-    "https://i.ibb.co/qg4nZz0/avataricon.png"
-  );
+  const [avatarUri, setAvatarUri] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
   const [age, setAge] = useState("");
   const [ageError, setAgeError] = useState("");
   const [bio, setBio] = useState("");
@@ -98,22 +101,83 @@ const UserProfileScreen = ({ navigation }) => {
 
   const handlePhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      // mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
-    console.log(result);
 
     if (!result.canceled) {
       setAvatarUri(result.assets[0].uri);
+
+      // upload photo to cloudinary
+      let base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
+      let data = {
+        file: base64Img,
+        upload_preset: "hwebe1a7",
+      };
+
+      uploadPhoto(data);
     }
   };
 
-  const handleCreateAccount = () => {
+  // upload profile photo to cloudinary
+  const uploadPhoto = async (data) => {
+    let CLOUDINARY_URL =
+      "https://api.cloudinary.com/v1_1/dvwxyofm2/image/upload";
+
+      await fetch(CLOUDINARY_URL, {
+        body: JSON.stringify(data),
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'POST',
+      }).then(async r => {
+        let data = await r.json();
+
+        setProfileImg(data.secure_url);
+      }).catch(err => console.log('err', err));
+  }
+
+  const handleCreateAccount = async () => {
     // send data to backend database
-    // navigate to inviteFriends Screen
-    navigationToScreen(navigation, "InviteFriendsScreen");
+    // send avatarUri, age, bio, interestList, tagList to backend
+    const data = {
+      ...receivedData,
+      profileImg,
+      age,
+      bio,
+      interestList,
+      tagList,
+    };
+    console.log("data", data);
+    
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(data),
+        redirect: "follow",
+      };
+
+      try {
+        const response = await client.post("/auth/register", requestOptions);
+        const result = await response.text();
+        console.log(result);
+      } catch (error) {
+        console.log("error", error);
+      }
+
+      // navigate to inviteFriends Screen
+      // navigationToScreen(navigation, "InviteFriendsScreen");
+    } catch (error) {
+      console.log("error", error);
+    }
+    
   };
 
   return (
@@ -123,26 +187,33 @@ const UserProfileScreen = ({ navigation }) => {
           {/* profile avatar */}
           <HStack space="2xl">
             <TouchableOpacity onPress={handlePhoto}>
-              <Avatar size="xl" bgColor="#E0E0E0">
-                <AvatarFallbackText>SS</AvatarFallbackText>
-                <AvatarImage
-                  source={{
-                    uri: avatarUri,
-                  }}
-                  alt="avatar"
-                />
-              </Avatar>
+              {avatarUri === null ? (
+                <View style={styles.avatarCon}>
+                  <Text>Click to Upload</Text>
+                </View>
+              ) : (
+                <Avatar size="xl" bgColor="#E0E0E0">
+                  <AvatarFallbackText>SS</AvatarFallbackText>
+                  <AvatarImage
+                    source={{
+                      uri: avatarUri || "https://bit.ly/3iJx6j6",
+                    }}
+                    alt="avatar"
+                  />
+                </Avatar>
+              )}
             </TouchableOpacity>
             <VStack mt={16}>
-              <Heading size="sm">Ronald Richards</Heading>
-              <Text size="sm">Lagos Nigeria</Text>
+              <Heading size="sm">{firstName} { lastName}</Heading>
+              <Text size="sm">{city} {country}</Text>
             </VStack>
           </HStack>
           {/* add age and bio */}
           <Box>
             <CustomInput
               placeholder="Add age"
-              type="text"
+              type="number"
+              keyboardType="numeric"
               inputValue={age}
               handleTextChange={handleAgeChange}
               error={ageError}
@@ -182,7 +253,10 @@ const UserProfileScreen = ({ navigation }) => {
           </Box>
 
           {/* action button */}
-          <CustomButton label="Create Account" buttonFunc={handleCreateAccount} />
+          <CustomButton
+            label="Create Account"
+            buttonFunc={handleCreateAccount}
+          />
         </VStack>
       </Box>
     </ScrollView>
@@ -194,6 +268,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  avatarCon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#E0E0E0",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 export default UserProfileScreen;

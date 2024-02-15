@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
@@ -9,15 +10,17 @@ import { Alert, TouchableOpacity } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
 
-const TokenScreen = ({ navigation }) => {
+const TokenScreen = () => {
   // data from signU  p screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
-  const verificationId = receivedData.verificationId;  
+  const verificationId = receivedData.verificationId; 
+  
+  // navigation
+  const navigation = useNavigation();
 
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
-  const [confirmToken, setConfirmToken] = useState("123456");
   const [error, setError] = useState("");
   const [mt, setMt] = useState(68); // margin top for resend text
   const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
@@ -80,7 +83,8 @@ const TokenScreen = ({ navigation }) => {
             const data = {
               phoneNumber: phoneNumber
             };
-           navigationToScreen(navigation, "AddEmailScreen", data);
+           //  navigationToScreen(navigation, "AddEmailScreen", data);
+           navigation.replace("AddEmailScreen", data);
          }
        })
        .catch((error) => {
