@@ -23,15 +23,15 @@ import { ScrollView } from "react-native-virtualized-view";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
 import handleListUpdate from "../../utils/handlyListUpdate";
-import navigationToScreen from "../../utils/navigationUtil";
+import { useNavigation } from "@react-navigation/native";
 import useReceivedData from "../../hooks/useReceivedData";
-import client from "../../api/client";
 
 // data import
 import interestData from "../../mockdata/interest";
 import hashtagsData from "../../mockdata/hashtags";
 
-const UserProfileScreen = ({ navigation }) => {
+const UserProfileScreen = () => {
+  const navigation = useNavigation();
   // received data from previous screen
   const receivedData = useReceivedData();
   const {firstName, lastName, country, city} = receivedData;
@@ -140,6 +140,7 @@ const UserProfileScreen = ({ navigation }) => {
       }).catch(err => console.log('err', err));
   }
 
+  // handle new user registration
   const handleCreateAccount = async () => {
     // send data to backend database
     // send avatarUri, age, bio, interestList, tagList to backend
@@ -151,33 +152,35 @@ const UserProfileScreen = ({ navigation }) => {
       interestList,
       tagList,
     };
-    console.log("data", data);
+
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
     
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(data),
+      redirect: "follow",
+    };
 
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(data),
-        redirect: "follow",
-      };
-
+    const registerUser = async () => {
       try {
-        const response = await client.post("/auth/register", requestOptions);
+        const response = await fetch(
+          "https://splinx-server.onrender.com/auth/register",
+          requestOptions
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const result = await response.text();
         console.log(result);
+        navigation.replace("InviteFriendsScreen");
       } catch (error) {
-        console.log("error", error);
+        console.error("Error:", error);
       }
-
-      // navigate to inviteFriends Screen
-      // navigationToScreen(navigation, "InviteFriendsScreen");
-    } catch (error) {
-      console.log("error", error);
-    }
+    };
     
+    registerUser();
   };
 
   return (
@@ -193,7 +196,7 @@ const UserProfileScreen = ({ navigation }) => {
                 </View>
               ) : (
                 <Avatar size="xl" bgColor="#E0E0E0">
-                  <AvatarFallbackText>SS</AvatarFallbackText>
+                  <AvatarFallbackText>SP</AvatarFallbackText>
                   <AvatarImage
                     source={{
                       uri: avatarUri || "https://bit.ly/3iJx6j6",
@@ -209,7 +212,7 @@ const UserProfileScreen = ({ navigation }) => {
             </VStack>
           </HStack>
           {/* add age and bio */}
-          <Box>
+          <VStack>
             <CustomInput
               placeholder="Add age"
               type="number"
@@ -226,7 +229,7 @@ const UserProfileScreen = ({ navigation }) => {
               handleTextChange={handleBioChange}
               error={bioError}
             />
-          </Box>
+          </VStack>
 
           {/* interest section */}
           <Box>
