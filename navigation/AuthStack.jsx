@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
+import { OnboardingScreen, LoginScreen, SignUpScreen, HomeScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
 import {
@@ -60,6 +60,12 @@ const AuthStack = () => {
         options={{ headerShown: false }}
         name="LoginScreen"
         component={LoginScreen}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        options={{ headerShown: true, headerTitle: "" }}
+        name="HomeScreen"
+        component={HomeScreen}
         navigation={navigation}
       />
 

@@ -6,11 +6,19 @@ import {
   CustomHeadings,
   CustomInput,
   PasswordInput,
+  LoadingSpinner,
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import { useLogin } from "../../context/LoginProvider"
+import { useNavigation } from "@react-navigation/native";
 
-const LoginInputScreen = ({ navigation }) => {
+const LoginInputScreen = () => {
+  const navigation = useNavigation()
+
+   // extract from useLogin context
+  const { setUserProfile, setIsLoginIn, setToken } = useLogin();
+  
   const [showPassword, setShowPassword] = useState(false);
   const handleState = () => {
     setShowPassword((showState) => {
@@ -19,13 +27,15 @@ const LoginInputScreen = ({ navigation }) => {
   };
 
   const [isAllValid, setIsAllValid] = useState(false); // to check if all inputs are valid
+  const [loading, setLoading] = useState(false); // to check if the login button is loading
+  const [loginMsg, setLoginMsg] = useState(""); // to display login message
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const handleEmailChange = (text) => {
-    setEmail(text);
+    setEmail(text.trim().toLowerCase());
     const emailRegex = /\S+@\S+\.\S+/;
     // validate email
     if (text.length === 0) {
@@ -39,30 +49,82 @@ const LoginInputScreen = ({ navigation }) => {
 
   // handle password
   const handlePasswordChange = (text) => {
-    setPassword(text);
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    setPassword(text.trim());
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
     // validate password
     if (text.length === 0) {
       setPasswordError("Password is required");
     } else if (text.length < 6) {
       setPasswordError("Password must be at least 6 characters");
-    } else if (!passwordRegex.test(text)) {
-      setPasswordError(
-        "Password must contain at least one uppercase letter, one lowercase letter and one number"
-      );
     } else {
       setPasswordError("");
+      setIsAllValid(true);
     }
   };
 
+  // handle social login
   const handleSocialLogin = () => {
     Alert.alert("Social Login");
+  };
+
+  // handle user Login
+  const handleLogin = async () => {
+    // set loading to true
+    setLoading(true);
+
+    // login info
+    const userInfo = {
+      emailAddress: email,
+      password,
+    };
+
+    // login logic
+    try {
+      const response = await fetch('https://splinx-server.onrender.com/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userInfo),
+      });
+
+      if (response.ok) {
+        // Login successful
+        setLoading(false);
+        setLoginMsg("")
+        const data = await response.json();
+        // store user data in context, navigate to the next home screen.
+        setUserProfile(data.user);
+        setIsLoginIn(true);
+        setToken(data.token);
+        console.log("Login successful:", data);
+        
+        // navigate to HomeScreen 
+        navigationToScreen(navigation, "HomeScreen");
+      } else {
+        // Login failed
+        setLoading(false);
+        const errorData = await response.json();
+        console.log('Login failed:', errorData.message)
+        setLoginMsg('Login failed: User not found or password is incorrect. Please try again.');
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error('Error logging in:', error);
+      setLoginMsg('An error occurred while logging in. Please try again.');
+    }
   };
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Welcome Back!" />
+
+      <Box>
+        <Text size="sm" style={{ color: "red", textAlign: "left" }}>
+          {loginMsg}
+        </Text>
+      </Box>
 
       {/* form section */}
       <VStack space="xl" mt={25}>
@@ -72,6 +134,7 @@ const LoginInputScreen = ({ navigation }) => {
           inputValue={email}
           handleTextChange={handleEmailChange}
           error={emailError}
+          keyboardType={"email-address"}
         />
         <PasswordInput
           showPassword={showPassword}
@@ -139,7 +202,13 @@ const LoginInputScreen = ({ navigation }) => {
               color="#000"
             />
           ) : (
-            <CustomButton label="Log in" />
+            <Box>
+              {!loading ? (
+                <CustomButton label="Log in" buttonFunc={handleLogin} />
+              ) : (
+                <LoadingSpinner />
+              )}
+            </Box>
           )}
         </Box>
 

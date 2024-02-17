@@ -140,6 +140,7 @@ const UserProfileScreen = () => {
     }
   };
 
+  // load profile image from device
   const handlePhoto = async () => {
     // set loading to true
     setLoading(true);
@@ -166,6 +167,10 @@ const UserProfileScreen = () => {
       };
 
       uploadPhoto(data);
+    }
+
+    if(result.canceled) {
+      setLoading(false);
     }
   };
 
