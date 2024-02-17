@@ -225,14 +225,6 @@ const AuthStack = () => {
           headerShown: true,
           headerTitle: "Invite Friends",
           headerTitleAlign: "center",
-          headerLeft: () => (
-            <AntDesign
-              onPress={handleGoBack}
-              name="left"
-              size={24}
-              color="black"
-            />
-          ),
         }}
         name="InviteFriendsScreen"
         component={InviteFriendsScreen}

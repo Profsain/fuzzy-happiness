@@ -24,7 +24,7 @@ const CreatePasswordScreen = ({ navigation }) => {
 
   // handle password
   const handlePasswordChange = (text) => {
-    setPassword(text);
+    setPassword(text.trim());
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
 
     // validate password
@@ -43,7 +43,7 @@ const CreatePasswordScreen = ({ navigation }) => {
 
   // handle confirm password
   const handleConfirmPasswordChange = (text) => {
-    setConfirmPassword(text);
+    setConfirmPassword(text.trim());
     // validate confirm password
     if (text.length === 0) {
       setConfirmPasswordError("Confirm password is required");

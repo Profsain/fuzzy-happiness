@@ -19,7 +19,7 @@ const AddEmailScreen = ({ navigation }) => {
   const [emailError, setEmailError] = useState("");
 
   const handleEmailChange = (text) => {
-    setEmail(text);
+    setEmail(text.trim().toLowerCase());
     const emailRegex = /\S+@\S+\.\S+/;
     // validate email
     if (text.length === 0) {

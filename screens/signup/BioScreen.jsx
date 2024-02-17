@@ -60,12 +60,14 @@ const BioScreen = ({ navigation }) => {
   };
 
   const handleProceed = () => {
+    // convert data to serializable string
+    const dob = dateOfBirth.toISOString();
     // send data to next screen
     const data = {
       ...receivedData,
       firstName,
       lastName,
-      dob: dateOfBirth,
+      dob,
     };
 
     // navigate to EnableNotification screen

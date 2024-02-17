@@ -10,16 +10,22 @@ import {
   Heading,
   Text,
 } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import {
-  Alert,
+  CustomButton,
+  CustomHeadings,
+  CustomInput,
+  LoadingSpinner,
+} from "../../components";
+import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
   View,
-  TextInput,
+  ScrollView,
+  Dimensions,
 } from "react-native";
-import { ScrollView } from "react-native-virtualized-view";
+
+// import { ScrollView } from "react-native-virtualized-view";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
 import handleListUpdate from "../../utils/handlyListUpdate";
@@ -30,18 +36,29 @@ import useReceivedData from "../../hooks/useReceivedData";
 import interestData from "../../mockdata/interest";
 import hashtagsData from "../../mockdata/hashtags";
 
+// get device width
+const { width } = Dimensions.get("window");
+const COLUMN_COUNT = 3;
+const ITEM_SIZE = width / COLUMN_COUNT;
+
 const UserProfileScreen = () => {
   const navigation = useNavigation();
   // received data from previous screen
   const receivedData = useReceivedData();
-  const {firstName, lastName, country, city} = receivedData;
-  
+
+  // loading spinner
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // form state
+  const { firstName, lastName, country, city } = receivedData;
   const [avatarUri, setAvatarUri] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
   const [age, setAge] = useState("");
   const [ageError, setAgeError] = useState("");
   const [bio, setBio] = useState("");
   const [bioError, setBioError] = useState("");
+  const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
 
   // render interest items
   const [bgColor, setBgColor] = useState(secondaryColor);
@@ -53,8 +70,11 @@ const UserProfileScreen = () => {
   const handleInterest = (id) => {
     handleListUpdate(id, interestData, setInterestList);
   };
-  const renderInterest = ({ item }) => (
+  // map through interestData and return item
+
+  const renderInterest = interestData.map((item) => (
     <CustomButton
+      key={item.id}
       fSize={14}
       mr={8}
       width={94}
@@ -67,7 +87,7 @@ const UserProfileScreen = () => {
       }
       buttonFunc={() => handleInterest(item.id)}
     />
-  );
+  ));
 
   // render tags items
   const [tagList, setTagList] = useState([]);
@@ -75,8 +95,9 @@ const UserProfileScreen = () => {
   const handleTag = (id) => {
     handleListUpdate(id, hashtagsData, setTagList);
   };
-  const renderTags = ({ item }) => (
+  const renderTags = hashtagsData.map((item) => (
     <CustomButton
+      key={item.id}
       fSize={14}
       mr={8}
       width={94}
@@ -89,17 +110,40 @@ const UserProfileScreen = () => {
       }
       buttonFunc={() => handleTag(item.id)}
     />
-  );
+  ));
 
   const handleAgeChange = (text) => {
     setAge(text);
+
+    // handle error
+    if (text.length < 1) {
+      setAgeError("Age is required");
+      setIsValid(false);
+    } else {
+      setAgeError("");
+    }
   };
 
   const handleBioChange = (text) => {
     setBio(text);
+
+    // handle error
+    if (text.length < 1) {
+      setBioError("Bio is required");
+      setIsValid(false);
+    } else if (text.length < 10) {
+      setBioError("Bio must be at least 10 characters");
+      setIsValid(false);
+    } else {
+      setBioError("");
+      setIsValid(true);
+    }
   };
 
   const handlePhoto = async () => {
+    // set loading to true
+    setLoading(true);
+
     let result = await ImagePicker.launchImageLibraryAsync({
       // mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -110,6 +154,9 @@ const UserProfileScreen = () => {
 
     if (!result.canceled) {
       setAvatarUri(result.assets[0].uri);
+
+      // set loading to false
+      setLoading(false);
 
       // upload photo to cloudinary
       let base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
@@ -127,23 +174,27 @@ const UserProfileScreen = () => {
     let CLOUDINARY_URL =
       "https://api.cloudinary.com/v1_1/dvwxyofm2/image/upload";
 
-      await fetch(CLOUDINARY_URL, {
-        body: JSON.stringify(data),
-        headers: {
-          'content-type': 'application/json'
-        },
-        method: 'POST',
-      }).then(async r => {
+    await fetch(CLOUDINARY_URL, {
+      body: JSON.stringify(data),
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "POST",
+    })
+      .then(async (r) => {
         let data = await r.json();
 
         setProfileImg(data.secure_url);
-      }).catch(err => console.log('err', err));
-  }
+      })
+      .catch((err) => console.log("err", err));
+  };
 
   // handle new user registration
   const handleCreateAccount = async () => {
+    // set submitting to true
+    setSubmitting(true);
+
     // send data to backend database
-    // send avatarUri, age, bio, interestList, tagList to backend
     const data = {
       ...receivedData,
       profileImg,
@@ -155,7 +206,7 @@ const UserProfileScreen = () => {
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -173,26 +224,38 @@ const UserProfileScreen = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.text();
-        console.log(result);
+
+        // set submitting to false
+        setSubmitting(false);
+
+        // navigate to invite friends screen
         navigation.replace("InviteFriendsScreen");
       } catch (error) {
         console.error("Error:", error);
       }
     };
-    
+
     registerUser();
   };
 
   return (
-    <ScrollView nestedScrollEnabled={true}>
-      <Box width="100%" justifyContent="center" p={24} pt={28}>
-        <VStack space="2xl">
+    <Box width="100%" justifyContent="center" p={24} pt={28}>
+      <ScrollView
+        nestedScrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <VStack space="2xl" flex={1}>
           {/* profile avatar */}
           <HStack space="2xl">
             <TouchableOpacity onPress={handlePhoto}>
               {avatarUri === null ? (
                 <View style={styles.avatarCon}>
-                  <Text>Click to Upload</Text>
+                  {!loading ? (
+                    <Text>Click to Upload</Text>
+                  ) : (
+                    <LoadingSpinner text="" />
+                  )}
                 </View>
               ) : (
                 <Avatar size="xl" bgColor="#E0E0E0">
@@ -207,12 +270,16 @@ const UserProfileScreen = () => {
               )}
             </TouchableOpacity>
             <VStack mt={16}>
-              <Heading size="sm">{firstName} { lastName}</Heading>
-              <Text size="sm">{city} {country}</Text>
+              <Heading size="sm">
+                {firstName} {lastName}
+              </Heading>
+              <Text size="sm">
+                {city} {country}
+              </Text>
             </VStack>
           </HStack>
           {/* add age and bio */}
-          <VStack>
+          <Box>
             <CustomInput
               placeholder="Add age"
               type="number"
@@ -229,40 +296,52 @@ const UserProfileScreen = () => {
               handleTextChange={handleBioChange}
               error={bioError}
             />
-          </VStack>
+          </Box>
 
+          {/* action button */}
+          {/* <CustomButton
+            label="Create Account"
+            buttonFunc={handleCreateAccount}
+          /> */}
+        </VStack>
+
+        <VStack space="2xl" mt={24} flex={1}>
           {/* interest section */}
           <Box>
             <CustomHeadings title="My Interests" />
-            <FlatList
-              data={interestData}
-              renderItem={renderInterest}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-              columnWrapperStyle={StyleSheet.columnWrapper}
-            />
+
+            <View style={styles.container}>{renderInterest}</View>
           </Box>
 
           {/* hash tags section */}
           <Box>
             <CustomHeadings title="Hashtags" />
-            <FlatList
-              data={hashtagsData}
-              renderItem={renderTags}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-              columnWrapperStyle={StyleSheet.columnWrapper}
-            />
+            <View style={styles.container}>{renderTags}</View>
           </Box>
 
           {/* action button */}
-          <CustomButton
-            label="Create Account"
-            buttonFunc={handleCreateAccount}
-          />
+          <Box>
+            {!isValid ? (
+              <CustomButton
+                label="Create Account"
+                backgroundColor={secondaryColor}
+              />
+            ) : (
+              <Box>
+                {submitting ? (
+                  <LoadingSpinner text="Creating Profile" />
+                ) : (
+                  <CustomButton
+                    label="Create Account"
+                    buttonFunc={handleCreateAccount}
+                  />
+                )}
+              </Box>
+            )}
+          </Box>
         </VStack>
-      </Box>
-    </ScrollView>
+      </ScrollView>
+    </Box>
   );
 };
 
@@ -279,6 +358,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#E0E0E0",
     justifyContent: "center",
     alignItems: "center",
+  },
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  item: {
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    backgroundColor: "lightblue",
+    borderWidth: 1,
+    borderColor: "gray",
   },
 });
 export default UserProfileScreen;
