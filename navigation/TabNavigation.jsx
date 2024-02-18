@@ -42,7 +42,7 @@ const TabNavigation = () => {
         options={{
           tabBarLabel: "BillsPay",
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="hand-holding-usd" size={24} color="black" />
+            <FontAwesome5 name="hand-holding-usd" size={24} color={color} />
           ),
         }}
       ></Tab.Screen>
@@ -51,7 +51,7 @@ const TabNavigation = () => {
         name="ChatCom"
         component={ChatComScreen}
         options={{
-          tabBarLabel: "ChatCom",
+          tabBarLabel: "Chat",
           tabBarIcon: ({ color }) => (
             <AntDesign name="message1" size={24} color={color} />
           ),
@@ -70,12 +70,12 @@ const TabNavigation = () => {
       ></Tab.Screen>
 
       <Tab.Screen
-        name="user"
+        name="Setting"
         component={SettingScreen}
         options={{
-          tabBarLabel: "Setting",
+          tabBarLabel: "Profile",
           tabBarIcon: ({ color }) => (
-            <AntDesign name="setting" size={24} color={color} />
+            <AntDesign name="user" size={24} color={color} />
           ),
         }}
       ></Tab.Screen>

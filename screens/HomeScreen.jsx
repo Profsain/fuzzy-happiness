@@ -1,12 +1,12 @@
-import { SafeAreaView, Text } from 'react-native'
-import {Box} from '@gluestack-ui/themed'
+import { Image, Text, View } from 'react-native'
 import React from 'react'
 
 const HomeScreen = () => {
   return (
-    <Box>
-      <Text>HomeScreen Welcome here we are</Text>
-    </Box>
+    <View className="flex-1 justify-center items-center">
+      <Text>Home Screen </Text>
+      <Image className="w-24 h-24" source={require('../assets/images/WorkInProgress.png')} />
+    </View>
   )
 }
 
