@@ -12,12 +12,13 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider"
 import { useNavigation } from "@react-navigation/native";
+import TabNavigation from "../../navigation/TabNavigation";
 
 const LoginInputScreen = () => {
   const navigation = useNavigation()
 
    // extract from useLogin context
-  const { setUserProfile, setIsLoginIn, setToken } = useLogin();
+  const { setUserProfile, isLogin, setIsLogin, setToken } = useLogin();
   
   const [showPassword, setShowPassword] = useState(false);
   const handleState = () => {
@@ -96,12 +97,12 @@ const LoginInputScreen = () => {
         const data = await response.json();
         // store user data in context, navigate to the next home screen.
         setUserProfile(data.user);
-        setIsLoginIn(true);
+        setIsLogin(true);
         setToken(data.token);
         console.log("Login successful:", data);
         
-        // navigate to HomeScreen 
-        navigationToScreen(navigation, "HomeScreen");
+        //navigate to TabNavigation Screen
+        navigation.navigate("TabNavigation");
       } else {
         // Login failed
         setLoading(false);
