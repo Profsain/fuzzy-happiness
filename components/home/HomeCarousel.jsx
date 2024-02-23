@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import React from "react";
 import Carousel from "react-native-snap-carousel";
 import CarouselCard from "./CarouselCard";
@@ -24,6 +24,12 @@ const HomeCarousel = () => {
       image: require("../../assets/images/slider5.jpg"),
     },
   ];
+
+  // handle carousel button click
+  const handleCarouselBtn = (itemTitle) => {
+    Alert.alert(`You clicked on ${itemTitle}`);
+  };
+
   return (
     <View>
       <Carousel
@@ -33,12 +39,13 @@ const HomeCarousel = () => {
             title={item.title}
             description={item.description}
             imageSource={item.image}
+            btnFunc={() => handleCarouselBtn(item.title)}
           />
         )}
         sliderWidth={300}
         itemWidth={300}
         autoplay={true} // Enable autoplay
-        autoplayInterval={4000} // Set autoplay interval (in milliseconds)
+        autoplayInterval={5000} // Set autoplay interval (in milliseconds)
         loop={true} // Enable looping
       />
     </View>

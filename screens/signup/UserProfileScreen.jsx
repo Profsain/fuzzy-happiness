@@ -24,8 +24,6 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-
-// import { ScrollView } from "react-native-virtualized-view";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
 import handleListUpdate from "../../utils/handlyListUpdate";
