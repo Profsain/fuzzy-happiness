@@ -20,6 +20,7 @@ const TabNavigation = () => {
           backgroundColor: "white",
           borderTopWidth: 0,
           elevation: 0,
+          shadowColor: "white",
         },
         tabBarActiveTintColor: "tomato",
         tabBarInactiveTintColor: "gray",

@@ -99,7 +99,6 @@ const LoginInputScreen = () => {
         setUserProfile(data.user);
         setIsLogin(true);
         setToken(data.token);
-        console.log("Login successful:", data);
         
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");

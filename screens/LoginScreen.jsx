@@ -32,12 +32,12 @@ const LoginScreen = ({ navigation }) => {
           color="#000"
           buttonFunc={handleSignUp}
         />
-        {/* <CustomButton
+        <CustomButton
           label="Move to"
           backgroundColor={secondaryColor}
           color="#000"
-          buttonFunc={() => navigationToScreen(navigation, "UserProfileScreen")}
-        />  */}
+          buttonFunc={() => navigationToScreen(navigation, "TabNavigation")}
+        /> 
       </View>
     </SafeAreaView>
   );

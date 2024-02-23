@@ -69,7 +69,14 @@ const AuthStack = () => {
         navigation={navigation}
       />
       <Stack.Screen
-        options={{ headerShown: true, headerTitle: "", headerBackVisible: false}}
+        options={{
+          headerShown: false,
+          headerTitle: "",
+          headerBackVisible: false,
+          shadowColor: "white",
+          borderBottomWidth: 0,
+          elevation: 0,
+        }}
         name="TabNavigation"
         component={TabNavigation}
       />
