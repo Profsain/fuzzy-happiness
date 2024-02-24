@@ -11,21 +11,23 @@ import {
   HomeCarousel,
   HorizontalTitle,
   AllEvents,
+  SingleEvent,
 } from "../components/home";
 import eventData from "../mockdata/eventData";
 
 const HomeScreen = () => {
   // switch screens
   const [openAllEvents, setOpenAllEvents] = useState(false);
-  const [openPopularEvents, setOpenPopularEvents] = useState(false);
+  const [openSingleEvent, setOpenSingleEvent] = useState(false);
+  const [eventDetails, setEventDetails] = useState({});
   const [eventList, setEventList] = useState([{}]);
   const [headlineText, setHeadlineText] = useState("");
-  const [backFunc, setBackFunc] = useState(null);
 
   // set openAllEvents to false when device back button press
   useEffect(() => {
     const backAction = () => {
       setOpenAllEvents(false);
+      setOpenSingleEvent(false);
       return true;
     };
     const backHandler = BackHandler.addEventListener(
@@ -34,9 +36,6 @@ const HomeScreen = () => {
     );
     return () => backHandler.remove();
   }, []);
-
-  // navigation instance
-  const navigation = useNavigation();
 
   // limit the number of events to display
   const limit = 30;
@@ -80,14 +79,25 @@ const HomeScreen = () => {
 
   // handle open event details
   const handleOpenSingleEvent = (id) => {
-    // convert id to string
-    id = id.toString();
-    Alert.alert("Event ID", id);
+    // set open single event to true
+    setOpenSingleEvent(() => !openSingleEvent);
+
+    // set event details
+    const event = eventData.find((event) => event.id === id);
+    setEventDetails(event);
   };
 
   return (
     <>
-      {!openAllEvents ? (
+      {openAllEvents ? (
+        <AllEvents
+          eventList={eventList}
+          setBack={setOpenAllEvents}
+          headlineText={headlineText}
+        />
+      ) : openSingleEvent ? (
+        <SingleEvent setBack={setOpenSingleEvent} event={eventDetails}/>
+      ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* Top bar */}
           <Box>
@@ -161,12 +171,6 @@ const HomeScreen = () => {
             </Box>
           </ScrollView>
         </SafeAreaView>
-      ) : (
-        <AllEvents
-          eventList={eventList}
-          setBack={setOpenAllEvents}
-          headlineText={headlineText}
-        />
       )}
     </>
   );
