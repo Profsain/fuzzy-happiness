@@ -8,7 +8,6 @@ import {
   OnboardingScreen,
   LoginScreen,
   SignUpScreen,
-  HomeScreen,
 } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";

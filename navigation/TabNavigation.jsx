@@ -12,6 +12,7 @@ import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
+  
   return (
     <Tab.Navigator
       screenOptions={{

@@ -13,6 +13,7 @@ import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider"
 import { useNavigation } from "@react-navigation/native";
 import TabNavigation from "../../navigation/TabNavigation";
+import AppStack from "../../navigation/AppStack";
 
 const LoginInputScreen = () => {
   const navigation = useNavigation()
@@ -111,12 +112,12 @@ const LoginInputScreen = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error('Error logging in:', error);
       setLoginMsg('An error occurred while logging in. Please try again.');
     }
   };
 
   return (
+
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Welcome Back!" />
 

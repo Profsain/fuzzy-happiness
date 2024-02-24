@@ -4,7 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import HomeScreen from "../screens/HomeScreen";
+import TabNavigation from "./TabNavigation";
+import { AllEvents } from "../components/home";
 
 
 const Stack = createNativeStackNavigator();
@@ -20,13 +21,19 @@ const AppStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        options={{ headerShown: true }}
-        name="HomeScreen"
-        component={HomeScreen}
-        navigation={navigation}
+        options={{
+          headerShown: false,
+          headerTitle: "",
+          headerBackVisible: false,
+          shadowColor: "white",
+          borderBottomWidth: 0,
+          elevation: 0,
+        }}
+        name="TabNavigation"
+        component={TabNavigation}
       />
 
-      {/* <Stack.Screen
+      <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "",
@@ -39,11 +46,10 @@ const AppStack = () => {
             />
           ),
         }}
-        name="LoginUser"
-        component={LoginUser}
-        navigation={navigation}
-      /> */}
-
+        name="AllEvents"
+        component={AllEvents}
+      />
+      
     </Stack.Navigator>
   );
 };

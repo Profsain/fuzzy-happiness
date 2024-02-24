@@ -6,7 +6,8 @@ import TabNavigation from "./TabNavigation";
 
 const MainNavigator = () => {
   const { isLogin } = useLogin;
-  return isLogin ? <TabNavigation /> : <AuthStack />;
+  console.log(isLogin)
+  return isLogin ? <AppStack /> : <AuthStack />;
 };
 
 export default MainNavigator;
