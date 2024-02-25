@@ -5,3 +5,6 @@ export { default as EventCard } from './EventCard';
 export { default as AllEvents } from './AllEvents';
 export { default as BackTopBar } from './BackTopBar';
 export { default as SingleEvent } from './SingleEvent';
+export { default as CreateNewEvent } from './CreateNewEvent';
+export { default as DateModal } from './DateModal';
+export { default as TimeModal } from './TimeModal';

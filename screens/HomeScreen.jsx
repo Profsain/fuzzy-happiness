@@ -4,14 +4,15 @@ import { useNavigation } from "@react-navigation/native";
 import { BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-virtualized-view";
-import { Box } from "@gluestack-ui/themed";
-import { SearchBox } from "../components";
+import { Box, set } from "@gluestack-ui/themed";
+import { CustomButton, SearchBox } from "../components";
 import {
   EventCard,
   HomeCarousel,
   HorizontalTitle,
   AllEvents,
   SingleEvent,
+  CreateNewEvent,
 } from "../components/home";
 import eventData from "../mockdata/eventData";
 
@@ -19,6 +20,7 @@ const HomeScreen = () => {
   // switch screens
   const [openAllEvents, setOpenAllEvents] = useState(false);
   const [openSingleEvent, setOpenSingleEvent] = useState(false);
+  const [openCreateEvent, setOpenCreateEvent] = useState(false);
   const [eventDetails, setEventDetails] = useState({});
   const [eventList, setEventList] = useState([{}]);
   const [headlineText, setHeadlineText] = useState("");
@@ -28,6 +30,7 @@ const HomeScreen = () => {
     const backAction = () => {
       setOpenAllEvents(false);
       setOpenSingleEvent(false);
+      setOpenCreateEvent(false);
       return true;
     };
     const backHandler = BackHandler.addEventListener(
@@ -87,6 +90,11 @@ const HomeScreen = () => {
     setEventDetails(event);
   };
 
+  // handle create new event
+  const handleCreateNewEvent = () => {
+    setOpenCreateEvent(() => !openCreateEvent);
+  };
+
   return (
     <>
       {openAllEvents ? (
@@ -96,7 +104,9 @@ const HomeScreen = () => {
           headlineText={headlineText}
         />
       ) : openSingleEvent ? (
-        <SingleEvent setBack={setOpenSingleEvent} event={eventDetails}/>
+        <SingleEvent setBack={setOpenSingleEvent} event={eventDetails} />
+      ) : openCreateEvent ? (
+        <CreateNewEvent setBack={setOpenCreateEvent}/>
       ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* Top bar */}
@@ -117,8 +127,18 @@ const HomeScreen = () => {
               <HomeCarousel />
             </Box>
 
+            {/* create event button */}
+            <Box mt={18}>
+              <CustomButton
+                backgroundColor="#000"
+                width={140}
+                label="Create Event"
+                buttonFunc={handleCreateNewEvent}
+              />
+            </Box>
+
             {/* Event section */}
-            <Box mt={24}>
+            <Box mt={10}>
               {/* upcoming events */}
               <Box>
                 <HorizontalTitle func={handleViewAllEvents} />

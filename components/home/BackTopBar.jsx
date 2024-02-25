@@ -8,7 +8,7 @@ const BackTopBar = ({ headline, func }) => {
       <TouchableOpacity onPress={() => func(false)}>
         <AntDesign name="left" size={24} color="black" />
       </TouchableOpacity>
-      <Text className="font-6xl font-semibold">{headline}</Text>
+      <Text className="text-2xl font-semibold">{headline}</Text>
       <View></View>
     </View>
   );
