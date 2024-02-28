@@ -17,8 +17,7 @@ import { Fontisto } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import TimeModal from "./TimeModal";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
-
-import handleValidation from "./inputValidation";
+import formatCurrency from "../../utils/formatCurrency";
 
 // fetch event categories from an api
 const fetchData = async () => {
@@ -67,6 +66,7 @@ const CreateNewEvent = ({ setBack }) => {
   const [eventData, setEventData] = useState({
     eventName: "",
     eventLocation: "",
+    eventCost: "",
     eventDescription: "",
     eventUserRules: "",
     eventHashtags: "",
@@ -79,6 +79,7 @@ const CreateNewEvent = ({ setBack }) => {
     if (
       eventData.eventName &&
       eventData.eventLocation &&
+      eventData.eventCost &&
       eventData.eventDescription &&
       eventData.eventUserRules &&
       eventData.eventHashtags
@@ -171,6 +172,21 @@ const CreateNewEvent = ({ setBack }) => {
                 onChangeText={(text) =>
                   handleEventDataChange("eventLocation", text)
                 }
+              />
+            </View>
+
+            {/* event cost */}
+            <View className="mt-4">
+              <Text className="text-lg font-semibold">Event Cost</Text>
+              <TextInput
+                multiline={true}
+                placeholder="Enter total cost of the event"
+                className="border-b-2 border-slate-100 mt-2 text-lg"
+                value={eventData.eventCost}
+                onChangeText={(text) =>
+                  handleEventDataChange("eventCost", text)
+                }
+                keyboardType="numeric"
               />
             </View>
 
@@ -270,7 +286,6 @@ const CreateNewEvent = ({ setBack }) => {
               <CustomButton
                 label="Create Event"
                 backgroundColor={secondBgColor}
-                buttonFunc={handleCreateNewEvent}
               />
             ) : (
               <CustomButton

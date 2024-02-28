@@ -21,6 +21,7 @@ const HomeScreen = () => {
   const [openAllEvents, setOpenAllEvents] = useState(false);
   const [openSingleEvent, setOpenSingleEvent] = useState(false);
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
+   const [openEventRegister, setOpenEventRegister] = useState(false);
   const [eventDetails, setEventDetails] = useState({});
   const [eventList, setEventList] = useState([{}]);
   const [headlineText, setHeadlineText] = useState("");
@@ -31,6 +32,7 @@ const HomeScreen = () => {
       setOpenAllEvents(false);
       setOpenSingleEvent(false);
       setOpenCreateEvent(false);
+      setOpenEventRegister(false);
       return true;
     };
     const backHandler = BackHandler.addEventListener(
@@ -104,9 +106,14 @@ const HomeScreen = () => {
           headlineText={headlineText}
         />
       ) : openSingleEvent ? (
-        <SingleEvent setBack={setOpenSingleEvent} event={eventDetails} />
+        <SingleEvent
+          setBack={setOpenSingleEvent}
+          event={eventDetails}
+            openEventRegister={openEventRegister}
+            setOpenEventRegister={setOpenEventRegister}
+        />
       ) : openCreateEvent ? (
-        <CreateNewEvent setBack={setOpenCreateEvent}/>
+        <CreateNewEvent setBack={setOpenCreateEvent} />
       ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* Top bar */}
