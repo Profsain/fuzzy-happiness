@@ -2,7 +2,6 @@ import {
   View,
   Image,
   Text,
-  TouchableOpacity,
   ScrollView,
   TextInput,
   SafeAreaView,
@@ -14,7 +13,7 @@ import CustomButton from "../CustomButton";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
 
-const EventRegistration = ({ setBack, event }) => {
+const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) => {
   const headlineText = `Register for Event`;
 
   // form data
@@ -37,8 +36,7 @@ const EventRegistration = ({ setBack, event }) => {
     // handle form input validation
     if (
       eventData.userName &&
-      eventData.emailAddress &&
-      eventData.eventDescription
+      eventData.emailAddress 
     ) {
       setIsAllValid(true);
       setErrorMsg("");
@@ -56,11 +54,20 @@ const EventRegistration = ({ setBack, event }) => {
     console.log("Create new event", formData);
   };
 
+  const handleBack = () => {
+
+    if (setBackToAll) {
+      setBackToAll(() => !openAllEvents);
+    } else if (setBack) {
+      setBack((preState) => !preState);
+    }
+  }
+
   return (
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar headline={headlineText} func={setBack} />
+        <BackTopBar icon="" headline={headlineText} func={handleBack} />
 
         {/* form input section */}
         <ScrollView className="mt-4">
@@ -125,7 +132,7 @@ const EventRegistration = ({ setBack, event }) => {
           </View>
 
           {/* register event button */}
-          <View className="mt-14 mb-16">
+          <View className="mt-8 mb-16">
             {!isAllValid ? (
               <CustomButton label="Register" backgroundColor={secondBgColor} />
             ) : (

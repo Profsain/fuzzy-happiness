@@ -35,6 +35,7 @@ const HomeScreen = () => {
       setOpenEventRegister(false);
       return true;
     };
+
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
@@ -104,13 +105,20 @@ const HomeScreen = () => {
           eventList={eventList}
           setBack={setOpenAllEvents}
           headlineText={headlineText}
+          openSingleEvent={openSingleEvent}
+          setOpenSingleEvent={setOpenSingleEvent}
+          setEventDetails={setEventDetails}
+          openEventRegister={openEventRegister}
+          setOpenEventRegister={setOpenEventRegister}
         />
       ) : openSingleEvent ? (
         <SingleEvent
+          openAllEvents={openAllEvents}
           setBack={setOpenSingleEvent}
           event={eventDetails}
-            openEventRegister={openEventRegister}
-            setOpenEventRegister={setOpenEventRegister}
+          openEventRegister={openEventRegister}
+          setOpenSingleEvent={setOpenSingleEvent}
+          setOpenEventRegister={setOpenEventRegister}
         />
       ) : openCreateEvent ? (
         <CreateNewEvent setBack={setOpenCreateEvent} />

@@ -6,22 +6,35 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 import EventRegistration from "./EventRegistration";
+import { BackHandler } from "react-native";
 // icons
 import { Fontisto } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import formatDate from "../../utils/dateConverter";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
+import useBackHandler from "../../hooks/useDeviceBackBtn";
 
 const SingleEvent = ({
   event,
+   openAllEvents,
   setBack,
   openEventRegister,
   setOpenEventRegister,
+  setOpenSingleEvent,
 }) => {
+ // handle back to prev screen when device back button press
+  const handleSingleBack = () => {
+    setOpenSingleEvent(false);
+    setOpenEventRegister(false);
+  }
+  // use custom device back btn hook
+  useBackHandler([handleSingleBack])
+
+
   const headlineText = `${event.eventCategory.substring(0, 20)} Event`;
   const inDays = `In ${daysBetweenDates(event.eventDate)} days`;
 
@@ -29,9 +42,16 @@ const SingleEvent = ({
   const { eventName, eventLocation, eventDate, eventTime, eventDescription } =
     event;
 
+  // component state
+  const [openEventsRegister, setOpenEventsRegister] = useState(false);
+
   // handle event registration
   const handleRegistration = () => {
-    setOpenEventRegister(() => !openEventRegister);
+    if (setOpenEventRegister) {
+      setOpenEventRegister((prevState) => !prevState); // Toggle openEventRegister
+    } else if (setOpenEventsRegister) {
+      setOpenEventsRegister((prevState) => !prevState); // Toggle openEventsRegister
+    }
   };
 
   // handle invite to event
@@ -42,8 +62,13 @@ const SingleEvent = ({
   return (
     <>
       {/*  event registration form */}
-      {openEventRegister ? (
-        <EventRegistration event={event} setBack={setOpenEventRegister} />
+      {openEventRegister || openEventsRegister ? (
+        <EventRegistration
+          event={event}
+          openAllEvents={openAllEvents}
+          setBack={setOpenEventRegister}
+          setBackToAll={setOpenEventsRegister}
+        />
       ) : (
         <ScrollView className="flex-1 px-6 pt-14 bg-white">
           {/* top bar  */}
