@@ -12,14 +12,12 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider"
 import { useNavigation } from "@react-navigation/native";
-import TabNavigation from "../../navigation/TabNavigation";
-import AppStack from "../../navigation/AppStack";
 
 const LoginInputScreen = () => {
   const navigation = useNavigation()
 
    // extract from useLogin context
-  const { setUserProfile, isLogin, setIsLogin, setToken } = useLogin();
+  const { setUserProfile, userProfile,  isLogin, setIsLogin, setToken } = useLogin();
   
   const [showPassword, setShowPassword] = useState(false);
   const handleState = () => {
@@ -97,7 +95,7 @@ const LoginInputScreen = () => {
         setLoginMsg("")
         const data = await response.json();
         // store user data in context, navigate to the next home screen.
-        setUserProfile(data.user);
+        setUserProfile(data.userProfile);
         setIsLogin(true);
         setToken(data.token);
         
@@ -214,7 +212,7 @@ const LoginInputScreen = () => {
         </Box>
 
         {/* signup text at the bottom*/}
-        <Box mt={40}>
+        <Box mt={20}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "SignUpUser")}
           >

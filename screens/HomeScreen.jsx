@@ -1,6 +1,6 @@
 import { Text, View, SafeAreaView, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useLogin } from "../context/LoginProvider";
 import { BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-virtualized-view";
@@ -15,16 +15,66 @@ import {
   CreateNewEvent,
 } from "../components/home";
 import eventData from "../mockdata/eventData";
+import filterEventsByCreator from "../utils/filterEventByUser";
+import MySingleEvent from "../components/home/MySingleEvent";
 
 const HomeScreen = () => {
+  const { userProfile, token } = useLogin();
+
   // switch screens
   const [openAllEvents, setOpenAllEvents] = useState(false);
-  const [openSingleEvent, setOpenSingleEvent] = useState(false);
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
-   const [openEventRegister, setOpenEventRegister] = useState(false);
-  const [eventDetails, setEventDetails] = useState({});
+  const [openMySingleEvent, setOpenMySingleEvent] = useState(false);
+  const [openSingleEvent, setOpenSingleEvent] = useState(false);
+  const [openEventRegister, setOpenEventRegister] = useState(false);
   const [eventList, setEventList] = useState([{}]);
+  const [myEventDetails, setMyEventDetails] = useState({});
+  const [eventDetails, setEventDetails] = useState({});
   const [headlineText, setHeadlineText] = useState("");
+  // fetch events
+  const [fetchEventData, setFetchEventData] = useState([]);
+  const [myEvents, setMyEvents] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // fetch event data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://splinx-server.onrender.com/event",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const data = await response.json();
+        setFetchEventData(data);
+        // get current user events
+        const userEvents = filterEventsByCreator(data.events, userProfile._id);
+        setMyEvents(userEvents);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        //  setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [openCreateEvent]);
+
+  // my event list
+  // console.log("myEvents", myEvents);
+
+  // console.log("fetchEventData", fetchEventData);
 
   // set openAllEvents to false when device back button press
   useEffect(() => {
@@ -93,6 +143,16 @@ const HomeScreen = () => {
     setEventDetails(event);
   };
 
+  // handle open event details
+  const handleOpenMySingleEvent = (id) => {
+    // set open single event to true
+    setOpenMySingleEvent(() => !openMySingleEvent);
+
+    // set event details
+    const event = myEvents.find((event) => event._id === id);
+    setMyEventDetails(event);
+  };
+
   // handle create new event
   const handleCreateNewEvent = () => {
     setOpenCreateEvent(() => !openCreateEvent);
@@ -122,12 +182,16 @@ const HomeScreen = () => {
         />
       ) : openCreateEvent ? (
         <CreateNewEvent setBack={setOpenCreateEvent} />
+      ) : openMySingleEvent ? (
+        <MySingleEvent event={myEventDetails} setBack={setOpenMySingleEvent} />
       ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* Top bar */}
           <Box>
             <View className="flex flex-row justify-between ">
-              <Text className="font-4xl font-semibold">Hello Pascal</Text>
+              <Text className="font-4xl font-semibold">
+                Hello {userProfile.firstName || "User"}
+              </Text>
               <View>
                 <Ionicons name="notifications" size={24} color="black" />
               </View>
@@ -154,6 +218,39 @@ const HomeScreen = () => {
 
             {/* Event section */}
             <Box mt={10}>
+              {/* My events list*/}
+              {myEvents && myEvents.length > 0 && (
+                <Box>
+                  <HorizontalTitle
+                    title="My Events"
+                    func={handleViewAllEvents}
+                  />
+                  <View>
+                    <FlatList
+                      data={myEvents}
+                      renderItem={({ item }) => (
+                        <EventCard
+                          img={
+                            item.eventImage
+                              ? item.eventImage
+                              : "https://res.cloudinary.com/dk5bvgq20/image/upload/v1632366143/splinx/placeholder-image"
+                          }
+                          category={item.eventCategory}
+                          title={item.eventName}
+                          location={item.eventLocation}
+                          date={item.eventDate}
+                          time={item.eventTime}
+                          func={() => handleOpenMySingleEvent(item._id)}
+                        />
+                      )}
+                      keyExtractor={(item) => item._id}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                    />
+                  </View>
+                </Box>
+              )}
+
               {/* upcoming events */}
               <Box>
                 <HorizontalTitle func={handleViewAllEvents} />
@@ -177,6 +274,7 @@ const HomeScreen = () => {
                   />
                 </View>
               </Box>
+
               {/* popular events */}
               <Box>
                 <HorizontalTitle

@@ -13,7 +13,7 @@ import CustomButton from "../CustomButton";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
 
-const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) => {
+const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
   const headlineText = `Register for Event`;
 
   // form data
@@ -24,7 +24,6 @@ const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) =>
   const [eventData, setEventData] = useState({
     userName: "",
     emailAddress: "",
-    eventDescription: "",
   });
 
   // format event days left
@@ -34,10 +33,7 @@ const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) =>
   const handleEventDataChange = (name, value) => {
     setEventData({ ...eventData, [name]: value });
     // handle form input validation
-    if (
-      eventData.userName &&
-      eventData.emailAddress 
-    ) {
+    if (eventData.userName && eventData.emailAddress) {
       setIsAllValid(true);
       setErrorMsg("");
     } else {
@@ -55,13 +51,12 @@ const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) =>
   };
 
   const handleBack = () => {
-
     if (setBackToAll) {
       setBackToAll(() => !openAllEvents);
     } else if (setBack) {
       setBack((preState) => !preState);
     }
-  }
+  };
 
   return (
     <>
@@ -102,7 +97,7 @@ const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) =>
               />
             </View>
 
-            {/* event description */}
+            {/* event email */}
             <View className="mt-4">
               <Text className="text-lg font-semibold">Email</Text>
               <TextInput
@@ -149,4 +144,3 @@ const EventRegistration = ({ setBack, setBackToAll,   openAllEvents, event }) =>
 };
 
 export default EventRegistration;
-
