@@ -179,7 +179,6 @@ const CreateNewEvent = ({ setBack }) => {
       eventImage,
       eventCreator: userProfile._id,
     };
-    console.log("Create new event", formData);
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");

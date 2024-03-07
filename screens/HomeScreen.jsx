@@ -4,8 +4,8 @@ import { useLogin } from "../context/LoginProvider";
 import { BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-virtualized-view";
-import { Box, set } from "@gluestack-ui/themed";
-import { CustomButton, SearchBox } from "../components";
+import { Box } from "@gluestack-ui/themed";
+import { CustomButton, SearchBox, LoadingSpinner } from "../components";
 import {
   EventCard,
   HomeCarousel,
@@ -34,12 +34,14 @@ const HomeScreen = () => {
   // fetch events
   const [fetchEventData, setFetchEventData] = useState([]);
   const [myEvents, setMyEvents] = useState([]);
-  // const [loading, setLoading] = useState(true);
+  const [allAppEvents, setAllAppEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // fetch event data
   useEffect(() => {
     const fetchData = async () => {
+      setEventsLoading(true);
       try {
         const response = await fetch(
           "https://splinx-server.onrender.com/event",
@@ -57,10 +59,16 @@ const HomeScreen = () => {
         }
 
         const data = await response.json();
-        setFetchEventData(data);
+        setFetchEventData(data.events);
+
+        // get all app events join with eventData
+        const allEvents = [...fetchEventData, ...eventData];
+        setAllAppEvents(allEvents);
         // get current user events
         const userEvents = filterEventsByCreator(data.events, userProfile._id);
         setMyEvents(userEvents);
+
+        setEventsLoading(false);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -70,11 +78,6 @@ const HomeScreen = () => {
 
     fetchData();
   }, [openCreateEvent]);
-
-  // my event list
-  // console.log("myEvents", myEvents);
-
-  // console.log("fetchEventData", fetchEventData);
 
   // set openAllEvents to false when device back button press
   useEffect(() => {
@@ -97,10 +100,10 @@ const HomeScreen = () => {
   const limit = 30;
 
   // sort events by date
-  eventData.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
+  allAppEvents.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
 
   // filter upcoming events and open events
-  const upcomingEvents = eventData.filter(
+  const upcomingEvents = allAppEvents.filter(
     (event) => event.isEventOpen && event.isUpComingEvent
   );
   const limitedUpcomingEvents = upcomingEvents.slice(0, limit);
@@ -117,7 +120,7 @@ const HomeScreen = () => {
   };
 
   // filter popular events
-  const popularEvents = eventData.filter(
+  const popularEvents = allAppEvents.filter(
     (event) => event.isEventOpen && event.isEventPopular
   );
   const limitedPopularEvents = popularEvents.slice(0, limit);
@@ -225,6 +228,7 @@ const HomeScreen = () => {
                     title="My Events"
                     func={handleViewAllEvents}
                   />
+                  {eventsLoading && <LoadingSpinner text="" />}
                   <View>
                     <FlatList
                       data={myEvents}
@@ -233,7 +237,7 @@ const HomeScreen = () => {
                           img={
                             item.eventImage
                               ? item.eventImage
-                              : "https://res.cloudinary.com/dk5bvgq20/image/upload/v1632366143/splinx/placeholder-image"
+                              : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                           }
                           category={item.eventCategory}
                           title={item.eventName}
@@ -254,6 +258,7 @@ const HomeScreen = () => {
               {/* upcoming events */}
               <Box>
                 <HorizontalTitle func={handleViewAllEvents} />
+                {eventsLoading && <LoadingSpinner text="" />}
                 <View>
                   <FlatList
                     data={limitedUpcomingEvents}
@@ -281,6 +286,7 @@ const HomeScreen = () => {
                   title="Popular Events"
                   func={handleViewAllPopularEvents}
                 />
+                {eventsLoading && <LoadingSpinner text="" />}
                 <View>
                   <FlatList
                     data={limitedPopularEvents}

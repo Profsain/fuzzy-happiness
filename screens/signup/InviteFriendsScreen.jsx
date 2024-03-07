@@ -103,7 +103,6 @@ const InviteFriendsScreen = ({ navigation }) => {
   const handleFinishInvite = () => {
     // send data to backend database
     // navigate to home Screen if login
-    Alert.alert("Search word", searchTerm);
     navigationToScreen(navigation, "HomeScreen");
   };
 

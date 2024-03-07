@@ -6,15 +6,19 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+
 import React, { useState, useEffect } from "react";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 import EventRegistration from "./EventRegistration";
+import BottomModal from "./InviteToEvent";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
 // icons
 import { Fontisto } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import formatDate from "../../utils/dateConverter";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
+import handleSocialShare from "../../utils/socialSharefunc";
 import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { Feather } from "@expo/vector-icons";
 
@@ -43,15 +47,36 @@ const MySingleEvent = ({
 
   // component state
   const [openEventsRegister, setOpenEventsRegister] = useState(false);
+  const [isEventClose, setIsEventClose] = useState(false);
+
+  // open bottom sheet
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  // check if event is over
+  const eventClosed = () => {
+    if (daysBetweenDates(event.eventDate) <= 0) {
+      setIsEventClose(true);
+    }
+  };
+
+  useEffect(() => {
+    eventClosed();
+  }, []);
 
   // handle invite to event
   const handleInvite = () => {
-    Alert.alert("Invite", "Invite sent successfully");
+    setShowActionsheet(!showActionsheet);
   };
 
   // handle share event
   const handleShare = () => {
-    Alert.alert("Share event social");
+    const appUrl = "https://www.google.com";
+    const message = `Join me at ${eventName} event. Download the app to register and join the event ${appUrl}`;
+    handleSocialShare(message);
   };
 
   return (
@@ -77,7 +102,9 @@ const MySingleEvent = ({
 
             {/* days left */}
             <View className="absolute right-4 top-32 bg-slate-50 px-2 py-1 rounded-lg">
-              <Text className="text-sm">{inDays}</Text>
+              <Text className="text-sm">
+                {daysBetweenDates(event.eventDate) <= 0 ? "Closed" : inDays}
+              </Text>
             </View>
 
             {/* event name */}
@@ -86,25 +113,47 @@ const MySingleEvent = ({
             </View>
 
             {/* action button */}
-            <View className="mt-4 flex justify-start flex-row">
-              <View>
-                <CustomButton
-                  mr={14}
-                  width={110}
-                  label="Invite"
-                  buttonFunc={handleInvite}
-                />
+            {isEventClose ? (
+              <View className="mt-4 flex justify-start flex-row">
+                <View>
+                  <CustomButton
+                    mr={14}
+                    width={110}
+                    label="Invite"
+                    backgroundColor={secondBgColor}
+                  />
+                </View>
+                <View>
+                  <CustomButton
+                    width={50}
+                    height={50}
+                    label={<Feather name="share" size={24} color="white" />}
+                    bradius={100}
+                    backgroundColor={secondBgColor}
+                  />
+                </View>
               </View>
-              <View>
-                <CustomButton
-                  width={50}
-                  height={50}
-                  label={<Feather name="share" size={24} color="white" />}
-                  buttonFunc={handleShare}
-                  bradius={100}
-                />
+            ) : (
+              <View className="mt-4 flex justify-start flex-row">
+                <View>
+                  <CustomButton
+                    mr={14}
+                    width={110}
+                    label="Invite"
+                    buttonFunc={toggleModal}
+                  />
+                </View>
+                <View>
+                  <CustomButton
+                    width={50}
+                    height={50}
+                    label={<Feather name="share" size={24} color="white" />}
+                    buttonFunc={handleShare}
+                    bradius={100}
+                  />
+                </View>
               </View>
-            </View>
+            )}
 
             {/* event details */}
             <View className="mt-4">
@@ -144,6 +193,9 @@ const MySingleEvent = ({
           </View>
         </ScrollView>
       )}
+
+      {/* bottom modal  */}
+      <BottomModal isVisible={isModalVisible} onClose={toggleModal} />
     </>
   );
 };
