@@ -111,7 +111,7 @@ const AuthStack = () => {
             />
           ),
         }}
-        name="SignUpUser"
+        name="SignUpScreen"
         component={SignUpScreen}
         navigation={navigation}
       />

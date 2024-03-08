@@ -14,8 +14,8 @@ const TokenScreen = () => {
   // data from signU  p screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
-  const verificationId = receivedData.verificationId; 
-  
+  const verificationId = receivedData.verificationId;
+
   // navigation
   const navigation = useNavigation();
 
@@ -27,25 +27,24 @@ const TokenScreen = () => {
   const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
 
   // sent timeout for 3 minutes
- useEffect(() => {
-   const interval = setInterval(() => {
-     setTimer((timer) => {
-       // Check if the timer is greater than 0 before decrementing
-       if (timer > 0) {
-         return timer - 1;
-       } else {
-         // If the timer is 0 or negative, show the resend text and clear the interval
-         setShowResend(true);
-         clearInterval(interval);
-         return 0; // Make sure to return 0 to stop further decrements
-       }
-     });
-   }, 1000);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((timer) => {
+        // Check if the timer is greater than 0 before decrementing
+        if (timer > 0) {
+          return timer - 1;
+        } else {
+          // If the timer is 0 or negative, show the resend text and clear the interval
+          setShowResend(true);
+          clearInterval(interval);
+          return 0; // Make sure to return 0 to stop further decrements
+        }
+      });
+    }, 1000);
 
-   // Cleanup the interval when the component unmounts
-   return () => clearInterval(interval);
- }, []);
-
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
 
   const codeInputRef = useRef(null);
 
@@ -69,36 +68,36 @@ const TokenScreen = () => {
   };
 
   // handle confirm token
-   const handleConfirmToken = () => {
-     const credential = firebase.auth.PhoneAuthProvider.credential(
-       verificationId,
-       tokenValue
-     );
-     firebase
-       .auth()
-       .signInWithCredential(credential)
-       .then((result) => {
-         // do something with the result
-         if (result) {
-            const data = {
-              phoneNumber: phoneNumber
-            };
-           //  navigationToScreen(navigation, "AddEmailScreen", data);
-           navigation.replace("AddEmailScreen", data);
-         }
-       })
-       .catch((error) => {
-         // do something with the error
-         setError(error.message);
-         console.log("Error", error);
-       });
+  const handleConfirmToken = () => {
+    const credential = firebase.auth.PhoneAuthProvider.credential(
+      verificationId,
+      tokenValue
+    );
+    firebase
+      .auth()
+      .signInWithCredential(credential)
+      .then((result) => {
+        // do something with the result
+        if (result) {
+          const data = {
+            phoneNumber: phoneNumber,
+          };
+          //  navigationToScreen(navigation, "AddEmailScreen", data);
+          navigation.replace("AddEmailScreen", data);
+        }
+      })
+      .catch((error) => {
+        // do something with the error
+        setError(error.message);
+        console.log("Error", error);
+      });
   };
-  
+
   // handle token resend
   const handleResendToken = () => {
     // navigate back to SignUpScreen
-    navigationToScreen(navigation, "SignUpScreen")
-  }
+     navigationToScreen(navigation, "SignUpScreen");
+  };
 
   return (
     <Box width="100%" justifyContent="center" p={24}>

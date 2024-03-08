@@ -62,7 +62,7 @@ const HomeScreen = () => {
         setFetchEventData(data.events);
 
         // get all app events join with eventData
-        const allEvents = [...fetchEventData, ...eventData];
+        const allEvents = [...data.events, ...eventData];
         setAllAppEvents(allEvents);
         // get current user events
         const userEvents = filterEventsByCreator(data.events, userProfile._id);
@@ -104,8 +104,9 @@ const HomeScreen = () => {
 
   // filter upcoming events and open events
   const upcomingEvents = allAppEvents.filter(
-    (event) => event.isEventOpen && event.isUpComingEvent
+    (event) => event.isOpen && new Date(event.eventDate) > new Date()
   );
+
   const limitedUpcomingEvents = upcomingEvents.slice(0, limit);
 
   // handle view all events
@@ -121,7 +122,7 @@ const HomeScreen = () => {
 
   // filter popular events
   const popularEvents = allAppEvents.filter(
-    (event) => event.isEventOpen && event.isEventPopular
+    (event) => event.isOpen && event.isPopular
   );
   const limitedPopularEvents = popularEvents.slice(0, limit);
 
@@ -142,7 +143,13 @@ const HomeScreen = () => {
     setOpenSingleEvent(() => !openSingleEvent);
 
     // set event details
-    const event = eventData.find((event) => event.id === id);
+    const event = allAppEvents.find((event) => {
+      if (event._id === id) {
+        return event;
+      } else {
+        return event.id === id;
+      }
+    });
     setEventDetails(event);
   };
 
@@ -264,16 +271,20 @@ const HomeScreen = () => {
                     data={limitedUpcomingEvents}
                     renderItem={({ item }) => (
                       <EventCard
-                        img={item.eventImage}
+                        img={
+                          item.eventImage
+                            ? item.eventImage
+                            : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        }
                         category={item.eventCategory}
                         title={item.eventName}
                         location={item.eventLocation}
                         date={item.eventDate}
                         time={item.eventTime}
-                        func={() => handleOpenSingleEvent(item.id)}
+                        func={() => handleOpenSingleEvent(item.id || item._id)}
                       />
                     )}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id || item._id}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                   />
@@ -292,16 +303,20 @@ const HomeScreen = () => {
                     data={limitedPopularEvents}
                     renderItem={({ item }) => (
                       <EventCard
-                        img={item.eventImage}
+                        img={
+                          item.eventImage
+                            ? item.eventImage
+                            : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        }
                         category={item.eventCategory}
                         title={item.eventName}
                         location={item.eventLocation}
                         date={item.eventDate}
                         time={item.eventTime}
-                        func={() => handleOpenSingleEvent(item.id)}
+                        func={() => handleOpenSingleEvent(item.id || item._id)}
                       />
                     )}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id || item._id}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                   />
