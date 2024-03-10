@@ -19,7 +19,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import formatDate from "../../utils/dateConverter";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
 import handleSocialShare from "../../utils/socialSharefunc";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
+import { BackHandler } from 'react-native';
 import { Feather } from "@expo/vector-icons";
 
 const MySingleEvent = ({
@@ -31,12 +31,25 @@ const MySingleEvent = ({
   setOpenSingleEvent,
 }) => {
   // handle back to prev screen when device back button press
-  const handleSingleBack = () => {
-    setOpenSingleEvent(false);
-    setOpenEventRegister(false);
-  };
-  // use custom device back btn hook
-  useBackHandler([handleSingleBack]);
+   useEffect(() => {
+    const backAction = () => {
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  // const handleSingleBack = (setOpenSingleEvent, setOpenEventRegister) => {
+  //   setOpenSingleEvent(false);
+  //   setOpenEventRegister(false);
+  // };
+  // // use custom device back btn hook
+  // useBackHandler;
 
   const headlineText = `${event.eventCategory.substring(0, 20)} Event`;
   const inDays = `In ${daysBetweenDates(event.eventDate)} days`;

@@ -212,7 +212,7 @@ const LoginInputScreen = () => {
         </Box>
 
         {/* signup text at the bottom*/}
-        <Box mt={20}>
+        <Box mt={20} mb={20}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "SignUpUser")}
           >

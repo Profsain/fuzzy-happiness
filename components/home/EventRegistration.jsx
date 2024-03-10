@@ -14,6 +14,8 @@ import CustomButton from "../CustomButton";
 import LoadingSpinner from "../LoadingSpinner";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
+// send email function
+// import sendEmail from "../../utils/sendEmail";
 
 const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
   // login context
@@ -56,7 +58,16 @@ const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
     handleValidation();
   }, [eventData]);
 
-  // handle event Registration
+  // handle back to prev screen
+  const handleBack = () => {
+    if (setBackToAll) {
+      setBackToAll(() => !openAllEvents);
+    } else if (setBack) {
+      setBack((preState) => !preState);
+    }
+  };
+
+    // handle event Registration
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitErrorMsg, setSubmitErrorMsg] = useState("");
 
@@ -68,13 +79,6 @@ const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
     const eventId = event._id || event.id;
     const isAllowReminder = isGetEventReminder;
 
-    console.log(
-      "Create new event",
-      eventData,
-      userId,
-      eventId,
-      isAllowReminder
-    );
     try {
       const response = await fetch(
         `https://splinx-server.onrender.com/event/${eventId}/register`,
@@ -95,7 +99,15 @@ const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
 
       if (response.ok) {
         // Registration successful
-        setSubmitErrorMsg(data.message);
+        setIsSubmitting(false);
+        // send email
+        // sendEmail(
+        //   [eventData.emailAddress],
+        //   "Event Registration",
+        //   `Hello ${eventData.userName}, \n\nYou have successfully registered for ${event.eventName} event. \n\nThank you for registering.`
+        // );
+        // navigate back to event list
+        handleBack();
         console.log("Success", data.message);
       } else {
         // Registration failed
@@ -105,14 +117,6 @@ const EventRegistration = ({ setBack, setBackToAll, openAllEvents, event }) => {
       }
     } catch (error) {
       console.error("Error:", error);
-    }
-  };
-
-  const handleBack = () => {
-    if (setBackToAll) {
-      setBackToAll(() => !openAllEvents);
-    } else if (setBack) {
-      setBack((preState) => !preState);
     }
   };
 

@@ -9,6 +9,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
+import { BackHandler } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
 import * as ImagePicker from "expo-image-picker";
 import BackTopBar from "./BackTopBar";
@@ -21,6 +22,7 @@ import { AntDesign } from "@expo/vector-icons";
 import TimeModal from "./TimeModal";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import formatCurrency from "../../utils/formatCurrency";
+// import sendEmail from "../../utils/sendEmail";
 
 // fetch event categories from an api
 const fetchData = async () => {
@@ -46,6 +48,20 @@ const CreateNewEvent = ({ setBack }) => {
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [listItems, setListItems] = useState([]);
 
+  // handle back to prev screen when device back button press
+  useEffect(() => {
+    const backAction = () => {
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   // fetch event categories and update listItems
   useEffect(() => {
     const fetchCategories = async () => {
@@ -64,9 +80,7 @@ const CreateNewEvent = ({ setBack }) => {
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [eventCategory, setEventCategory] = useState("");
-  const [eventImage, setEventImage] = useState(
-    "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  );
+  const [eventImage, setEventImage] = useState("");
   const [eventImageUrl, setEventImageUrl] = useState("");
   const [isAllValid, setIsAllValid] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -193,6 +207,7 @@ const CreateNewEvent = ({ setBack }) => {
       redirect: "follow",
     };
 
+    // handle create
     const createEvent = async () => {
       try {
         const response = await fetch(
@@ -204,16 +219,18 @@ const CreateNewEvent = ({ setBack }) => {
         }
         const result = await response.json();
         // clear input field
-         setBack(false)
+        setBack(false);
         setNewEvent(result);
 
         // set submitting to false
         setSubmitting(false);
 
-        // clear
-
-        // navigate to invite friends screen
-        // navigation.replace("InviteFriendsScreen");
+        // send email to user
+        // sendEmail(
+        //   [userProfile.email],
+        //   "SplinX Event Created",
+        //   `Hi ${userProfile.firstName}. Your event ${result.eventName} has been created successfully`
+        // );
       } catch (error) {
         console.error("Error:", error);
       }

@@ -32,13 +32,14 @@ const SingleEvent = ({
 }) => {
   // get login user from context
   const { userProfile } = useLogin();
+  const { _id, emailAddress } = userProfile;
 
   // check if login user is an event members
   const [isEventMember, setIsEventMember] = useState(false);
   const checkEventMember = () => {
     if (userProfile) {
       const { eventMembers } = event;
-      if (eventMembers.includes(userProfile._id)) {
+      if (eventMembers.includes(_id)) {
         setIsEventMember(true);
       }
     }
@@ -94,6 +95,11 @@ const SingleEvent = ({
     handleSocialShare(message);
   };
 
+    // check if login user is an event member
+  const isUserMember = event.eventMembers.some(
+    (member) => member.user === userProfile._id
+  );
+
   return (
     <>
       {/*  event registration form */}
@@ -112,7 +118,11 @@ const SingleEvent = ({
           <View className="mt-8">
             <ScrollView>
               <Image
-                source={{ uri: event.eventImage }}
+                source={{
+                  uri: event.eventImage
+                    ? event.eventImage
+                    : "https://img.freepik.com/free-photo/medium-shot-people-with-vr-glasses_23-2150433375.jpg?t=st=1708723420~exp=1708727020~hmac=9096dbce4e7a09ca0c3d54e14edff136a83b68c1bbceb01e22626488aa8ca9db&w=740",
+                }}
                 className="w-full h-40 rounded-2xl"
               />
 
@@ -151,14 +161,35 @@ const SingleEvent = ({
                 </View>
               ) : (
                 <View className="mt-4 flex justify-start flex-row">
-                  <View>
-                    <CustomButton
-                      mr={14}
-                      width={110}
-                      label="Register"
-                      buttonFunc={handleRegistration}
-                    />
-                  </View>
+                  {event.eventCreator !== userProfile._id ? (
+                    <View>
+                      {isUserMember ? (
+                        <CustomButton
+                          mr={14}
+                          width={110}
+                          label="Registered"
+                          backgroundColor={secondBgColor}
+                        />
+                      ) : (
+                        <CustomButton
+                          mr={14}
+                          width={110}
+                          label="Register"
+                          buttonFunc={handleRegistration}
+                        />
+                      )}
+                    </View>
+                  ) : (
+                    <View>
+                      <CustomButton
+                        mr={14}
+                        width={170}
+                        label="Your Event Share >"
+                        backgroundColor={secondBgColor}
+                      />
+                    </View>
+                  )}
+
                   <View>
                     <CustomButton
                       width={50}
@@ -202,10 +233,10 @@ const SingleEvent = ({
               </View>
 
               {/* event confirmation  */}
-              {isEventMember && (
-                <View className="mt-6 p-3 border-2 border-slate-400 rounded-xl">
+              {isUserMember && (
+                <View className="mt-6 p-3 border-2 border-slate-200 rounded-xl">
                   <Text className="font-semibold pb-2">You're In!</Text>
-                  <Text>A confirmation email has been sent to you email</Text>
+                  <Text>A confirmation email has been sent {emailAddress}</Text>
                   <View className="flex flex-row items-center bg-green-600 rounded-md p-2 mt-2">
                     <AntDesign name="checkcircle" size={24} color="white" />
                     <Text className="text-white ml-3">

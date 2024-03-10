@@ -3,7 +3,7 @@ import React from "react";
 import Carousel from "react-native-snap-carousel";
 import CarouselCard from "./CarouselCard";
 
-const HomeCarousel = () => {
+const HomeCarousel = ({func}) => {
   const data = [
     {
       title: "Discover Nearby",
@@ -25,11 +25,6 @@ const HomeCarousel = () => {
     },
   ];
 
-  // handle carousel button click
-  const handleCarouselBtn = (itemTitle) => {
-    Alert.alert(`You clicked on ${itemTitle}`);
-  };
-
   return (
     <View>
       <Carousel
@@ -39,7 +34,7 @@ const HomeCarousel = () => {
             title={item.title}
             description={item.description}
             imageSource={item.image}
-            btnFunc={() => handleCarouselBtn(item.title)}
+            btnFunc={func}
           />
         )}
         sliderWidth={300}

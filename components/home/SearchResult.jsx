@@ -4,7 +4,7 @@ import BackTopBar from "./BackTopBar";
 import EventCard from "./EventCard";
 import SingleEvent from "./SingleEvent";
 
-const AllEvents = ({
+const SearchResult = ({
   eventList,
   setBack,
   headlineText,
@@ -53,10 +53,10 @@ const AllEvents = ({
           setOpenEventRegister={setOpenEventRegister}
         />
       ) : (
-        <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+        <SafeAreaView className="flex-1  bg-white">
           {/* top bar  */}
 
-          <BackTopBar headline={headlineText} func={setBack} />
+          <BackTopBar headline={headlineText} icon="" />
           <View className="mt-8">
             <FlatList
               data={eventList}
@@ -72,4 +72,4 @@ const AllEvents = ({
   );
 };
 
-export default AllEvents;
+export default SearchResult;
