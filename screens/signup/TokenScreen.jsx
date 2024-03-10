@@ -1,48 +1,56 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Text, VStack, set } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
+import firebase from "firebase/compat/app";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { Alert, TouchableOpacity } from "react-native";
+// hooks
+import useReceivedData from "../../hooks/useReceivedData";
 
-const TokenScreen = ({ navigation }) => {
-  const [phoneNumber, setPhoneNumber] = useState("+447821456740");
+const TokenScreen = () => {
+  // data from signU  p screen
+  const receivedData = useReceivedData();
+  const phoneNumber = receivedData.phone;
+  const verificationId = receivedData.verificationId;
+
+  // navigation
+  const navigation = useNavigation();
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
-  const [confirmToken, setConfirmToken] = useState("123456");
   const [error, setError] = useState("");
   const [mt, setMt] = useState(68); // margin top for resend text
   const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
   const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
 
   // sent timeout for 3 minutes
- useEffect(() => {
-   const interval = setInterval(() => {
-     setTimer((timer) => {
-       // Check if the timer is greater than 0 before decrementing
-       if (timer > 0) {
-         return timer - 1;
-       } else {
-         // If the timer is 0 or negative, show the resend text and clear the interval
-         setShowResend(true);
-         clearInterval(interval);
-         return 0; // Make sure to return 0 to stop further decrements
-       }
-     });
-   }, 1000);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((timer) => {
+        // Check if the timer is greater than 0 before decrementing
+        if (timer > 0) {
+          return timer - 1;
+        } else {
+          // If the timer is 0 or negative, show the resend text and clear the interval
+          setShowResend(true);
+          clearInterval(interval);
+          return 0; // Make sure to return 0 to stop further decrements
+        }
+      });
+    }, 1000);
 
-   // Cleanup the interval when the component unmounts
-   return () => clearInterval(interval);
- }, []);
-
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
 
   const codeInputRef = useRef(null);
 
   // handle token code change
   const handleTokenValue = (code) => {
     setTokenValue(code);
-
     // handle error
     if (code.length === 0) {
       setError("Token Code is required");
@@ -52,10 +60,6 @@ const TokenScreen = ({ navigation }) => {
       setError("Token Code must be 6 digits");
       setMt(18);
       return;
-    } else if (code !== confirmToken) {
-      setError("Token Code is incorrect");
-      setMt(18);
-      return;
     } else {
       setError("");
       setIsValid(true);
@@ -63,11 +67,36 @@ const TokenScreen = ({ navigation }) => {
     }
   };
 
-  // handle send token
+  // handle confirm token
   const handleConfirmToken = () => {
-    // persist phone number in local storage
-    // navigate to Add Email Screen
-    navigationToScreen(navigation, "AddEmailScreen");
+    const credential = firebase.auth.PhoneAuthProvider.credential(
+      verificationId,
+      tokenValue
+    );
+    firebase
+      .auth()
+      .signInWithCredential(credential)
+      .then((result) => {
+        // do something with the result
+        if (result) {
+          const data = {
+            phoneNumber: phoneNumber,
+          };
+          //  navigationToScreen(navigation, "AddEmailScreen", data);
+          navigation.replace("AddEmailScreen", data);
+        }
+      })
+      .catch((error) => {
+        // do something with the error
+        setError(error.message);
+        console.log("Error", error);
+      });
+  };
+
+  // handle token resend
+  const handleResendToken = () => {
+    // navigate back to SignUpScreen
+     navigationToScreen(navigation, "SignUpScreen");
   };
 
   return (
@@ -122,7 +151,7 @@ const TokenScreen = ({ navigation }) => {
                 <Text
                   size="sm"
                   style={{ color: "#000", textAlign: "center" }}
-                  onPress={() => Alert.alert("Resend Token")}
+                  onPress={handleResendToken}
                 >
                   Resend
                 </Text>

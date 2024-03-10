@@ -2,14 +2,20 @@ import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,
+  CustomDatePicker,
   CustomHeadings,
   CustomInput,
 } from "../../components";
-import { DatePickerInput } from "react-native-paper-dates";
+
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import { StyleSheet } from "react-native";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const BioScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [firstName, setFirstName] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -17,11 +23,12 @@ const BioScreen = ({ navigation }) => {
   const [lastNameError, setLastNameError] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [dateOfBirthError, setDateOfBirthError] = useState("");
+  
 
   // handle first name change
   const handleFirstNameChange = (text) => {
     setFirstName(text);
-    // validate city
+    // validate first name
     if (text.length === 0) {
       setFirstNameError("First name is required");
     } else {
@@ -32,10 +39,10 @@ const BioScreen = ({ navigation }) => {
   // handle last name change
   const handleLastNameChange = (text) => {
     setLastName(text);
-    // validate address
+    // validate last name
     if (text.length === 0) {
       setLastNameError("Last name is required");
-    } else if (text.length > 5) {
+    } else if (text.length > 3) {
       setLastNameError("");
     }
   };
@@ -43,7 +50,7 @@ const BioScreen = ({ navigation }) => {
   // handle date of birth change
   const handleDateOfBirthChange = (date) => {
     setDateOfBirth(date);
-    // validate address
+    // validate date
     if (date.length === 0) {
       setDateOfBirthError("Date of birth is required");
     } else {
@@ -53,10 +60,18 @@ const BioScreen = ({ navigation }) => {
   };
 
   const handleProceed = () => {
-    // persist data in local storage
-   
+    // convert data to serializable string
+    const dob = dateOfBirth.toISOString();
+    // send data to next screen
+    const data = {
+      ...receivedData,
+      firstName,
+      lastName,
+      dob,
+    };
+
     // navigate to EnableNotification screen
-    navigationToScreen(navigation, "EnableNotificationScreen");
+    navigationToScreen(navigation, "CreatePasswordScreen", data);
   };
 
   return (
@@ -83,24 +98,8 @@ const BioScreen = ({ navigation }) => {
           handleTextChange={handleLastNameChange}
           error={lastNameError}
         />
-        {/* <CustomInput
-          placeholder="Date of Birth"
-          type="date"
-          inputValue={dateOfBirth}
-          handleTextChange={handleDateOfBirthChange}
-          error={dateOfBirthError}
-        /> */}
-        <Box>
-          <DatePickerInput
-            value={dateOfBirth}
-            onChange={(date) => handleDateOfBirthChange(date)}
-            label="Date of Birth"
-            leftIcon="calendar"
-            inputMode="start"
-            mode="outlined"
-            style={{ width: "100%" }}
-            error={dateOfBirthError}
-          />
+        <Box mt={24}>
+          <CustomDatePicker dateOfBirth={dateOfBirth } setDate={setDateOfBirth} dateError={dateOfBirthError} handleDateChange={handleDateOfBirthChange} label="Date of Birth"/>
         </Box>
 
         {/* next button */}
@@ -119,5 +118,19 @@ const BioScreen = ({ navigation }) => {
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: "transparent",
+    borderColor: "#000",
+    borderWidth: 1,
+    borderRadius: 4,
+    height: 48,
+    width: "100%",
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: "#000",
+  },
+});
 
 export default BioScreen

@@ -1,16 +1,21 @@
 import React, { useState, useRef } from "react";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { firebaseConfig } from "../config";
+import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings } from "../components";
+import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 import PhoneInput from "react-native-phone-number-input";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 
 const SignUpScreen = ({ navigation }) => {
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [phoneValue, setPhoneValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
   const [error, setError] = useState("");
+  // loading spinner
+  const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
 
@@ -30,24 +35,53 @@ const SignUpScreen = ({ navigation }) => {
     }
   };
 
+  // send token to phone number
+  const recaptchaVerifier = useRef(null);
+
+  const sendVerificationCode = async (phoneNumber) => {
+    // set loading to true
+    setLoading(true);
+    try {
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const verificationToken = await phoneProvider.verifyPhoneNumber(
+        phoneNumber,
+        recaptchaVerifier.current
+      );
+
+      if (verificationToken) {
+        // navigate to token screen
+        const data = {
+          phone: formattedValue,
+          verificationId: verificationToken,
+        };
+
+        navigationToScreen(navigation, "TokenScreen", data);
+
+        // set loading to false
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log("Error", error.message);
+    }
+  };
+
+  // async function sendVerificationCode(phoneNumber) {
+  //   try {
+  //     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+  //     // Save confirmation to state or context for later use
+  //     setConfirmation(confirmation);
+  //     Alert.alert("Verification code has been sent to your phone.");
+  //     console.log("Confirmation", confirmation);
+  //   } catch (error) {
+  //     console.error("Error sending verification code: ", error);
+  //     // Handle error
+  //   }
+  // }
+
   // handle send token
   const handleGetToken = () => {
-    // persist phone number in local storage
-    // send token to phone number
-    const checkValid = phoneInput.current?.isValidNumber(phoneValue);
-
-    if (!checkValid) {
-      setError("Invalid Phone Number");
-      return;
-    } else {
-      setError("");
-      setIsValid(true);
-    }
-
-    // Alert.alert("Formatted Number", formattedValue);
-    // sent token to formattedValue
-    // navigate to TokenScreen
-    navigationToScreen(navigation, "TokenScreen");
+    // call sendVerificationCode function
+    sendVerificationCode(formattedValue);
   };
 
   return (
@@ -77,6 +111,12 @@ const SignUpScreen = ({ navigation }) => {
               {error}
             </Text>
           )}
+
+          {/* recaptcha component */}
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+          />
         </Box>
 
         {/* next button */}
@@ -88,7 +128,13 @@ const SignUpScreen = ({ navigation }) => {
               color="#000"
             />
           ) : (
-            <CustomButton label="Get Token" buttonFunc={handleGetToken} />
+            <Box>
+              {!loading ? (
+                <CustomButton label="Get Token" buttonFunc={handleGetToken} />
+              ) : (
+                <LoadingSpinner />
+              )}
+            </Box>
           )}
         </Box>
 
