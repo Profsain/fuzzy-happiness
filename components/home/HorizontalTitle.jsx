@@ -8,15 +8,15 @@ const HorizontalTitle = ({
   func,
 }) => {
   return (
-    <TouchableOpacity onPress={func} className="mb-4">
+    <View className="mb-4">
       <View className="flex flex-row justify-between items-center">
         <Text className="text-lg font-semibold">{title}</Text>
-        <View className="flex flex-row justify-between items-center">
+        <TouchableOpacity onPress={func} className="flex flex-row justify-between items-center">
           <Text>{action}</Text>
           <Ionicons name="arrow-forward" size={20} color="black" />
-        </View>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
