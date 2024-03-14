@@ -8,7 +8,10 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { toggleOpenAllGroup } from "../../store/openScreenSlice";
+import {
+  toggleOpenAllGroup,
+  toggleOpenGroupDetails,
+} from "../../store/openScreenSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
@@ -75,7 +78,7 @@ const BillsHome = () => {
       </View>
 
       <ScrollView>
-        {/* title header  */}
+        {/* top group section, title header  */}
         <HorizontalTitle
           title="Groups"
           action="View all"
@@ -99,8 +102,8 @@ const BillsHome = () => {
             </Text>
           </View>
           {/* group bills card flatlist */}
-          <GroupBillsCard />
-          <GroupBillsCard />
+          <GroupBillsCard func={() => dispatch(toggleOpenGroupDetails())} />
+          <GroupBillsCard func={() => dispatch(toggleOpenGroupDetails())} />
         </View>
 
         {/* friends own section */}
