@@ -22,6 +22,7 @@
     "@react-navigation/bottom-tabs": "^6.5.12",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
+    "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "deprecated-react-native-prop-types": "^2.2.0",
@@ -54,7 +55,8 @@
     "react-native-timer-picker": "^1.5.3",
     "react-native-ui-datepicker": "^2.0.1",
     "react-native-virtualized-view": "^1.0.0",
-    "react-native-webview": "13.2.2"
+    "react-native-webview": "13.2.2",
+    "react-redux": "^9.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
