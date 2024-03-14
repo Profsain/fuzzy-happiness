@@ -3,7 +3,7 @@ import React from "react";
 
 const EventBillCard = () => {
   return (
-    <View className="flex flex-row justify-between content-center mt-4">
+    <View className="flex flex-row justify-between content-center mt-4 border py-2 px-4 rounded-lg border-slate-300">
       <View className="flex flex-row">
         <Image
           source={{

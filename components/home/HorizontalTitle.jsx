@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 const HorizontalTitle = ({
   title = "Upcoming Events",
   action = "View all",
+  icon = <Ionicons name="arrow-forward" size={20}color="black" />,
   func,
 }) => {
   return (
@@ -13,7 +14,7 @@ const HorizontalTitle = ({
         <Text className="text-lg font-semibold">{title}</Text>
         <TouchableOpacity onPress={func} className="flex flex-row justify-between items-center">
           <Text>{action}</Text>
-          <Ionicons name="arrow-forward" size={20} color="black" />
+          {icon}
         </TouchableOpacity>
       </View>
     </View>

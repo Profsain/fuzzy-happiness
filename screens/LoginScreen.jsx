@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }) => {
   };
   // handle signup
   const handleSignUp = () => {
-    navigationToScreen(navigation, "SignUpUser");
+    navigationToScreen(navigation, "SignUpScreen");
   };
 
   return (

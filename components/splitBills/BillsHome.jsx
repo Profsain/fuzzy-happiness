@@ -7,14 +7,18 @@ import {
   Alert,
 } from "react-native";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toggleOpenAllGroup } from "../../store/openScreenSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
 import { primeryColor } from "../../utils/appstyle";
 import GroupBillsCard from "./component/GroupBillsCard";
 import EventBillCard from "./component/EventBillCard";
+import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 
 const BillsHome = () => {
+  const dispatch = useDispatch();
   const handleCreateNewBill = () => {
     Alert.alert("Create new bill");
   };
@@ -72,7 +76,11 @@ const BillsHome = () => {
 
       <ScrollView>
         {/* title header  */}
-        <HorizontalTitle title="Groups" action="View all" />
+        <HorizontalTitle
+          title="Groups"
+          action="View all"
+          func={() => dispatch(toggleOpenAllGroup())}
+        />
         <View className="flex flex-row">
           <View className="h-24 w-24 bg-gray-200 rounded-2xl p-3 flex justify-center items-center">
             <TouchableOpacity
@@ -117,27 +125,14 @@ const BillsHome = () => {
           </View>
           {/* horizontal button section */}
           <View>
-            <TouchableOpacity
-              className="flex flex-row content-center justify-between px-4 py-2 border-t border-gray-300 mt-3"
-              onPress={handlePaySomeone}
-            >
-              <View className="flex flex-row content-center">
+            <BillsHorizontalBtn func={handlePaySomeone} />
+            <BillsHorizontalBtn
+              text="Request money"
+              iconLeft={
                 <AntDesign name="arrowleft" size={24} color={primeryColor} />
-                <Text className="ml-2 font-medium">Pay someone</Text>
-              </View>
-              <AntDesign name="right" size={24} color="black" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex flex-row content-center justify-between px-4 py-2 border-t border-gray-300 "
-              onPress={handleRequestMoney}
-            >
-              <View className="flex flex-row content-center">
-                <AntDesign name="arrowright" size={24} color={primeryColor} />
-                <Text className="ml-2 font-medium">Request money</Text>
-              </View>
-              <AntDesign name="right" size={24} color="black" />
-            </TouchableOpacity>
+              }
+              func={handleRequestMoney}
+            />
           </View>
         </View>
 

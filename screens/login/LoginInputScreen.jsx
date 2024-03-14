@@ -115,7 +115,6 @@ const LoginInputScreen = () => {
   };
 
   return (
-
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Welcome Back!" />
 
@@ -214,7 +213,7 @@ const LoginInputScreen = () => {
         {/* signup text at the bottom*/}
         <Box mt={20} mb={20}>
           <TouchableOpacity
-            onPress={() => navigationToScreen(navigation, "SignUpUser")}
+            onPress={() => navigationToScreen(navigation, "SignUpScreen")}
           >
             <Text size="sm" style={{ color: "#000", textAlign: "center" }}>
               Don't have an account?{"   "}
