@@ -7,6 +7,7 @@ const initialState = {
   openGroupDetails: false,
   openTransactionScreen: false,
   openCreateNewBill: false,
+  openTransactionHistory: false,
 };
 
 const openScreenSlice = createSlice({
@@ -25,8 +26,11 @@ const openScreenSlice = createSlice({
     toggleOpenCreateNewBill(state) {
       state.openCreateNewBill = !state.openCreateNewBill;
     },
+    toggleOpenTransactionHistory(state) {
+      state.openTransactionHistory = !state.openTransactionHistory;
+    },
   },
 });
 
-export const { toggleOpenAllGroup, toggleOpenGroupDetails, toggleOpenTransactionScreen, toggleOpenCreateNewBill } = openScreenSlice.actions;
+export const { toggleOpenAllGroup, toggleOpenGroupDetails, toggleOpenTransactionScreen, toggleOpenCreateNewBill, toggleOpenTransactionHistory } = openScreenSlice.actions;
 export default openScreenSlice.reducer;

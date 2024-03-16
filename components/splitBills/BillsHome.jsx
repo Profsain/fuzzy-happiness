@@ -12,6 +12,8 @@ import {
   toggleOpenAllGroup,
   toggleOpenGroupDetails,
   toggleOpenCreateNewBill,
+  toggleOpenTransactionScreen,
+  toggleOpenTransactionHistory,
 } from "../../store/openScreenSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
@@ -68,6 +70,7 @@ const BillsHome = () => {
             mr={12}
             backgroundColor="white"
             label="Wallet"
+            buttonFunc={() => dispatch(toggleOpenTransactionScreen())}
           />
           <CustomButton
             color="black"
@@ -76,6 +79,7 @@ const BillsHome = () => {
             fSize={12}
             backgroundColor="white"
             label="Transaction History"
+            buttonFunc={() => dispatch(toggleOpenTransactionHistory())}
           />
         </View>
       </View>

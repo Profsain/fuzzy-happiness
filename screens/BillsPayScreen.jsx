@@ -6,6 +6,8 @@ import {
   BillsGroup,
   BillsDetails,
   CreateNewBills,
+  TransactionScreen,
+  TransactionHistory,
 } from "../components/splitBills";
 
 const BillsPayScreen = () => {
@@ -17,6 +19,10 @@ const BillsPayScreen = () => {
   const openCreateNewBill = useSelector(
     (state) => state.openScreens.openCreateNewBill
   );
+  const openTransactionScreen = useSelector(
+    (state) => state.openScreens.openTransactionScreen
+  );
+  const openTransactionHistory = useSelector((state) => state.openScreens.openTransactionHistory);
 
   return (
     <>
@@ -26,7 +32,9 @@ const BillsPayScreen = () => {
         <BillsDetails />
       ) : openCreateNewBill ? (
         <CreateNewBills />
-      ) : (
+      ) : openTransactionScreen ? (
+        <TransactionScreen />
+      ) : openTransactionHistory ? (<TransactionHistory />) : (
         <BillsHome />
       )}
     </>

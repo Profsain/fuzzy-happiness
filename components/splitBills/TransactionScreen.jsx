@@ -9,25 +9,25 @@ import {
 } from "react-native";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { toggleOpenTransactionScreen } from "../../store/openScreenSlice";
+import { toggleOpenTransactionScreen, toggleOpenTransactionHistory } from "../../store/openScreenSlice";
 import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
-import { BackTopBar, HorizontalTitle } from "../home";
+import { BackTopBar } from "../home";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 
-const TransactionScreen = ({ eventName = "Karaoke" }) => {
+const TransactionScreen = () => {
   const dispatch = useDispatch();
 
   // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenTransactionScreen())]);
+  useBackHandler([() => dispatch(toggleOpenTransactionScreen()), () => dispatch(toggleOpenTransactionHistory())]);
 
   // handle make transaction
   const handleTransactionHistory = () => {
-    Alert.alert("show history transaction");
+    dispatch(toggleOpenTransactionHistory());
   };
 
   // handle change payment method
