@@ -30,12 +30,12 @@ const MySingleEvent = ({
   setOpenEventRegister,
   setOpenSingleEvent,
 }) => {
-  // handle back to prev screen when device back button press
-   useEffect(() => {
+  useEffect(() => {
     const backAction = () => {
       return true;
     };
-
+// handle back to prev screen when device back button press
+   
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
