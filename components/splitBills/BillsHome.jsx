@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import {
   toggleOpenAllGroup,
   toggleOpenGroupDetails,
+  toggleOpenCreateNewBill,
 } from "../../store/openScreenSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
@@ -22,8 +23,10 @@ import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 
 const BillsHome = () => {
   const dispatch = useDispatch();
+
+  // handle create new bill
   const handleCreateNewBill = () => {
-    Alert.alert("Create new bill");
+    dispatch(toggleOpenCreateNewBill());
   };
 
   // handle pay someone

@@ -49,7 +49,7 @@ const TransactionScreen = ({ eventName = "Karaoke" }) => {
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       {/* top bar */}
       <BackTopBar
-        headline=""
+        headline="Wallet"
         func={() => dispatch(toggleOpenTransactionScreen())}
       />
 
