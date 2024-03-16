@@ -5,7 +5,7 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  Image,
+  Alert,
   TouchableOpacity,
 } from "react-native";
 
@@ -15,6 +15,7 @@ import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { toggleOpenCreateNewBill } from "../../store/openScreenSlice";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomInput from "../CustomInput";
+import CustomButton from "../CustomButton";
 import { primeryColor } from "../../utils/appstyle";
 import MembersRowCard from "./component/MembersRowCard";
 
@@ -23,6 +24,12 @@ const CreateNewBills = () => {
 
   // handle back to prev screen when device back button press
   useBackHandler([() => dispatch(toggleOpenCreateNewBill())]);
+
+  // handle create new bill
+  const handleCreateNewBill = () => {
+    // create new bill
+    Alert.alert("create new bill");
+  };
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -51,7 +58,7 @@ const CreateNewBills = () => {
           />
         </View>
 
-        {/* member list section to select from */}
+        {/* member list section to select from flatList scrollable*/}
         <View>
           <HorizontalTitle
             title="Select with whom to split"
@@ -69,6 +76,14 @@ const CreateNewBills = () => {
             memberName="Fred James"
           />
           <MembersRowCard imgUrl="https://img.freepik.com/free-photo/carefree-relaxed-pretty-young-mixed-race-female-wearing-big-round-eyeglasses-smiling-broadly-feeling-excited-about-spending-vacations-abroad_273609-1260.jpg?t=st=1710626535~exp=1710630135~hmac=4733b7502db243a164e78fd0ae3c8da5edd2539cdd6e0da4879cd4b1239a357d&w=826" memberName="Ekemini Rico" />
+        </View>
+
+        {/* create button */}
+        <View className="flex justify-center items-center mt-8">
+          <CustomButton
+            title="Create"
+            onPress={handleCreateNewBill}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
