@@ -13,6 +13,7 @@ import {
   toggleOpenTransactionScreen,
   toggleOpenTransactionHistory,
   toggleOpenTopUpScreen,
+  toggleOpenTransferScreen,
 } from "../../store/openScreenSlice";
 import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { FontAwesome } from "@expo/vector-icons";
@@ -24,6 +25,7 @@ import { BackTopBar } from "../home";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 import TransactionHistory from "./TransactionHistory";
 import AddMoney from "./AddMoney";
+import TransferMoney from "./TransferMoney";
 
 const TransactionScreen = () => {
   const dispatch = useDispatch();
@@ -32,6 +34,9 @@ const TransactionScreen = () => {
   );
   const openTopUpScreen = useSelector(
     (state) => state.openScreens.openTopUpScreen
+  );
+  const openTransferScreen = useSelector(
+    (state) => state.openScreens.openTransferScreen
   );
 
   // handle back to prev screen when device back button press
@@ -64,6 +69,8 @@ const TransactionScreen = () => {
         <TransactionHistory />
       ) : openTopUpScreen ? (
         <AddMoney />
+      ) : openTransferScreen ? (
+        <TransferMoney />
       ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* top bar */}
@@ -104,7 +111,10 @@ const TransactionScreen = () => {
                     </View>
                     <Text className="font-semibold text-xs">Top up</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="flex items-center mr-3">
+                  <TouchableOpacity
+                    className="flex items-center mr-3"
+                    onPress={() => dispatch(toggleOpenTransferScreen())}
+                  >
                     <View className="bg-white p-1 rounded-full h-7 w-7 flex items-center justify-center">
                       <Fontisto name="arrow-swap" size={14} color="black" />
                     </View>

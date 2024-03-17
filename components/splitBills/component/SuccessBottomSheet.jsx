@@ -12,7 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "../../CustomButton";
 import { primeryColor } from "../../../utils/appstyle";
 
-const SuccessBottomSheet = ({ isVisible, onClose }) => {
+const SuccessBottomSheet = ({ isVisible, onClose, heading, message }) => {
   const dispatch = useDispatch();
   const translateY = useRef(new Animated.Value(400)).current;
 
@@ -54,8 +54,13 @@ const SuccessBottomSheet = ({ isVisible, onClose }) => {
           <AntDesign name="checkcircle" size={90} color={primeryColor} />
         </View>
         <View>
-          <Text className="text-center text-3xl font-semibold mb-4">Success</Text>
-          <Text className="text-lg text-center">You've successfully added $0.00 to your Splinx wallet.</Text>
+          <Text className="text-center text-3xl font-semibold mb-4">
+            {heading || "Success"}
+          </Text>
+          <Text className="text-lg text-center">
+            {message ||
+              "You've successfully added $0.00 to your Splinx wallet."}
+          </Text>
         </View>
 
         <CustomButton label="Done" buttonFunc={handleDone} />
