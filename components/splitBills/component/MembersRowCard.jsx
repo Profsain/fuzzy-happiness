@@ -1,13 +1,19 @@
-import { View, Text, Image } from 'react-native'
-import React from 'react'
+import { View, Text, Image } from "react-native";
+import React, { useState } from "react";
 import {
   Checkbox,
   CheckboxIndicator,
   CheckboxIcon,
   CheckIcon,
 } from "@gluestack-ui/themed";
+import { primeryColor } from "../../../utils/appstyle";
 
-const MembersRowCard = ({imgUrl, memberName}) => {
+const MembersRowCard = ({ imgUrl, memberName }) => {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+  };
   return (
     <View className="flex flex-row justify-between items-center border p-2 mb-3 rounded-md border-gray-300">
       <View className="flex flex-row items-center">
@@ -28,14 +34,21 @@ const MembersRowCard = ({imgUrl, memberName}) => {
         isInvalid={false}
         isDisabled={false}
         aria-label="checkbox"
-        onChange={console.log("checked")}
+        isChecked={isChecked}
+        onChange={handleCheckboxChange}
       >
-        <CheckboxIndicator mr="$2">
+        <CheckboxIndicator
+          mr="$2"
+          style={{
+            backgroundColor: isChecked ? primeryColor : "transparent",
+            borderColor: isChecked ? primeryColor : "gray",
+          }}
+        >
           <CheckboxIcon as={CheckIcon} />
         </CheckboxIndicator>
       </Checkbox>
     </View>
   );
-}
+};
 
-export default MembersRowCard
+export default MembersRowCard;

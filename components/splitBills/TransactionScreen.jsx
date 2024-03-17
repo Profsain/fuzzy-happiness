@@ -14,6 +14,7 @@ import {
   toggleOpenTransactionHistory,
   toggleOpenTopUpScreen,
   toggleOpenTransferScreen,
+  toggleOpenRequestScreen,
 } from "../../store/openScreenSlice";
 import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { FontAwesome } from "@expo/vector-icons";
@@ -26,6 +27,7 @@ import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 import TransactionHistory from "./TransactionHistory";
 import AddMoney from "./AddMoney";
 import TransferMoney from "./TransferMoney";
+import RequestMoney from "./RequestMoney";
 
 const TransactionScreen = () => {
   const dispatch = useDispatch();
@@ -37,6 +39,9 @@ const TransactionScreen = () => {
   );
   const openTransferScreen = useSelector(
     (state) => state.openScreens.openTransferScreen
+  );
+  const openRequestScreen = useSelector(
+    (state) => state.openScreens.openRequestScreen
   );
 
   // handle back to prev screen when device back button press
@@ -71,6 +76,8 @@ const TransactionScreen = () => {
         <AddMoney />
       ) : openTransferScreen ? (
         <TransferMoney />
+      ) : openRequestScreen ? (
+        <RequestMoney />
       ) : (
         <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
           {/* top bar */}
@@ -120,7 +127,7 @@ const TransactionScreen = () => {
                     </View>
                     <Text className="font-semibold text-xs">Transfer</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="flex items-center">
+                  <TouchableOpacity className="flex items-center" onPress={() => dispatch(toggleOpenRequestScreen())}>
                     <View className="bg-white p-1 rounded-full h-7 w-7 flex items-center justify-center">
                       <AntDesign name="arrowdown" size={18} color="black" />
                     </View>
