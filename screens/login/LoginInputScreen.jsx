@@ -16,6 +16,10 @@ import { useNavigation } from "@react-navigation/native";
 const LoginInputScreen = () => {
   const navigation = useNavigation()
 
+  // base url
+  const baseUrl = process.env.BASE_URL;
+  console.log('base url:', baseUrl)
+
    // extract from useLogin context
   const { setUserProfile, userProfile,  isLogin, setIsLogin, setToken } = useLogin();
   
