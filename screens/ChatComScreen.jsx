@@ -1,13 +1,28 @@
-import { Image, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import { Image, Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import ChatScreen from "../components/chatroom/ChatScreen";
+import ChatList from "../components/chatroom/ChatList";
+
+const Stack = createNativeStackNavigator();
 
 const ChatComScreen = () => {
   return (
-    <View className="flex-1 justify-center items-center">
-      <Text>Chat Screen </Text>
-      <Image className="w-24 h-24" source={require('../assets/images/WorkInProgress.png')} />
-    </View>
-  )
-}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ChatList"
+        component={ChatList}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 
-export default ChatComScreen
+export default ChatComScreen;
