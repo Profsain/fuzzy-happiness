@@ -118,7 +118,6 @@ const HomeScreen = () => {
   }, [token, userProfile._id]);
 
   const handleCreateNewEvent = useCallback(() => {
-    console.log("Open me")
     setState((prevState) => ({ ...prevState, openCreateEvent: !prevState.openCreateEvent }));
 
   }, []);

@@ -1,4 +1,5 @@
 import { View, Text, SafeAreaView, Alert, FlatList, ScrollView } from "react-native";
+import { Fab, Box, FabIcon, FabLabel, EditIcon } from "@gluestack-ui/themed";
 import React, { useState, useEffect } from "react";
 import {useLogin} from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -6,8 +7,9 @@ import SearchBox from "../SearchBox";
 
 import UserCard from "./UserCard";
 import User from "./User";
+import { secondaryColor, primeryColor } from "../../utils/appstyle";
 
-const ChatList = () => {
+const ChatList = ({navigation}) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -35,7 +37,6 @@ const ChatList = () => {
         const data = await response.json();
         // update state
         setUserList(data);
-        console.log("All users", data);
       } else {
         console.log("Failed to fetch users");
       }
@@ -59,6 +60,12 @@ const ChatList = () => {
     Alert.alert("User card clicked");
   };
 
+  // handle fab click
+  const handleFab = () => {
+    // navigate to UserFriendsScreen
+    navigation.navigate("UserFriendsScreen");
+  }
+ 
   // render user list
   const renderUser = ({ item }) => <User item={item} />;
 
@@ -80,29 +87,41 @@ const ChatList = () => {
 
         {/* chat list */}
         <ScrollView>
-          {/* <View>
+          <View>
             {userList.map((user) => (
               <UserCard
                 key={user._id}
                 userName={user.firstName}
-                lastMessage={user.emailAddress}
+                lastMessage="Hello there!"
                 messageCount={user.friends.length}
                 lastMessageTime="8:47 am"
                 func={handleUserCardClick}
                 profileImage={user.profileImg}
               />
             ))}
-          </View> */}
-
-          <View style={{flex: 1}}>
-            <FlatList
-              data={userList}
-              renderItem={renderUser}
-              keyExtractor={(item, index) => index.toString()}
-              scroll={"vertical"}
-            />
           </View>
         </ScrollView>
+
+        {/* floating action button */}
+        <Box
+          w={320}
+          bg={secondaryColor}
+          $dark-bg="$backgroundDark900"
+          borderRadius="$md"
+        >
+          <Fab
+            bg={primeryColor}
+            size="md"
+            placement="bottom right"
+            isHovered={false}
+            isDisabled={false}
+            isPressed={false}
+            onPress={handleFab}
+          >
+            <FabIcon as={EditIcon} mr="$1" />
+            <FabLabel>Chat</FabLabel>
+          </Fab>
+        </Box>
       </SafeAreaView>
     </>
   );
