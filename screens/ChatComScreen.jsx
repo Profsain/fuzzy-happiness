@@ -1,12 +1,10 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ChatScreen from "../components/chatroom/ChatScreen";
 import ChatList from "../components/chatroom/ChatList";
 import UserFriendsScreen from "../components/chatroom/UserFriendsScreen";
-import { User } from "lucide-react-native";
 
 const Stack = createNativeStackNavigator();
 
