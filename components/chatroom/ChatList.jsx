@@ -1,20 +1,61 @@
-import { View, Text, SafeAreaView, Alert, FlatList, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Alert,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { Fab, Box, FabIcon, FabLabel, EditIcon } from "@gluestack-ui/themed";
 import React, { useState, useEffect } from "react";
-import {useLogin} from "../../context/LoginProvider";
+import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import SearchBox from "../SearchBox";
 
 import UserCard from "./UserCard";
-import User from "./User";
+import UserChat from "./UserChat";
 import { secondaryColor, primeryColor } from "../../utils/appstyle";
+import LoadingSpinner from "../LoadingSpinner";
 
-const ChatList = ({navigation}) => {
+const ChatList = ({ navigation }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
   const { userProfile, token } = useLogin();
+
+  const [acceptedFriends, setAcceptedFriends] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const userId = userProfile._id;
+
+  useEffect(() => {
+    const acceptedFriendsList = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${baseUrl}/user/accepted-friends/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setLoading(false);
+          setAcceptedFriends(data);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.log("error showing the accepted friends", error);
+      }
+    };
+
+    acceptedFriendsList();
+  }, []);
 
   // component state
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +73,7 @@ const ChatList = ({navigation}) => {
           "Content-Type": "application/json",
         },
       });
-      
+
       if (response) {
         const data = await response.json();
         // update state
@@ -64,11 +105,7 @@ const ChatList = ({navigation}) => {
   const handleFab = () => {
     // navigate to UserFriendsScreen
     navigation.navigate("UserFriendsScreen");
-  }
- 
-  // render user list
-  const renderUser = ({ item }) => <User item={item} />;
-
+  };
 
   return (
     <>
@@ -86,7 +123,7 @@ const ChatList = ({navigation}) => {
         </View>
 
         {/* chat list */}
-        <ScrollView>
+        {/* <ScrollView>
           <View>
             {userList.map((user) => (
               <UserCard
@@ -100,6 +137,25 @@ const ChatList = ({navigation}) => {
               />
             ))}
           </View>
+        </ScrollView> */}
+        
+        {/* show loading spinner */}
+        {loading && <LoadingSpinner />}
+
+        {acceptedFriends.length === 0 && (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-center text-gray-500">
+              No friends found. Connect with friends to chat.
+            </Text>
+          </View>
+        )}
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Pressable>
+            {acceptedFriends.map((item, index) => (
+              <UserChat key={index} item={item} />
+            ))}
+          </Pressable>
         </ScrollView>
 
         {/* floating action button */}

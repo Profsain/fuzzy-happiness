@@ -104,6 +104,11 @@ const User = ({ item, setUserList, userList }) => {
     };
 
     fetchUserSentRequest();
+
+    // call fetchUserSentRequest function after 10 seconds
+    const interval = setInterval(() => {
+      fetchUserSentRequest();
+    }, 10000);
   }, []);
 
   // handle send friend request
@@ -211,7 +216,7 @@ const User = ({ item, setUserList, userList }) => {
             borderRadius: 6,
           }}
         >
-          <Text style={{ textAlign: "center", color: "white", fontSize: 13 }}>
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 13 }}>
             Accept
           </Text>
         </Pressable>
@@ -238,7 +243,7 @@ const User = ({ item, setUserList, userList }) => {
             width: 105,
           }}
         >
-          <Text style={{ textAlign: "center", color: "white", fontSize: 13 }}>
+          <Text style={{ textAlign: "center", color: "black", fontSize: 13 }}>
             Connect
           </Text>
         </Pressable>
