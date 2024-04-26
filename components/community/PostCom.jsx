@@ -1,26 +1,23 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import MemberProfieTop from "./MemberProfieTop";
 
 const PostCom = () => {
+  const navigation = useNavigation();
+  // handle open comment screen
+  const openComment = () => {
+    // navigate to comment screen
+    navigation.navigate("AddComment");
+  };
+
   return (
     <View className="px-6 py-4 border-b-2 border-gray-300">
-      {/* profile section */}
-      <View className="flex flex-row items-center">
-        {/* image avatar */}
-        <Image
-          source={{
-            uri: "https://img.freepik.com/free-photo/medium-shot-young-people-having-fun-party_23-2151108194.jpg?t=st=1710406096~exp=1710409696~hmac=906914bcf854bf8683147a964e415c512e4a6f93a5fbc6b28a8b10f5157deb3d&w=740",
-          }}
-          className="h-12 w-12 mr-4 rounded-full"
-        />
-        <View>
-          <Text className="text-xs font-medium mb-1">@temmy23</Text>
-          <Text className="text-xs text-gray-500">13 hours ago</Text>
-        </View>
-      </View>
+      {/* publisher profile section */}
+      <MemberProfieTop />
 
       {/* post content */}
       <View className="mt-4">
@@ -39,16 +36,20 @@ const PostCom = () => {
         {/* post actions */}
         <View className="flex flex-row justify-between mt-4">
           <View className="flex flex-row items-center">
-            <AntDesign name="hearto" size={18} color="black" />
-            <Text className="pl-1 font-medium">2.5k Likes</Text>
+            <AntDesign name="hearto" size={14} color="black" />
+            <Text className="pl-1 font-medium text-xs">2.5k Likes</Text>
           </View>
+
+          <TouchableOpacity
+            className="flex flex-row items-center"
+            onPress={openComment}
+          >
+            <EvilIcons name="comment" size={18} color="black" />
+            <Text className="pl-1 font-medium text-xs">200 Comments</Text>
+          </TouchableOpacity>
           <View className="flex flex-row items-center">
-            <EvilIcons name="comment" size={24} color="black" />
-            <Text className="pl-1 font-medium">Comments</Text>
-          </View>
-          <View className="flex flex-row items-center">
-            <FontAwesome5 name="share-square" size={24} color="black" />
-            <Text className="pl-1 font-medium">Share</Text>
+            <FontAwesome5 name="share-square" size={12} color="black" />
+            <Text className="pl-1 font-medium text-xs">Share</Text>
           </View>
         </View>
       </View>

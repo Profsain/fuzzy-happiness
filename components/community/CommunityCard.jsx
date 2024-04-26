@@ -1,11 +1,20 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import AvatarStack from "../splitBills/component/AvatarStack";
 
 const CommunityCard = ({ community }) => {
-    const { communityName, members, createdAt, createdBy, coverImage } = community;
+  const navigation = useNavigation();
+  const { communityName, members, createdAt, createdBy, coverImage } = community;
+  
+  // handle open community page
+  const openCommunityPage = () => {
+    // navigate to community page
+    navigation.navigate("CommunityPage", { community });
+  };
+
   return (
-    <View className="flex flex-row justify-between content-center mt-4 border py-2 px-4 rounded-lg border-slate-300">
+    <TouchableOpacity onPress={openCommunityPage} className="flex flex-row justify-between content-center mt-4 border py-2 px-4 rounded-lg border-slate-300">
       <View className="flex flex-row">
         <Image
           source={{
@@ -25,7 +34,7 @@ const CommunityCard = ({ community }) => {
               <Text className="text-xs font-medium mb-1">{ createdAt || "12/09/yyyy"}</Text>
               <Text className="text-xs text-gray-500">{ createdBy || "John"}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
