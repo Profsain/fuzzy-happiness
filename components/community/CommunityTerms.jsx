@@ -18,7 +18,7 @@ const CommunityTerms = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+    <SafeAreaView className="flex-1 pt-14 px-6 bg-white">
       {/* top section */}
       <View>
         <BackTopBar headline="Splinx Terms" func={handleBack} />
