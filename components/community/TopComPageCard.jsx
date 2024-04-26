@@ -37,7 +37,7 @@ const TopComPageCard = () => {
 
             {/* share button */}
             <TouchableOpacity className="p-2 rounded-full border border-cyan-50 h-8 w-8">
-              <Octicons name="share" size={16} color="black" />
+              <Octicons name="share" size={16} color="white" />
             </TouchableOpacity>
           </View>
 

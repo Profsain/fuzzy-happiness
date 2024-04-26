@@ -1,13 +1,17 @@
-import { View, Text, SafeAreaView, ScrollView } from "react-native";
+import { View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import React from "react";
 import { Fab, FabIcon, } from "@gluestack-ui/themed";
 import { EditIcon } from "lucide-react-native";
-import { AntDesign } from "@expo/vector-icons";
 import TopComPageCard from "./TopComPageCard";
 import PostCom from "./PostCom";
 import {primeryColor} from "../../utils/appstyle";
 
-const CommunityPage = () => {
+const CommunityPage = ({navigation}) => {
+  // handle open create post 
+  const openCreatePost = () => {
+    // navigate to create new post screen
+    navigation.navigate("CreatePost");
+  }
   return (
     <SafeAreaView className="flex-1 pt-14 bg-white">
       {/* top card */}
@@ -22,7 +26,7 @@ const CommunityPage = () => {
 
       {/* fab button */}
       <View>
-        <Fab bg={primeryColor} size="lg">
+        <Fab bg={primeryColor} size="lg" onPress={openCreatePost}>
           {/* EditIcon is imported from 'lucide-react-native' */}
           <FabIcon as={EditIcon} />
         </Fab>
