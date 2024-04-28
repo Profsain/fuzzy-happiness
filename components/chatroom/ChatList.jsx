@@ -12,7 +12,6 @@ import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import SearchBox from "../SearchBox";
 
-import UserCard from "./UserCard";
 import UserChat from "./UserChat";
 import { secondaryColor, primeryColor } from "../../utils/appstyle";
 import LoadingSpinner from "../LoadingSpinner";

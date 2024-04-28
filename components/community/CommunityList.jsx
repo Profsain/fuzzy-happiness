@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar } from "../home";
 import { primeryColor } from "../../utils/appstyle";
 import CommunityCard from "./CommunityCard";
+import { useLogin } from "../../context/LoginProvider";
 
 const CommunityList = ({ navigation }) => {
   const communities = [
@@ -79,6 +81,12 @@ const CommunityList = ({ navigation }) => {
         "https://img.freepik.com/free-photo/software-developers-sitting-desk-developing-functional-data-encryption-system-multiethnic-cyber-security-team-members-agency-office-writing-cloud-database-processing-algorithm_482257-40528.jpg?t=st=1714005643~exp=1714009243~hmac=93d88068cae3e5d23f420baa9bce18e05c691ad63fa58c22cd83e29be21ffefa&w=826",
     },
   ];
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // extract from useLogin context
+  const { userProfile, token } = useLogin();
+  const userId = userProfile._id;
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
