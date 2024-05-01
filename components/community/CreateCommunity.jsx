@@ -18,13 +18,14 @@ import { secondBgColor, secondaryColor } from "../../utils/appstyle";
 import handlePhoto from "../../utils/uploadImage";
 import UserBottomSheetCom from "./UserBottomSheetCom";
 import AddMemberModal from "./AddMemberModal";
+import LoadingSpinner from "../LoadingSpinner";
 
 const CreateCommunity = ({ navigation }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-  const { userProfile, token, communityMembers } = useLogin();
+  const { userProfile, token, communityMembers, setCommunityData } = useLogin();
   const userId = userProfile._id;
 
   // form state
@@ -35,12 +36,13 @@ const CreateCommunity = ({ navigation }) => {
   const [isAllValid, setIsAllValid] = useState(false);
   const [error, setError] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // handle modal close
   const handleModalClose = () => {
     setIsVisible(false);
   };
-  
+
   // form validation
   const validateForm = () => {
     if (
@@ -80,6 +82,9 @@ const CreateCommunity = ({ navigation }) => {
   const handleCreateCommunity = async (e) => {
     e.preventDefault();
     validateForm();
+    // set loading to true
+    setLoading(true);
+    // community data object
     const communityData = {
       communityCreator: userId,
       coverImage,
@@ -102,8 +107,15 @@ const CreateCommunity = ({ navigation }) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        navigation.navigate("CommunityTerms");
+
+        // update community data
+        setCommunityData(data);
+
+        // set loading to false
+        setLoading(false);
+        // navigate to community terms
+        
+        navigation.navigate("CommunityTerms", {community: data});
       } else {
         console.log("Failed to create community");
       }
@@ -184,28 +196,31 @@ const CreateCommunity = ({ navigation }) => {
             <Text className="text-lg ml-4">Add Community Members</Text>
           </View>
         </TouchableOpacity>
-        
+
         {/* create community button */}
         <View className="mt-12">
           {/* show error message */}
           {error && (
             <Text className="text-red-500 text-center text-xs">{error}</Text>
           )}
-         
-            <CustomButton
-              buttonFunc={handleCreateCommunity}
-              label="Create Community"
-            />
+
+          <View>
+            {loading ? (
+              <LoadingSpinner />
+            ) : (
+              <CustomButton
+                buttonFunc={handleCreateCommunity}
+                label="Create Community"
+              />
+            )}
+          </View>
         </View>
       </ScrollView>
 
       {/* add member modal sheet */}
       {isVisible && (
-        <AddMemberModal
-          visible={isVisible}
-          onClose={handleModalClose}
-        />)}
-     
+        <AddMemberModal visible={isVisible} onClose={handleModalClose} />
+      )}
     </SafeAreaView>
   );
 };

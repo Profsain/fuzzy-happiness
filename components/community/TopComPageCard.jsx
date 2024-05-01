@@ -4,21 +4,31 @@ import AvatarStack from "../splitBills/component/AvatarStack";
 import { Octicons } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
 
-const TopComPageCard = () => {
+const TopComPageCard = ({
+  communityName,
+  communityDescription,
+  communityMembers,
+  coverImage,
+  createdBy,
+  images,
+  noOfPosts,
+}) => {
   return (
     <View style={styles.container}>
       <ImageBackground
         source={{
-          uri: "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826",
+          uri:
+            coverImage ||
+            "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826",
         }}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
         <View style={styles.overlay}>
-          <Text style={styles.text}>Ballers Corner</Text>
+          <Text style={styles.text}>{communityName || "Ballers Corner"}</Text>
           <Text style={styles.text2}>
-            Step into Ballers Corner, where every connection transforms into a
-            vibrant experience. In our community, each interaction is a journey.....
+            {communityDescription.slice(0, 120) ||
+              "Step into Ballers Corner, where every connection transforms into a vibrant experience. In our community, each interaction is a journey....."}
           </Text>
         </View>
         <View
@@ -29,10 +39,12 @@ const TopComPageCard = () => {
             bottom: 0,
           }}
         >
-          <View className="flex flex-row items-center justify-between mb-2" >
+          <View className="flex flex-row items-center justify-between mb-2">
             <View className="flex flex-row items-center">
-              <AvatarStack />
-              <Text className="pl-3 font-semibold">2.5k Members</Text>
+              <AvatarStack hw={25} images={images} />
+              <Text className="pl-3 font-semibold">
+                {communityMembers.length || 0} Members
+              </Text>
             </View>
 
             {/* share button */}
@@ -42,8 +54,12 @@ const TopComPageCard = () => {
           </View>
 
           <View className="flex flex-row items-center">
-            <Text className="text-sm">Created by John</Text>
-            <Text className="ml-3 py-1 px-2 bg-white rounded-3xl">340 Posts</Text>
+            <Text className="text-sm">
+              Created by {createdBy.firstName || "John"}
+            </Text>
+            <Text className="ml-3 py-1 px-2 bg-white rounded-3xl">
+              {noOfPosts} Posts
+            </Text>
           </View>
         </View>
       </ImageBackground>
@@ -55,6 +71,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%", // Full width
     height: 235, // Height of 235px
+    
   },
   backgroundImage: {
     flex: 1,

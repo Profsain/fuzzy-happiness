@@ -11,9 +11,10 @@ import { BackTopBar } from "../home";
 import { primeryColor } from "../../utils/appstyle";
 import CommunityCard from "./CommunityCard";
 import { useLogin } from "../../context/LoginProvider";
+import LoadingSpinner from "../LoadingSpinner";
 
 const CommunityList = ({ navigation }) => {
-  const communities = [
+  const communitiesMock = [
     {
       id: 1,
       communityName: "Ballers Corner",
@@ -85,8 +86,73 @@ const CommunityList = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, communities, setCommunities, setAllUsers } =
+    useLogin();
   const userId = userProfile._id;
+
+  // fetch all users and update allUsers context
+  const fetchAllUsers = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/get-all-users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      // update allUsers context
+      setAllUsers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
+  // fetch all communities
+  const [communitiesList, setCommunitiesList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchAllCommunities = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${baseUrl}/community/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      setLoading(false);
+      // update communities context
+      setCommunities(data);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  // check if communities is empty and fetch all communities
+  useEffect(() => {
+    if (communities.length === 0) {
+      fetchAllCommunities();
+    } else {
+      setCommunitiesList(communities);
+    }
+  }, []);
+
+  // Filter communities based on whether the user created them or belongs to them
+  const filteredCommunities = communities.filter((community) => {
+    return (
+      community.communityCreator === userId ||
+      community.communityMembers.includes(userId)
+    );
+  });
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -101,22 +167,31 @@ const CommunityList = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateCommunity")}
           style={{ backgroundColor: primeryColor }}
-          className="flex justify-center items-center flex-row p-3 rounded-lg shadow-lg my-4"
+          className="flex justify-center items-center flex-row p-3 rounded-lg shadow-lg my-4 "
         >
           <AntDesign name="pluscircleo" size={26} color="white" />
           <View className="">
-            <Text className="ml-6 font-medium ">Create New Community</Text>
+            <Text className="ml-6 font-medium text-white">
+              Create New Community
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
 
       {/* community list */}
+      {loading && <LoadingSpinner />}
       {/* use FlatList to render Communities */}
+      {filteredCommunities.length === 0 && (
+        <Text className="text-center text-gray-500 text-lg">
+          No community found
+        </Text>
+      )}
+
       <FlatList
-        data={communities}
+        data={filteredCommunities}
         renderItem={({ item }) => <CommunityCard community={item} />}
-        keyExtractor={(item) => item.id.toString()}
-        vertical={true} // Enable vertical scrolling
+        keyExtractor={(item) => item._id.toString()} // Use _id instead of id for MongoDB ObjectIDs
+        vertical={true}
       />
     </SafeAreaView>
   );

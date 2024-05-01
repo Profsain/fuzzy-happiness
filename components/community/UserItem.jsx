@@ -4,7 +4,6 @@ import {
   Image,
   Text,
 } from "react-native";
-import { useLogin } from "../../context/LoginProvider";
 import Checkbox from "expo-checkbox";
 import { primeryColor} from "../../utils/appstyle";
 

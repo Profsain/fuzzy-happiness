@@ -20,19 +20,27 @@ const avatars = [
   },
 ];
 
-const AvatarStack = ({ hw = 18 }) => {
+const defaultImg =
+  "https://img.freepik.com/free-photo/medium-shot-young-people-having-fun-party_23-2151108194.jpg?t=st=1710406096~exp=1710409696~hmac=906914bcf854bf8683147a964e415c512e4a6f93a5fbc6b28a8b10f5157deb3d&w=740";
+
+const AvatarStack = ({ hw = 18, images }) => {
+  // limit images to 5, user images or avatars
+  const dataToShow = images && images.length > 0 ? images.slice(0, 5) : avatars;
   const renderItem = ({ item }) => (
     <View style={styles.avatarContainer}>
-      <Image source={{ uri: item.url }} style={{height: hw, width: hw, borderRadius: 25}} />
+      <Image
+        source={{ uri: item.url || defaultImg}}
+        style={{ height: hw, width: hw, borderRadius: 25 }}
+      />
     </View>
   );
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={avatars}
+        data={dataToShow}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id}
         horizontal
       />
     </View>
@@ -41,7 +49,7 @@ const AvatarStack = ({ hw = 18 }) => {
 
 const styles = StyleSheet.create({
   container: {
-        marginTop: 5,
+    marginTop: 5,
   },
 
   avatarContainer: {
