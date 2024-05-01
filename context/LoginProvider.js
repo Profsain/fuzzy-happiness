@@ -6,9 +6,10 @@ export const LoginProvider = ({ children }) => {
     const [isLogin, setIsLogin] = useState(false);
     const [userProfile, setUserProfile] = useState({});
     const [token, setToken] = useState("");
+    const [communityMembers, setCommunityMembers] = useState([userProfile._id]);
 
     return (
-        <LoginContext.Provider value={{ isLogin, setIsLogin, userProfile, setUserProfile, token, setToken }}>
+        <LoginContext.Provider value={{ isLogin, setIsLogin, userProfile, setUserProfile, token, setToken, communityMembers, setCommunityMembers }}>
             {children}
         </LoginContext.Provider>
     );

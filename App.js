@@ -17,7 +17,7 @@ export default function App() {
             <MainNavigator />
           </NavigationContainer>
         </GluestackUIProvider>
-      </LoginProvider>
+        </LoginProvider>
     </Provider>
   );
 }

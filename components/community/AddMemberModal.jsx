@@ -1,22 +1,27 @@
 import React from "react";
 import { Modal, View, Text, Button } from "react-native";
 import { useState } from "react";
+import { useLogin } from "../../context/LoginProvider";
 import { TextInput } from "react-native";
 import UserList from "./UserList";
 
-const AddMemberModal = ({ visible, onClose, usersList }) => {
-    const [selectedUsers, setSelectedUsers] = useState([]);
+const AddMemberModal = ({ visible, onClose }) => {
+    const { communityMembers, setCommunityMembers } = useLogin();
     const [searchQuery, setSearchQuery] = useState("");
 
     const handleToggleUser = (userId, isSelected) => {
       if (isSelected) {
-        setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+        setCommunityMembers((prevSelectedUsers) => [
+          ...prevSelectedUsers,
+          userId,
+        ]);
       } else {
-        setSelectedUsers((prevSelectedUsers) =>
+        setCommunityMembers((prevSelectedUsers) =>
           prevSelectedUsers.filter((id) => id !== userId)
         );
       }
-    };
+  };
+  
   return (
     <Modal
       animationType="slide"
@@ -33,7 +38,7 @@ const AddMemberModal = ({ visible, onClose, usersList }) => {
         }}
       >
         <View
-          style={{ backgroundColor: "white", padding: 20, borderRadius: 10 }}
+          className="w-full h-full bg-white p-4 rounded-lg overflow-y-auto"
         >
           <View>
             <TextInput
@@ -43,7 +48,6 @@ const AddMemberModal = ({ visible, onClose, usersList }) => {
               style={{ marginBottom: 10 }}
             />
             <UserList
-              users={usersList}
               searchQuery={searchQuery}
               onToggle={handleToggleUser}
             />

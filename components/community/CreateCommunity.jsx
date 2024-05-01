@@ -5,6 +5,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLogin } from "../../context/LoginProvider";
@@ -23,46 +24,14 @@ const CreateCommunity = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, communityMembers } = useLogin();
   const userId = userProfile._id;
-
-  const [userList, setUserList] = useState([]);
-
-  // handle fetch all users excluding logged in user
-  const fetchAllUsers = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/user/all-users/${userId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response) {
-        const data = await response.json();
-        // update state
-        setUserList(data);
-      } else {
-        console.log("Failed to fetch users");
-      }
-    } catch (error) {
-      console.log("An error occurred while fetching users", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
-
-  console.log(userList);
 
   // form state
   const [coverImage, setCoverImage] = useState("");
   const [communityName, setCommunityName] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
   const [communityGuidelines, setCommunityGuidelines] = useState("");
-  const [communityMembers, setCommunityMembers] = useState([]);
   const [isAllValid, setIsAllValid] = useState(false);
   const [error, setError] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -104,24 +73,43 @@ const CreateCommunity = ({ navigation }) => {
 
   // handle add members modal
   const handleAddMembersModal = () => {
-    console.log("Add Members Modal");
     setIsVisible(true);
   };
 
   // handle create community
-  const handleCreateCommunity = (e) => {
+  const handleCreateCommunity = async (e) => {
     e.preventDefault();
     validateForm();
     const communityData = {
+      communityCreator: userId,
       coverImage,
       communityName,
       communityDescription,
       communityGuidelines,
       communityMembers,
     };
-    console.log(communityData);
-    console.log("Create Community");
-    // navigation.navigate("CommunityTerms");
+
+    // create community in database
+    try {
+      const response = await fetch(`${baseUrl}/community/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(communityData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        navigation.navigate("CommunityTerms");
+      } else {
+        console.log("Failed to create community");
+      }
+    } catch (error) {
+      console.log("An error occurred while creating community", error);
+    }
   };
 
   return (
@@ -196,26 +184,18 @@ const CreateCommunity = ({ navigation }) => {
             <Text className="text-lg ml-4">Add Community Members</Text>
           </View>
         </TouchableOpacity>
-
+        
         {/* create community button */}
         <View className="mt-12">
           {/* show error message */}
           {error && (
             <Text className="text-red-500 text-center text-xs">{error}</Text>
           )}
-          {isAllValid ? (
+         
             <CustomButton
               buttonFunc={handleCreateCommunity}
               label="Create Community"
             />
-          ) : (
-            <CustomButton
-              buttonFunc={handleCreateCommunity}
-              label="Create Community"
-              backgroundColor={secondaryColor}
-              color="black"
-            />
-          )}
         </View>
       </ScrollView>
 
@@ -224,7 +204,6 @@ const CreateCommunity = ({ navigation }) => {
         <AddMemberModal
           visible={isVisible}
           onClose={handleModalClose}
-          userList={userList}
         />)}
      
     </SafeAreaView>
