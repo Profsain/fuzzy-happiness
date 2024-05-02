@@ -1,16 +1,59 @@
-import { Image, Text, View } from 'react-native'
-import React from 'react'
+import { Image, Text, View } from "react-native";
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
+import { CommunityList, CommunityPage, CommunityTerms, CreateCommunity, CreatePost, QuickNote, AddComment } from "../components/community";
 
 const CommunityScreen = () => {
-  return (
-    <View className="flex-1 justify-center items-center">
-      <Text>Our Community </Text>
-      <Image
-        className="w-24 h-24"
-        source={require("../assets/images/WorkInProgress.png")}
-      />
-    </View>
-  );
-}
+  const Stack = createNativeStackNavigator();
+  const navigation = useNavigation();
 
-export default CommunityScreen
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="CommunityList"
+        component={CommunityList}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="CommunityPage"
+        component={CommunityPage}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AddComment"
+        component={AddComment}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="CommunityTerms"
+        component={CommunityTerms}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="CreateCommunity"
+        component={CreateCommunity}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="CreatePost"
+        component={CreatePost}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="QuickNote"
+        component={QuickNote}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export default CommunityScreen;

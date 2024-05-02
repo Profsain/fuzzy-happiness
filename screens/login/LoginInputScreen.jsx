@@ -10,15 +10,19 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { useLogin } from "../../context/LoginProvider"
+import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
 
 const LoginInputScreen = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
-   // extract from useLogin context
-  const { setUserProfile, userProfile,  isLogin, setIsLogin, setToken } = useLogin();
-  
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // extract from useLogin context
+  const { setUserProfile, userProfile, isLogin, setIsLogin, setToken } =
+    useLogin();
+
   const [showPassword, setShowPassword] = useState(false);
   const handleState = () => {
     setShowPassword((showState) => {
@@ -81,41 +85,45 @@ const LoginInputScreen = () => {
 
     // login logic
     try {
-      const response = await fetch('https://splinx-server.onrender.com/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userInfo),
-      });
+      const response = await fetch(
+        `${baseUrl}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userInfo),
+        }
+      );
 
       if (response.ok) {
         // Login successful
         setLoading(false);
-        setLoginMsg("")
+        setLoginMsg("");
         const data = await response.json();
         // store user data in context, navigate to the next home screen.
         setUserProfile(data.userProfile);
         setIsLogin(true);
         setToken(data.token);
-        
+
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
       } else {
         // Login failed
         setLoading(false);
         const errorData = await response.json();
-        console.log('Login failed:', errorData.message)
-        setLoginMsg('Login failed: User not found or password is incorrect. Please try again.');
+        console.log("Login failed:", errorData.message);
+        setLoginMsg(
+          "Login failed: User not found or password is incorrect. Please try again."
+        );
       }
     } catch (error) {
       setLoading(false);
-      setLoginMsg('An error occurred while logging in. Please try again.');
+      setLoginMsg("An error occurred while logging in. Please try again.");
     }
   };
 
   return (
-
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Welcome Back!" />
 
@@ -214,7 +222,7 @@ const LoginInputScreen = () => {
         {/* signup text at the bottom*/}
         <Box mt={20} mb={20}>
           <TouchableOpacity
-            onPress={() => navigationToScreen(navigation, "SignUpUser")}
+            onPress={() => navigationToScreen(navigation, "SignUpScreen")}
           >
             <Text size="sm" style={{ color: "#000", textAlign: "center" }}>
               Don't have an account?{"   "}

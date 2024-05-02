@@ -1,15 +1,43 @@
-import { Image, Text, View } from 'react-native'
-import React from "react";
+import React, { useState } from "react";
+import { Text } from "react-native";
+import { useSelector } from "react-redux";
+import {
+  BillsHome,
+  BillsGroup,
+  BillsDetails,
+  CreateNewBills,
+  TransactionScreen,
+  TransactionHistory,
+} from "../components/splitBills";
 
 const BillsPayScreen = () => {
+  // app state
+  const openAllGroups = useSelector((state) => state.openScreens.openAllGroup);
+  const openGroupDetails = useSelector(
+    (state) => state.openScreens.openGroupDetails
+  );
+  const openCreateNewBill = useSelector(
+    (state) => state.openScreens.openCreateNewBill
+  );
+  const openTransactionScreen = useSelector(
+    (state) => state.openScreens.openTransactionScreen
+  );
+  const openTransactionHistory = useSelector((state) => state.openScreens.openTransactionHistory);
+
   return (
-    <View className="flex-1 justify-center items-center">
-      <Text>Bills Screen </Text>
-      <Image
-        className="w-24 h-24"
-        source={require("../assets/images/WorkInProgress.png")}
-      />
-    </View>
+    <>
+      {openAllGroups ? (
+        <BillsGroup />
+      ) : openGroupDetails ? (
+        <BillsDetails />
+      ) : openCreateNewBill ? (
+        <CreateNewBills />
+      ) : openTransactionScreen ? (
+        <TransactionScreen />
+      ) : openTransactionHistory ? (<TransactionHistory />) : (
+        <BillsHome />
+      )}
+    </>
   );
 };
 

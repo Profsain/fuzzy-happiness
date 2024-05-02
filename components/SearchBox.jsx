@@ -4,7 +4,6 @@ import React from 'react'
 const SearchBox = ({
   placeholder = "Search....",
   searchTerm,
-  setSearchTerm,
   handleSearch,
   mt,
   mb=28
@@ -19,7 +18,7 @@ const SearchBox = ({
           placeholder={placeholder}
           type="text"
           value={searchTerm}
-          onChangeText={(text) => setSearchTerm(text)}
+          onChangeText={handleSearch}
         />
       </Input>
     </Box>
