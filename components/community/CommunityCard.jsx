@@ -54,7 +54,7 @@ const CommunityCard = ({ community }) => {
         />
         <View>
           <Text className="text-xs font-medium mb-1">
-            {communityName || "Good Name"}
+            {communityName.slice(0, 15) || "Good Name"}
           </Text>
           <Text className="text-xs text-gray-500">
             {communityMembers.length || "0"} Members
@@ -62,12 +62,13 @@ const CommunityCard = ({ community }) => {
           <AvatarStack images={membersProfileImg} />
         </View>
       </View>
-      <View>
+
+      <View className="flex flex-column items-end">
         <Text className="text-xs font-medium mb-1">
           {formatDate(createdAt) || "12/09/2022"}
         </Text>
         <Text className="text-xs text-gray-500">
-          {creatorUser.firstName || "John"}
+          Created by: {creatorUser?.firstName || "John"}
         </Text>
       </View>
     </TouchableOpacity>

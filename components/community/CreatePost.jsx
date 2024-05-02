@@ -1,11 +1,28 @@
-import { View, Text, SafeAreaView, Pressable, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
+import { useLogin } from "../../context/LoginProvider";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { primeryColor, secondaryColor } from "../../utils/appstyle";
+import uploadImage from "../../utils/uploadImage";
 
+const CreatePost = ({ navigation, route }) => {
+  // extract from route param
+  const { communityId } = route.params;
+  // base url
+  const baseUrl = process.env.BASE_URL;
 
-const CreatePost = ({ navigation }) => {
+  // extract from useLogin context
+  const { userProfile, token } = useLogin();
+  const userId = userProfile._id;
+
   const [postText, setPostText] = useState("");
   const [postTextError, setPostTextError] = useState("");
   const [postImage, setPostImage] = useState(null);
@@ -15,6 +32,10 @@ const CreatePost = ({ navigation }) => {
 
   // handle text change
   const handleTextChange = (text) => {
+    if (text.length > 0 && text.length <= textCharacterLimit) {
+      setPostTextError("");
+    }
+
     if (text.length > textCharacterLimit) {
       setPostTextError("Text limit reached");
       return;
@@ -24,19 +45,47 @@ const CreatePost = ({ navigation }) => {
   };
 
   // handle image upload
-  const handleUpload = () => {
-    console.log("Upload Image");
+  const handleUpload = async () => {
+    const postImg = await uploadImage();
+    setPostImage(postImg);
   };
 
   // handle cancel
   const handleCancel = () => {
-    console.log("Cancel")
     navigation.goBack();
   };
 
   // handle post send
-  const handlePostSend = () => {
-    console.log("Post Send");
+  const handlePostSend = async () => {
+    if (postText.length < 1) {
+      setPostTextError("Text is required");
+      return;
+    }
+    // post data object
+    const postData = {
+      postCreator: userId,
+      postText,
+      postImage: postImage ? postImage : null,
+      community: communityId,
+    };
+
+    // send post to server
+    try {
+      const response = await fetch(`${baseUrl}/post/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(postData),
+      });
+
+      const data = await response.json();
+      console.log("Post Data", data);
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <SafeAreaView className="flex-1 pt-14 bg-white">
@@ -47,7 +96,8 @@ const CreatePost = ({ navigation }) => {
             <Text className="font-semibold text-lg">Cancel</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handlePostSend}
+          <TouchableOpacity
+            onPress={handlePostSend}
             style={{ backgroundColor: secondaryColor }}
             className="py-2 px-3 rounded-2xl"
           >
@@ -61,14 +111,24 @@ const CreatePost = ({ navigation }) => {
         <Text className="leading-5 font-medium text-lg">
           {postText ? postText : "What's on your mind?"}
         </Text>
+
+        {/* image preview */}
+        {postImage && (
+          <View className="mt-2">
+            <Image
+              source={{ uri: postImage }}
+              style={{ width: "100%", height: 200 }}
+            />
+          </View>
+        )}
       </View>
 
       {/* post input */}
-      <View className="flex flex-row justify-between items-center px-6 py-4">
+      <View className="flex flex-row justify-between items-center px-6 py-4 bg-white">
         <TouchableOpacity onPress={handleUpload}>
-          <AntDesign name="camerao" size={24} color="black" />
+          <AntDesign name="camerao" size={28} color="black" />
         </TouchableOpacity>
-        <View className="flex-1 mx-3 mt-2">
+        <View className="flex-1 mx-3 mt-4">
           <TextInput
             placeholder="Write something..."
             multiline={true}

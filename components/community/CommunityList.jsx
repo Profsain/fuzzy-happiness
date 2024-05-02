@@ -128,6 +128,8 @@ const CommunityList = ({ navigation }) => {
       });
 
       const data = await response.json();
+      // Sort communities by createdAt field
+      data = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setLoading(false);
       // update communities context
       setCommunities(data);
