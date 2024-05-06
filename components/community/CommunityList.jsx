@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar } from "../home";
 import { primeryColor } from "../../utils/appstyle";
@@ -129,10 +130,12 @@ const CommunityList = ({ navigation }) => {
 
       const data = await response.json();
       // Sort communities by createdAt field
-      data = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortedData = data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
       setLoading(false);
       // update communities context
-      setCommunities(data);
+      setCommunities(sortedData);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -147,6 +150,13 @@ const CommunityList = ({ navigation }) => {
       setCommunitiesList(communities);
     }
   }, []);
+
+  // Fetch all posts when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchAllCommunities();
+    }, [])
+  );
 
   // Filter communities based on whether the user created them or belongs to them
   const filteredCommunities = communities.filter((community) => {
@@ -183,10 +193,22 @@ const CommunityList = ({ navigation }) => {
       {/* community list */}
       {loading && <LoadingSpinner />}
       {/* use FlatList to render Communities */}
-      {filteredCommunities.length === 0 && (
-        <Text className="text-center text-gray-500 text-lg">
-          No community found
-        </Text>
+      {!loading && filteredCommunities.length === 0 && (
+        <View>
+          <Text className="text-center text-gray-500 text-lg">
+            No community found
+          </Text>
+          {/* reload community */}
+          <TouchableOpacity
+            onPress={fetchAllCommunities}
+            className="flex justify-center items-center flex-row p-3 rounded-lg shadow-lg my-4 bg-slate-300 w-32 mx-auto"
+          >
+            <AntDesign name="reload1" size={26} color="white" />
+            <View className="">
+              <Text className="ml-2 font-medium text-white">Reload</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       )}
 
       <FlatList

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   ImageBackground,
@@ -7,27 +7,103 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  TextInput,
+  Image,
 } from "react-native";
+import { useLogin } from "../../context/LoginProvider";
 import AvatarStack from "../splitBills/component/AvatarStack";
 import { Octicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
 import PostCom from "./PostCom";
 import UserCommentCom from "./UserCommentCom";
 
+// default
+const imgUrl =
+  "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826";
+
 const AddComment = () => {
+  const baseUrl = process.env.BASE_URL;
+  const [isAddCommentPage, setIsAddCommentPage] = useState(true);
+
+  // extract from useLogin context
+  const { userProfile, currentPost, communities } = useLogin();
+  const userId = userProfile._id;
+  console.log("User info", userProfile);
+
+
+  // find the current community
+  const currentCommunity = communities.find(
+    (community) => community._id === currentPost.community
+  );
+
+  // handle comment input
+  const [commentText, setCommentText] = useState("");
+  const [commentTextError, setCommentTextError] = useState("");
+  const textLimit = 100;
+
+  // handle comment input change
+  const handleCommentTextChange = (text) => {
+    setCommentText(text)
+    if (text.length === textLimit) {
+      setCommentTextError("Limit reached");
+      //stop typing
+      return;
+    } else {
+      setCommentTextError("")
+    }
+  };
+
+// handle comment submit
+const handleCommentSubmit = async () => {
+  // check if the comment is empty
+  if (!commentText) {
+    setCommentTextError("Comment is required");
+    return;
+  }
+
+  // post comment
+  try {
+    const response = await fetch(`${baseUrl}/post/${currentPost._id}/comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        commentText: commentText,
+        commenter: userId,
+        commenterName: userProfile.firstName,
+        commenterProfileImage: userProfile.profileImage,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Comment response", data);
+    setCommentText("");
+    setCommentTextError("");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
   return (
     <SafeAreaView className="flex-1 pt-14 pb-8 bg-white">
       {/* top section */}
       <View style={styles.container}>
         <ImageBackground
           source={{
-            uri: "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826",
+            uri:
+              currentCommunity.coverImage ||
+              "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826",
           }}
           style={styles.backgroundImage}
           resizeMode="cover"
         >
           <View style={styles.overlay}>
-            <Text style={styles.text}>Ballers Corner</Text>
+            <Text style={styles.text}>
+              {currentCommunity.communityName || ""}
+            </Text>
           </View>
           <View
             className="w-full py-2 px-6 rounded-t-md border-b-2 border-gray-300 bg-white"
@@ -47,11 +123,34 @@ const AddComment = () => {
       {/* post preview */}
       <ScrollView className="flex-1 bg-white">
         <View className="px-6 py-2 border-b-2 border-gray-300 bg-white ">
-          <PostCom />
+          <PostCom post={currentPost} isAddCommentPage={isAddCommentPage} />
         </View>
         {/* comments section */}
         <UserCommentCom />
       </ScrollView>
+
+      {/* add comment */}
+      <View className="flex flex-row items-center justify-between px-6 py-2 mt-6 bg-white">
+        <View className="flex flex-row items-center w-4/5">
+          <View>
+            <Image
+              source={{ uri: userProfile.profileImage || imgUrl }}
+              className="h-8 w-8 rounded-full"
+            />
+          </View>
+          <View className="flex w-full mx-2">
+            <TextInput
+              value={commentText}
+              onChangeText={handleCommentTextChange}
+              placeholder="Write a comment..."
+              className="h-8  border px-2 rounded-3xl border-gray-300"
+            />
+          </View>
+          <TouchableOpacity className="py-2" onPress={handleCommentSubmit}>
+            <Ionicons name="send" size={18} color={primeryColor} />
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -77,7 +176,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-    textAlign: "left",
+    textAlign: "center",
     paddingBottom: 10,
   },
   text2: {

@@ -6,8 +6,6 @@ import { primeryColor } from "../../utils/appstyle";
 
 const UserCommentCom = () => {
   const [replyText, setReplyText] = useState("");
-  const [commentText, setCommentText] = useState("");
-  const [commentTextError, setCommentTextError] = useState("");
   const [isReplyClicked, setIsReplyClicked] = useState(false);
 
   const replyInputRef = useRef(null);
@@ -26,7 +24,7 @@ const UserCommentCom = () => {
   return (
     <View className="px-6 py-2">
       <View>
-        <MemberProfieTop />
+        {/* <MemberProfieTop /> */}
         <View className="pl-16">
           <Text>
             The adult years bring about increased autonomy and responsibilities.
