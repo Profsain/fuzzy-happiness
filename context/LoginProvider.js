@@ -11,7 +11,7 @@ export const LoginProvider = ({ children }) => {
     const [communityData, setCommunityData] = useState({});
     const [communities, setCommunities] = useState([]);
     const [currentPost, setCurrentPost] = useState({});
-
+    const [commentCount, setCommentCount] = useState(0);
     return (
         <LoginContext.Provider
             value={{
@@ -21,7 +21,9 @@ export const LoginProvider = ({ children }) => {
                 communityMembers, setCommunityMembers, communityData, setCommunityData,
                 communities, setCommunities,
                 allUsers, setAllUsers,
-                currentPost, setCurrentPost
+                currentPost, setCurrentPost,
+                commentCount, setCommentCount,
+
             }}>
             {children}
         </LoginContext.Provider>

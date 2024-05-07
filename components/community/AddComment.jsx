@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ImageBackground,
@@ -11,8 +11,6 @@ import {
   Image,
 } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
-import AvatarStack from "../splitBills/component/AvatarStack";
-import { Octicons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
 import PostCom from "./PostCom";
@@ -24,13 +22,13 @@ const imgUrl =
 
 const AddComment = () => {
   const baseUrl = process.env.BASE_URL;
+
   const [isAddCommentPage, setIsAddCommentPage] = useState(true);
+  const [commentList, setCommentList] = useState([]);
 
   // extract from useLogin context
   const { userProfile, currentPost, communities } = useLogin();
   const userId = userProfile._id;
-  console.log("User info", userProfile);
-
 
   // find the current community
   const currentCommunity = communities.find(
@@ -44,48 +42,81 @@ const AddComment = () => {
 
   // handle comment input change
   const handleCommentTextChange = (text) => {
-    setCommentText(text)
+    setCommentText(text);
     if (text.length === textLimit) {
       setCommentTextError("Limit reached");
       //stop typing
       return;
     } else {
-      setCommentTextError("")
+      setCommentTextError("");
     }
   };
 
-// handle comment submit
-const handleCommentSubmit = async () => {
-  // check if the comment is empty
-  if (!commentText) {
-    setCommentTextError("Comment is required");
-    return;
-  }
+  // comment count
+  const [commentCounter, setCommentCounter] = useState(0);
+  
+   // fetch all comments of post
+  const fetchAllComments = async () => {
+    try {
+      const response = await fetch( `${baseUrl}/post/${currentPost._id}/comments`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-  // post comment
-  try {
-    const response = await fetch(`${baseUrl}/post/${currentPost._id}/comment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        commentText: commentText,
-        commenter: userId,
-        commenterName: userProfile.firstName,
-        commenterProfileImage: userProfile.profileImage,
-      }),
-    });
+      const data = await response.json();
+      setCommentList(data);
+      // update comment count
+      setCommentCounter(data.length)
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const data = await response.json();
-    console.log("Comment response", data);
-    setCommentText("");
-    setCommentTextError("");
-  } catch (error) {
-    console.log(error);
-  }
-};
+  useEffect(() => {
+    fetchAllComments()
+  }, [])
 
+  // handle comment submit
+  const handleCommentSubmit = async () => {
+    // check if the comment is empty
+    if (!commentText) {
+      setCommentTextError("Comment is required");
+      return;
+    }
+
+    // post comment
+    try {
+      const response = await fetch(
+        `${baseUrl}/post/${currentPost._id}/comment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            commentText: commentText,
+            commenter: userId,
+            commenterName: userProfile.firstName,
+            commenterProfileImage: userProfile.profileImage,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      // console.log("Comment response", data);
+      setCommentText("");
+      setCommentTextError("");
+
+      // call fetchComments
+      fetchAllComments()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
 
   return (
     <SafeAreaView className="flex-1 pt-14 pb-8 bg-white">
@@ -123,10 +154,13 @@ const handleCommentSubmit = async () => {
       {/* post preview */}
       <ScrollView className="flex-1 bg-white">
         <View className="px-6 py-2 border-b-2 border-gray-300 bg-white ">
-          <PostCom post={currentPost} isAddCommentPage={isAddCommentPage} />
+          <PostCom post={currentPost} isAddCommentPage={isAddCommentPage} commentCounter={commentCounter} />
         </View>
         {/* comments section */}
-        <UserCommentCom />
+        {commentList.map((comment) => ( 
+          <UserCommentCom key={comment._id} comment={comment} />
+        ))}
+        
       </ScrollView>
 
       {/* add comment */}
@@ -151,6 +185,12 @@ const handleCommentSubmit = async () => {
           </TouchableOpacity>
         </View>
       </View>
+        <View className="flex items-end justify-end pr-12">
+          <Text className="text-gray-500 text-xs">
+            {commentText.length}/{textLimit}
+          </Text>
+          <Text className="text-red-500 text-xs">{commentTextError}</Text>
+        </View>
     </SafeAreaView>
   );
 };

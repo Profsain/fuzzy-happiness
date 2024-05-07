@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import React, { useState, useRef } from "react";
-import MemberProfieTop from "./MemberProfieTop";
 import { Ionicons } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
+import timeAgo from "../../utils/timeAgo";
 
-const UserCommentCom = () => {
+const UserCommentCom = ({comment}) => {
   const [replyText, setReplyText] = useState("");
   const [isReplyClicked, setIsReplyClicked] = useState(false);
 
@@ -24,11 +24,28 @@ const UserCommentCom = () => {
   return (
     <View className="px-6 py-2">
       <View>
-        {/* <MemberProfieTop /> */}
+        <View className="flex flex-row items-center">
+          <View>
+            <Image
+              source={{
+                uri:
+                  comment.commenterProfileImage ||
+                  "https://res.cloudinary.com/dvwxyofm2/image/upload/v1714869565/senjhz3dfuxl6bjsburq.jpg",
+              }}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+              }}
+            />
+          </View>
+          <View className="ml-2">
+            <Text>{comment.commenterName}</Text>
+            <Text>{timeAgo(comment.createdAt)}</Text>
+          </View>
+        </View>
         <View className="pl-16">
-          <Text>
-            The adult years bring about increased autonomy and responsibilities.
-          </Text>
+          <Text>{comment.commentText}.</Text>
 
           {/* reply button */}
           <TouchableOpacity
@@ -40,9 +57,7 @@ const UserCommentCom = () => {
 
           {/* reply text input */}
           {isReplyClicked && (
-            <View
-              className="flex flex-row items-center mt-2"
-            >
+            <View className="flex flex-row items-center mt-2">
               <View className="flex-1 ml-2">
                 <TextInput
                   placeholder="Write a reply..."

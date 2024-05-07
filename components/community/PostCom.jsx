@@ -8,11 +8,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import MemberProfieTop from "./MemberProfieTop";
 import timeAgo from "../../utils/timeAgo";
 
-const PostCom = ({ post, isAddCommentPage }) => {
+const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
   const postId = post._id;
+  const commentsLen = post.comments.length;
+  const [commentCount, setCommentCount] = useState(commentsLen);
 
   // extract from useLogin context
   const { allUsers, userProfile, setCurrentPost } = useLogin();
@@ -26,7 +28,6 @@ const PostCom = ({ post, isAddCommentPage }) => {
 
   // handle open comment screen
   const openComment = () => {
-    console.log("Open comment screen");
     // set current post to context
     setCurrentPost(post);
 
@@ -140,11 +141,11 @@ const PostCom = ({ post, isAddCommentPage }) => {
 
           {/* if not on add comment page, show comment button */}
           {isAddCommentPage ? (
-            <TouchableOpacity
-              className="flex flex-row items-center"
-            >
+            <TouchableOpacity className="flex flex-row items-center">
               <EvilIcons name="comment" size={18} color="black" />
-              <Text className="pl-1 font-medium text-xs">100 Comments</Text>
+              <Text className="pl-1 font-medium text-xs">
+                {commentCount || commentCounter} Comments
+              </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -152,7 +153,9 @@ const PostCom = ({ post, isAddCommentPage }) => {
               onPress={openComment}
             >
               <EvilIcons name="comment" size={18} color="black" />
-              <Text className="pl-1 font-medium text-xs">200 Comments</Text>
+              <Text className="pl-1 font-medium text-xs">
+                {commentCount || commentCounter} Comments
+              </Text>
             </TouchableOpacity>
           )}
 
