@@ -1,10 +1,8 @@
 import {
   View,
   Text,
-  TouchableOpacity,
   SafeAreaView,
   FlatList,
-  ScrollView,
   BackHandler,
 } from "react-native";
 

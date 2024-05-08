@@ -115,7 +115,7 @@ const CreateCommunity = ({ navigation }) => {
         setLoading(false);
         // navigate to community terms
         
-        navigation.navigate("CommunityTerms", {community: data});
+        navigation.navigate("CommunityTerms");
       } else {
         console.log("Failed to create community");
       }

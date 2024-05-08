@@ -3,7 +3,8 @@ import React from "react";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
 
-const CommunityTerms = ({ navigation }) => {
+const CommunityTerms = ({ navigation}) => {
+  
   // handle go back
   const handleBack = () => {
     navigation.goBack();
@@ -12,8 +13,8 @@ const CommunityTerms = ({ navigation }) => {
   // handle continue to create community
   const handleCreateCommunity = () => {
       // navigation.navigate("");
-      navigation.navigate("CommunityPage");
-      console.log("create community")
+    navigation.navigate("CommunityList");
+    
     // todo: create community in backend
   };
 
