@@ -49,22 +49,19 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
       const response = await fetch(`${baseUrl}/post/${postId}/likes`);
       if (response.ok) {
         const data = await response.json();
-        console.log("Post likes", data);
         setPostLikes(data.likes);
         // check if user has liked the post
         const liked = data.likes.find((like) => like.likeBy === userId);
         if (liked) {
           setIsLiked(true);
-          console.log("User liked post", liked);
         } else {
           setIsLiked(false);
-          console.log("User has not liked post", liked);
         }
       } else {
-        console.error("Error fetching post likes:", response.statusText);
+       throw new Error("Error fetching post likes");
       }
     } catch (error) {
-      console.error("Error fetching post likes:", error);
+      throw new Error("Error fetching post likes catch:", error);
     }
   };
 
@@ -88,11 +85,9 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
       });
 
       const data = await response.json();
-      console.log("Like response", data.message);
       if (data.error) {
         console.log(data.error);
       } else {
-        console.log("Post liked", data);
         // Update local state to reflect that the post is liked
         setIsLiked(true);
         // fetch post likes

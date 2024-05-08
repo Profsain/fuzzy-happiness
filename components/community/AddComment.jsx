@@ -54,29 +54,34 @@ const AddComment = () => {
 
   // comment count
   const [commentCounter, setCommentCounter] = useState(0);
-  
-   // fetch all comments of post
+  // comment box state
+  const [showCommentBox, setShowCommentBox] = useState(true);
+
+  // fetch all comments of post
   const fetchAllComments = async () => {
     try {
-      const response = await fetch( `${baseUrl}/post/${currentPost._id}/comments`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${baseUrl}/post/${currentPost._id}/comments`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
       setCommentList(data);
       // update comment count
-      setCommentCounter(data.length)
+      setCommentCounter(data.length);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchAllComments()
-  }, [])
+    fetchAllComments();
+  }, []);
 
   // handle comment submit
   const handleCommentSubmit = async () => {
@@ -110,16 +115,14 @@ const AddComment = () => {
       setCommentTextError("");
 
       // call fetchComments
-      fetchAllComments()
+      fetchAllComments();
     } catch (error) {
       console.log(error);
     }
   };
 
-  
-
   return (
-    <SafeAreaView className="flex-1 pt-14 pb-8 bg-white">
+    <SafeAreaView className="flex-1 pt-14 bg-white">
       {/* top section */}
       <View style={styles.container}>
         <ImageBackground
@@ -143,9 +146,9 @@ const AddComment = () => {
               bottom: 0,
             }}
           >
-            <View className="flex items-center justify-between mb-2 py-4">
+            <View className="flex items-center justify-between mb-2 ">
               <View className="w-20 h-2 bg-slate-200 rounded-2xl mb-4"></View>
-              <Text className="font-semibold text-lg">Comments</Text>
+              <Text className="font-semibold ">Comments</Text>
             </View>
           </View>
         </ImageBackground>
@@ -154,43 +157,55 @@ const AddComment = () => {
       {/* post preview */}
       <ScrollView className="flex-1 bg-white">
         <View className="px-6 py-2 border-b-2 border-gray-300 bg-white ">
-          <PostCom post={currentPost} isAddCommentPage={isAddCommentPage} commentCounter={commentCounter} />
+          <PostCom
+            post={currentPost}
+            isAddCommentPage={isAddCommentPage}
+            commentCounter={commentCounter}
+          />
         </View>
         {/* comments section */}
-        {commentList.map((comment) => ( 
-          <UserCommentCom key={comment._id} comment={comment} />
+        {commentList.map((comment) => (
+          <UserCommentCom
+            key={comment._id}
+            comment={comment}
+            setShowCommentBox={setShowCommentBox}
+            postId={currentPost._id}
+          />
         ))}
-        
       </ScrollView>
 
       {/* add comment */}
-      <View className="flex flex-row items-center justify-between px-6 py-2 mt-6 bg-white">
-        <View className="flex flex-row items-center w-4/5">
-          <View>
-            <Image
-              source={{ uri: userProfile.profileImage || imgUrl }}
-              className="h-8 w-8 rounded-full"
-            />
+      {showCommentBox && (
+        <View className="bg-white">
+          <View className="flex flex-row items-center justify-between px-6 mt-2 bg-white">
+            <View className="flex flex-row items-center w-4/5">
+              <View>
+                <Image
+                  source={{ uri: userProfile.profileImage || imgUrl }}
+                  className="h-8 w-8 rounded-full"
+                />
+              </View>
+              <View className="flex w-full mx-2">
+                <TextInput
+                  value={commentText}
+                  onChangeText={handleCommentTextChange}
+                  placeholder="Write a comment..."
+                  className="h-8  border px-2 rounded-3xl border-gray-300"
+                />
+              </View>
+              <TouchableOpacity className="py-2" onPress={handleCommentSubmit}>
+                <Ionicons name="send" size={18} color={primeryColor} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View className="flex w-full mx-2">
-            <TextInput
-              value={commentText}
-              onChangeText={handleCommentTextChange}
-              placeholder="Write a comment..."
-              className="h-8  border px-2 rounded-3xl border-gray-300"
-            />
+          <View className="flex items-end justify-end pr-12">
+            <Text className="text-gray-500 text-xs">
+              {commentText.length}/{textLimit}
+            </Text>
+            <Text className="text-red-500 text-xs">{commentTextError}</Text>
           </View>
-          <TouchableOpacity className="py-2" onPress={handleCommentSubmit}>
-            <Ionicons name="send" size={18} color={primeryColor} />
-          </TouchableOpacity>
         </View>
-      </View>
-        <View className="flex items-end justify-end pr-12">
-          <Text className="text-gray-500 text-xs">
-            {commentText.length}/{textLimit}
-          </Text>
-          <Text className="text-red-500 text-xs">{commentTextError}</Text>
-        </View>
+      )}
     </SafeAreaView>
   );
 };
