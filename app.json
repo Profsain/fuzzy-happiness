@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/splinxicon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#fdccbb"
       },
       "permissions": [
