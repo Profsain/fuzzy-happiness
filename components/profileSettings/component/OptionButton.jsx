@@ -2,15 +2,24 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { primeryColor } from "../../../utils/appstyle";
 
-const OptionButton = () => {
+const OptionButton = ({
+  btnFunc,
+  btnText,
+  iconLeft = <AntDesign name="user" size={24} color={primeryColor} />,
+  iconRight = <FontAwesome6 name="greater-than" size={18} color="black" />,
+}) => {
   return (
-    <TouchableOpacity>
-      <View>
-        <AntDesign name="user" size={24} color="black" />
-        <Text>OptionButton Text</Text>
+    <TouchableOpacity
+      onPress={btnFunc}
+      className="flex flex-row justify-between items-center border px-4 py-3 rounded-xl border-slate-200 my-3"
+    >
+      <View className="flex flex-row justify-between items-center">
+        {iconLeft}
+        <Text className=" text-xl">{btnText || "Add Button Text"}</Text>
       </View>
-      <FontAwesome6 name="greater-than" size={24} color="black" />
+      {iconRight}
     </TouchableOpacity>
   );
 };

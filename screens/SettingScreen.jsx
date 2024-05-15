@@ -1,4 +1,3 @@
-import { Image, Text, View } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
@@ -13,6 +12,10 @@ import {
   ReportProblem,
   RestrictedAccount,
   ShareProfile,
+  ChangeNumber,
+  VerifyNumber,
+  ChangePassword,
+  ChooseNotificationType,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -77,6 +80,30 @@ const SettingScreen = () => {
       <Stack.Screen
         name="ShareProfile"
         component={ShareProfile}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="ChangeNumber"
+        component={ChangeNumber}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="VerifyNumber"
+        component={VerifyNumber}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="ChooseNotificationType"
+        component={ChooseNotificationType}
         options={{ headerShown: false }}
         navigation={navigation}
       />
