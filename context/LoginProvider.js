@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
-
+// create context instance
 const LoginContext = createContext();
 
+// create provider component
 export const LoginProvider = ({ children }) => { 
     const [isLogin, setIsLogin] = useState(false);
     const [userProfile, setUserProfile] = useState({});

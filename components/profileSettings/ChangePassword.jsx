@@ -1,16 +1,15 @@
 import { Text, SafeAreaView } from "react-native";
+import { BackTopBar } from "../home";
 
-const ChangePassword = () => {
+const ChangePassword = ({ navigation }) => {
   const handleBackBtn = () => {
-    console.log("back click");
+    // navigate back
+    navigation.goBack();
   };
+  
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar
-        headline="Change Phone Number"
-        icon2=""
-        func={handleBackBtn}
-      />
+      <BackTopBar headline="Change Password" icon2="" func={handleBackBtn} />
       <Text>Change ChangePassword</Text>
     </SafeAreaView>
   );

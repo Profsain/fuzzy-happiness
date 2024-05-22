@@ -12,7 +12,7 @@ import {
   ReportProblem,
   RestrictedAccount,
   ShareProfile,
-  ChangeNumber,
+  ChangePhoneNumber,
   VerifyNumber,
   ChangePassword,
   ChooseNotificationType,
@@ -84,11 +84,12 @@ const SettingScreen = () => {
         navigation={navigation}
       />
       <Stack.Screen
-        name="ChangeNumber"
-        component={ChangeNumber}
+        name="ChangePhoneNumber"
+        component={ChangePhoneNumber}
         options={{ headerShown: false }}
         navigation={navigation}
       />
+      
       <Stack.Screen
         name="VerifyNumber"
         component={VerifyNumber}

@@ -1,9 +1,13 @@
 import { View, SafeAreaView, Alert } from 'react-native'
 import React from 'react'
+import { useLogin } from '../../context/LoginProvider'
 import { BackTopBar } from '../home'
 import OptionButton from './component/OptionButton'
 
-const ProfileHome = ({navigation}) => {
+const ProfileHome = ({ navigation }) => {
+  // extract context 
+  const { setIsLogin, setUserProfile } = useLogin();
+
   // handle personal info
   const handlePersonalInfo = () => {
     // navigate to PersonalInfoScreen
@@ -27,7 +31,10 @@ const ProfileHome = ({navigation}) => {
   // handle log out
   const handleLogout = () => {
     // clear login context
+    setIsLogin(false);
+    setUserProfile({});
     // navigate to login screen
+    navigation.navigate("LoginScreen");
   }
 
   return (

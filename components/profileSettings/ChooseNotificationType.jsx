@@ -1,4 +1,5 @@
 import { Text, SafeAreaView } from "react-native";
+import { BackTopBar } from "../home";
 
 const ChooseNotificationType = () => {
   const handleBackBtn = () => {
@@ -7,7 +8,7 @@ const ChooseNotificationType = () => {
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       <BackTopBar
-        headline="Change Phone Number"
+        headline="Choose Notification Type"
         icon2=""
         func={handleBackBtn}
       />
