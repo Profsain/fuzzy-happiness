@@ -33,15 +33,12 @@ const AddEmailScreen = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    // persist email in local storage
+    // send data to next screen
     const data = {
       ...receivedData,
       emailAddress: email,
     };
-    // send token to email
-    // Alert.alert("Email", email);
-    // navigate to EmailVerificationCode screen
-    // console.log(data);
+    
     navigationToScreen(navigation, "AddAddressScreen", data);
   };
 

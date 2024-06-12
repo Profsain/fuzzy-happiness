@@ -1,83 +1,136 @@
-import { useState } from "react";
-import { Text, SafeAreaView, View, Alert } from "react-native";
-import { BackTopBar } from "../home";
-import CustomInput from "../CustomInput";
-import CustomButton from "../CustomButton";
+import React, { useState, useRef } from "react";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { firebaseConfig } from "../../config";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
+import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
+import PhoneInput from "react-native-phone-number-input";
 import { secondaryColor } from "../../utils/appstyle";
+import navigationToScreen from "../../utils/navigationUtil";
+import { View, TouchableOpacity } from "react-native";
+import { BackTopBar } from "../../components/home";
 
 const ChangePhoneNumber = ({ navigation }) => {
-  const [newPhoneNumber, setNewPhoneNumber] = useState("");
-  const [phoneNumberError, setPhoneNumberError] = useState("");
   const [isValid, setIsValid] = useState(false);
+  const [phoneValue, setPhoneValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleBackBtn = () => {
-    // navigate back
-    navigation.goBack();
-  };
+  const phoneInput = useRef(null);
+  const recaptchaVerifier = useRef(null);
 
-  // handle phone number validation
-  const handlePhoneValidation = () => {
-    if (newPhoneNumber.length < 10) {
-      setPhoneNumberError("Phone number must be at least 10 digits");
-    } else if (newPhoneNumber === "") {
-      setPhoneNumberError("Phone number is required");
+  const handleChangeValue = (text) => {
+    setPhoneValue(text);
+    if (text.length === 0) {
+      setError("Phone Number is required");
+      setIsValid(false);
+    } else if (text.length < 10) {
+      setError("Phone Number must be 10 digits");
+      setIsValid(false);
     } else {
-      setPhoneNumberError("");
+      setError("");
       setIsValid(true);
     }
   };
 
-  // handle phone number change
-  const handlePhoneNumberChange = (text) => {
-    setNewPhoneNumber(text);
-    handlePhoneValidation();
+  const sendVerificationCode = async (phoneNumber) => {
+    setLoading(true);
+    // try {
+    //   const phoneProvider = new firebase.auth.PhoneAuthProvider();
+    //   const verificationToken = await phoneProvider.verifyPhoneNumber(
+    //     phoneNumber,
+    //     recaptchaVerifier.current
+    //   );
+
+    //   if (verificationToken) {
+    //     const data = {
+    //       phone: formattedValue,
+    //       verificationId: verificationToken,
+    //     };
+    //     navigationToScreen(navigation, "VerifyNumber", data);
+    //   }
+    // } catch (error) {
+    //   console.error("Error", error.message);
+    //   setError("Failed to send verification code. Please try again.");
+    // } finally {
+    //   setLoading(false);
+    // }
+
+    // temp work through
+    navigationToScreen(navigation, "VerifyNumber", {
+      phone: formattedValue,
+      verificationId: "123456",
+    });
   };
 
-  // handle confirm changes
-  const handleConfirmChanges = () => {
+  const handleGetToken = () => {
     if (isValid) {
-      // navigate to verification screen
-      navigation.navigate("VerifyNumber", { newPhoneNumber });
+      sendVerificationCode(formattedValue);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar
-        headline="Change Phone Number"
-        icon2=""
-        func={handleBackBtn}
-      />
-
-      <View className="my-16">
-        <CustomInput
-          type="tel"
-          keyboardType={"phone-pad"}
-          error={phoneNumberError}
-          handleTextChange={handlePhoneNumberChange}
-          placeholder="Enter new number"
-          mb={48}
+    <Box width="100%" justifyContent="center" p={24}>
+      <View className="my-8">
+        <BackTopBar
+          func={() => navigation.goBack()}
+          headline="Change Phone Number"
         />
+      </View>
 
-        <View className="flex justify-center items-center">
-          <Text className="text-sm text-gray-400 mb-12">
-            A verification code will be sent to your new number
-          </Text>
+      <VStack space="xl" mt={15}>
+        <Text fontSize={16}>Enter new mobile number to get a OTP.</Text>
 
-          {isValid ? (
+        <Box width="100%">
+          <PhoneInput
+            ref={phoneInput}
+            defaultValue={phoneValue}
+            defaultCode="NG"
+            layout="first"
+            onChangeText={handleChangeValue}
+            onChangeFormattedText={(text) => {
+              setFormattedValue(text);
+            }}
+            withDarkTheme
+            withShadow
+          />
+          {error && (
+            <Text size="sm" style={{ color: "#ea9977" }}>
+              {error}
+            </Text>
+          )}
+
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+          />
+        </Box>
+
+        <Box mt={160}>
+          {!isValid ? (
             <CustomButton
-              label="Confirm Changes"
-              buttonFunc={handleConfirmChanges}
+              label="Get OTP Code"
+              backgroundColor={secondaryColor}
+              color="#000"
+              buttonFunc={null}
             />
           ) : (
-            <CustomButton
-              label="Confirm Changes"
-              backgroundColor={secondaryColor}
-            />
+            <Box>
+              {!loading ? (
+                <CustomButton
+                  label="Get OTP Code"
+                  buttonFunc={handleGetToken}
+                />
+              ) : (
+                <LoadingSpinner />
+              )}
+            </Box>
           )}
-        </View>
-      </View>
-    </SafeAreaView>
+        </Box>
+      </VStack>
+    </Box>
   );
 };
 

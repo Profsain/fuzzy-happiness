@@ -42,6 +42,11 @@
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7e231064-1cb2-4292-ae51-6f305cb10e8c"
+      }
+    }
   }
 }

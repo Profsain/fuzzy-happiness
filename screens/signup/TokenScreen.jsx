@@ -11,7 +11,7 @@ import { TouchableOpacity } from "react-native";
 import useReceivedData from "../../hooks/useReceivedData";
 
 const TokenScreen = () => {
-  // data from signU  p screen
+  // data from signUp screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
   const verificationId = receivedData.verificationId;
@@ -82,7 +82,7 @@ const TokenScreen = () => {
           const data = {
             phoneNumber: phoneNumber,
           };
-          //  navigationToScreen(navigation, "AddEmailScreen", data);
+         
           navigation.replace("AddEmailScreen", data);
         }
       })

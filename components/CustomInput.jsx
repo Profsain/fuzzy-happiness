@@ -13,7 +13,7 @@ const CustomInput = ({
 }) => {
   return (
     <Box mb={mb}>
-      <Input size="xl">
+      <Input size="lg">
         <InputField
           placeholder={placeholder}
           aria-label={placeholder}

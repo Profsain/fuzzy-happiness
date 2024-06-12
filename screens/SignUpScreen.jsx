@@ -65,20 +65,7 @@ const SignUpScreen = ({ navigation }) => {
     }
   };
 
-  // async function sendVerificationCode(phoneNumber) {
-  //   try {
-  //     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-  //     // Save confirmation to state or context for later use
-  //     setConfirmation(confirmation);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //     console.log("Confirmation", confirmation);
-  //   } catch (error) {
-  //     console.error("Error sending verification code: ", error);
-  //     // Handle error
-  //   }
-  // }
-
-  // handle send token
+  
   const handleGetToken = () => {
     // call sendVerificationCode function
     sendVerificationCode(formattedValue);

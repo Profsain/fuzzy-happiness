@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Text, SafeAreaView, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import firebase from "firebase/compat/app";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
+import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
-import { Box } from "@gluestack-ui/themed";
+import navigationToScreen from "../../utils/navigationUtil";
+import { TouchableOpacity, SafeAreaView, View, Alert } from "react-native";
+// hooks
+import useReceivedData from "../../hooks/useReceivedData";
 import { BackTopBar } from "../home";
-import CustomButton from "../CustomButton";
 
 const VerifyNumber = ({ navigation, route }) => {
-  // extract phone number from param
-  const { newPhoneNumber } = route.params;
+  const receivedData = useReceivedData();
+  const phoneNumber = receivedData.phone;
+  const verificationId = receivedData.verificationId;
 
-  const [tokenValue, setTokenValue] = useState("");
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
+  const [tokenValue, setTokenValue] = useState("");
+  const [error, setError] = useState("");
   const [mt, setMt] = useState(68); // margin top for resend text
   const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
   const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
-  const [error, setError] = useState("");
-
-  const handleBackBtn = () => {
-    navigation.goBack();
-  };
-
-  const codeInputRef = useRef(null);
 
   // sent timeout for 3 minutes
   useEffect(() => {
@@ -43,6 +43,8 @@ const VerifyNumber = ({ navigation, route }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const codeInputRef = useRef(null);
+
   // handle token code change
   const handleTokenValue = (code) => {
     setTokenValue(code);
@@ -62,27 +64,54 @@ const VerifyNumber = ({ navigation, route }) => {
     }
   };
 
-  // handle verify code
-  const handleVerifyCode = () => {
-    if (isValid) {
-      // navigate to home screen
+  // handle confirm token
+  const handleConfirmToken = () => {
+    //  const credential = firebase.auth.PhoneAuthProvider.credential(
+    //    verificationId,
+    //    tokenValue
+    //  );
+    //  firebase
+    //    .auth()
+    //    .signInWithCredential(credential)
+    //    .then((result) => {
+    //      // do something with the result
+    //      if (result) {
+    //        const data = {
+    //          phoneNumber: phoneNumber,
+    //        };
+
+    //        navigation.replace("PersonalInfoScreen", data);
+    //      }
+    //    })
+    //    .catch((error) => {
+    //      // do something with the error
+    //      setError(error.message);
+    //      console.log("Error", error);
+    //    });
+    if (verificationId === "123456") {
+      Alert.alert("Success", "Phone Number Verified", [{ text: "OK" }]);
+      // navigate to personal info screen
       navigation.navigate("PersonalInfoScreen");
+    } else {
+      setError("Failed to verify phone number. Please try again.");
     }
   };
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Verify Number" icon2="" func={handleBackBtn} />
+      <BackTopBar
+        headline="Verify Number"
+        icon2=""
+        func={() => navigation.goBack()}
+      />
 
       <View className="mt-14 flex items-center">
-        <Text className="font-bold text-lg">Enter Verification Code</Text>
+        <Text className="mt-6 text-center text-gray-500">
+          Enter the 6-digit code sent to {phoneNumber}
+        </Text>
 
         {/* verification code input */}
-        <View>
-          <Text className="mt-6 text-center text-gray-500">
-            Enter the 4-digit code sent to {newPhoneNumber}
-          </Text>
-
+        <View className="my-8 flex items-center">
           <Box width="100%">
             <CodeInput
               ref={codeInputRef}
@@ -137,10 +166,7 @@ const VerifyNumber = ({ navigation, route }) => {
         {/* verify button */}
         <View className="mt-6">
           {isValid ? (
-            <CustomButton
-              label="Verify"
-              buttonFunc={handleVerifyCode}
-            />
+            <CustomButton label="Verify" buttonFunc={handleConfirmToken} />
           ) : (
             <CustomButton label="Verify" backgroundColor={secondaryColor} />
           )}

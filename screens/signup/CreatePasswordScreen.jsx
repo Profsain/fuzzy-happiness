@@ -4,6 +4,9 @@ import { CustomButton, CustomHeadings, PasswordInput } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import useReceivedData from "../../hooks/useReceivedData";
+// functions
+import handlePasswordChange from "../../utils/handlePasswordChange";
+import handleConfirmPasswordChange from "../../utils/handleConfirmPassword";
 
 const CreatePasswordScreen = ({ navigation }) => {
   // received data from previous screen
@@ -21,39 +24,6 @@ const CreatePasswordScreen = ({ navigation }) => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-
-  // handle password
-  const handlePasswordChange = (text) => {
-    setPassword(text.trim());
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
-
-    // validate password
-    if (text.length === 0) {
-      setPasswordError("Password is required");
-    } else if (text.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-    } else if (!passwordRegex.test(text)) {
-      setPasswordError(
-        "Password must contain at least one uppercase letter, one lowercase letter and one number"
-      );
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  // handle confirm password
-  const handleConfirmPasswordChange = (text) => {
-    setConfirmPassword(text.trim());
-    // validate confirm password
-    if (text.length === 0) {
-      setConfirmPasswordError("Confirm password is required");
-    } else if (text !== password) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError("");
-      setIsAllValid(true);
-    }
-  };
 
   // handle next btn
   const handleNext = () => {
@@ -81,7 +51,9 @@ const CreatePasswordScreen = ({ navigation }) => {
           handleState={handleState}
           placeholder="Enter Password"
           inputValue={password}
-          handleTextChange={handlePasswordChange}
+          handleTextChange={(text) =>
+            handlePasswordChange(text, setPassword, setPasswordError)
+          }
           error={passwordError}
         />
 
@@ -90,7 +62,15 @@ const CreatePasswordScreen = ({ navigation }) => {
           handleState={handleState}
           placeholder="Confirm Password"
           inputValue={confirmPassword}
-          handleTextChange={handleConfirmPasswordChange}
+          handleTextChange={(text) =>
+            handleConfirmPasswordChange(
+              text,
+              password,
+              setConfirmPassword,
+              setConfirmPasswordError,
+              setIsAllValid
+            )
+          }
           error={confirmPasswordError}
         />
 
