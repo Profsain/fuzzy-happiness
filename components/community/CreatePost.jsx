@@ -81,7 +81,7 @@ const CreatePost = ({ navigation, route }) => {
       });
 
       const data = await response.json();
-      console.log("Post Data", data);
+     
       navigation.goBack();
     } catch (error) {
       console.log(error);

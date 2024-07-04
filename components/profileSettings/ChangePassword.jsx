@@ -10,8 +10,15 @@ import { secondaryColor } from "../../utils/appstyle";
 import handlePasswordChange from "../../utils/handlePasswordChange";
 import handleConfirmPasswordChange from "../../utils/handleConfirmPassword";
 import handleEmailChange from "../../utils/handleEmailChange";
+import { useLogin } from "../../context/LoginProvider";
 
 const ChangePassword = ({ navigation }) => {
+  // extract from useLogin context
+  const { userProfile, token } = useLogin();
+
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
   const handleBackBtn = () => {
     // navigate back
     navigation.goBack();
@@ -34,26 +41,43 @@ const ChangePassword = ({ navigation }) => {
   const [processing, setProcessing] = useState(false); // to check if form is processing
 
   // handle change password
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     setProcessing(true);
 
-    // update password
+    // Prepare data to be sent
     const data = {
-      password,
-      email: currentEmail,
+      newPassword: password,
+      emailAddress: currentEmail,
     };
 
-    Alert.alert(
-      "Password Changed",
-      "Your password has been changed successfully",
-      [{ text: "OK", onPress: () => navigation.goBack() }]
-    );
+    // Send data to server
+    try {
+      const response = await fetch(
+        `${baseUrl}/user/change-password/${userProfile._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
-    // reset processing
-    setProcessing(false);
+      const result = await response.json();
 
-    // navigate to next screen
-    // navigation.navigate("PersonalInfoScreen", data);
+      if (response.status === 200) {
+        Alert.alert("Success", "Password changed successfully");
+        setProcessing(false);
+        navigation.goBack();
+      } else {
+        Alert.alert("Error", result.error || result.message);
+        setProcessing(false);
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred. Please try again");
+      setProcessing(false);
+    }
   };
 
   return (
@@ -111,7 +135,7 @@ const ChangePassword = ({ navigation }) => {
       <View className="mt-14">
         {/* loading spinner */}
         {processing && <LoadingSpinner />}
-        
+
         {!isAllValid ? (
           <CustomButton
             label="Change Password"

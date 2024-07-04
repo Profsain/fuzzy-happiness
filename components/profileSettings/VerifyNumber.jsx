@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase/compat/app";
-import { Box, Text, VStack } from "@gluestack-ui/themed";
+import { useLogin } from "../../context/LoginProvider";
+import { getItem } from "../../utils/asyncStorage";
+import { Box, Text } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { TouchableOpacity, SafeAreaView, View, Alert } from "react-native";
-// hooks
-import useReceivedData from "../../hooks/useReceivedData";
 import { BackTopBar } from "../home";
+import useReceivedData from "../../hooks/useReceivedData";
+import { primeryColor } from "../../utils/appstyle";
 
 const VerifyNumber = ({ navigation, route }) => {
+  // extract received data
   const receivedData = useReceivedData();
-  const phoneNumber = receivedData.phone;
-  const verificationId = receivedData.verificationId;
+
+  // extract context
+  const { userProfile, token } = useLogin();
+
+  // base url
+  const baseUrl = process.env.BASE_URL;
 
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
@@ -65,35 +72,44 @@ const VerifyNumber = ({ navigation, route }) => {
   };
 
   // handle confirm token
-  const handleConfirmToken = () => {
-    //  const credential = firebase.auth.PhoneAuthProvider.credential(
-    //    verificationId,
-    //    tokenValue
-    //  );
-    //  firebase
-    //    .auth()
-    //    .signInWithCredential(credential)
-    //    .then((result) => {
-    //      // do something with the result
-    //      if (result) {
-    //        const data = {
-    //          phoneNumber: phoneNumber,
-    //        };
+  const handleConfirmToken = async () => {
+    // get otp from local storage
+    const otp = await getItem("otp");
+   
+    try {
+      // verify otp
+      if (tokenValue == otp) {
+               // update phone number on the server
+        const updateData = {
+          phoneNumber: receivedData.phoneNumber,
+        };
 
-    //        navigation.replace("PersonalInfoScreen", data);
-    //      }
-    //    })
-    //    .catch((error) => {
-    //      // do something with the error
-    //      setError(error.message);
-    //      console.log("Error", error);
-    //    });
-    if (verificationId === "123456") {
-      Alert.alert("Success", "Phone Number Verified", [{ text: "OK" }]);
-      // navigate to personal info screen
-      navigation.navigate("PersonalInfoScreen");
-    } else {
-      setError("Failed to verify phone number. Please try again.");
+        const response = await fetch(
+          `${baseUrl}/user/update-user/${userProfile._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updateData),
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          Alert.alert("Success", result.message);
+          // navigate to personal info screen
+          navigation.navigate("PersonalInfoScreen");
+        } else {
+          Alert.alert("Error", result.error || result.message);
+        }
+      } else {
+        Alert.alert("Error", "Invalid Token Code");
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message);
     }
   };
 
@@ -107,7 +123,7 @@ const VerifyNumber = ({ navigation, route }) => {
 
       <View className="mt-14 flex items-center">
         <Text className="mt-6 text-center text-gray-500">
-          Enter the 6-digit code sent to {phoneNumber}
+          Enter the 6-digit code sent to {userProfile.emailAddress}
         </Text>
 
         {/* verification code input */}
@@ -150,13 +166,19 @@ const VerifyNumber = ({ navigation, route }) => {
                 {!showResend ? (
                   <Text>Resend in 0:{timer}</Text>
                 ) : (
-                  <Text
-                    size="sm"
-                    style={{ color: "#000", textAlign: "center" }}
-                    // onPress={handleResendToken}
+                  <TouchableOpacity
+                    onPress={() => {
+                      // navigate back to the ChangePhoneNumber screen
+                      navigation.navigate("ChangePhoneNumber");
+                    }}
                   >
-                    Resend
-                  </Text>
+                    <Text
+                      size="sm"
+                      style={{ color: { primeryColor }, textAlign: "center" }}
+                    >
+                      Resend
+                    </Text>
+                  </TouchableOpacity>
                 )}
               </Text>
             </Box>
