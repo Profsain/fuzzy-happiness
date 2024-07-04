@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
-import firebase from "firebase/compat/app";
 import { useLogin } from "../../context/LoginProvider";
 import { getItem } from "../../utils/asyncStorage";
 import { Box, Text } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
-import navigationToScreen from "../../utils/navigationUtil";
 import { TouchableOpacity, SafeAreaView, View, Alert } from "react-native";
 import { BackTopBar } from "../home";
 import useReceivedData from "../../hooks/useReceivedData";

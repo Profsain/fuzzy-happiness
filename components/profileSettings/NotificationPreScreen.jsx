@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLogin } from "../../context/LoginProvider";
 import { View, Text, SafeAreaView } from "react-native";
 import { BackTopBar } from "../home";
 import { Switch } from "@gluestack-ui/themed";
@@ -6,6 +7,12 @@ import { primeryColor, secondaryColor } from "../../utils/appstyle";
 import CustomSwitch from "../CustomSwitch";
 
 const NotificationPreScreen = ({ navigation }) => {
+  // extract context
+  const { userProfile, token } = useLogin();
+
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
   // handle back button
   const handleBackBtn = () => {
     // navigate back
@@ -13,11 +20,12 @@ const NotificationPreScreen = ({ navigation }) => {
   };
 
   // fetch current notification settings and set them to the state
+  const { enableSmsNotification, enableNotification, enableEmailNotification } = userProfile;
 
   // notification state
-  const [smsNotification, setSmsNotification] = useState(false);
-  const [pushNotification, setPushNotification] = useState(false);
-  const [emailNotification, setEmailNotification] = useState(false);
+  const [smsNotification, setSmsNotification] = useState(enableSmsNotification);
+  const [pushNotification, setPushNotification] = useState(enableNotification);
+  const [emailNotification, setEmailNotification] = useState(enableEmailNotification);
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -41,7 +49,7 @@ const NotificationPreScreen = ({ navigation }) => {
         />
 
         <CustomSwitch
-          switchText="Emain notifications"
+          switchText="Email notifications"
           notification={emailNotification}
           setNotification={setEmailNotification}
         />
