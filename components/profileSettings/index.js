@@ -12,4 +12,5 @@ export { default as ChangePhoneNumber } from './ChangePhoneNumber';
 export { default as VerifyNumber } from './VerifyNumber';
 export { default as ChangePassword } from './ChangePassword';
 export { default as ChooseNotificationType } from './ChooseNotificationType';
+export { default as AllUsersList } from './AllUsersList';
 

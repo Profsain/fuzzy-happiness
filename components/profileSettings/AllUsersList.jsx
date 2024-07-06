@@ -11,7 +11,7 @@ import {
 import { BackTopBar } from "../home";
 import LoadingSpinner from "../LoadingSpinner";
 
-const RestrictedAccount = ({ navigation }) => {
+const AllUsersList = ({ navigation }) => {
   // handle back button
   const handleBackBtn = () => {
     // navigate back
@@ -24,10 +24,10 @@ const RestrictedAccount = ({ navigation }) => {
   // extract from useLogin context
   const { userProfile, token } = useLogin();
   // restricted accounts list
+    const restrictedAccounts = userProfile.restrictedAccount || [];
 
   // component state
   const [userList, setUserList] = useState([]);
-  alert(userList.length)
   const [loading, setLoading] = useState(false);
 
   // handle fetch all users excluding logged in user
@@ -36,27 +36,23 @@ const RestrictedAccount = ({ navigation }) => {
     const userId = userProfile._id;
 
     try {
-      const response = await fetch(
-        `${baseUrl}/user/get-restricted-account/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseUrl}/user/all-users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response) {
         const data = await response.json();
-        alert(data.length)
         // filter out restricted users
-        // const filteredData = data.filter(
-        //   (user) => !restrictedAccounts.includes(user._id)
-        // );
+        const filteredData = data.filter(
+          (user) => !restrictedAccounts.includes(user._id)
+        );
         // update state
         setLoading(false);
-        setUserList(data);
+        setUserList(filteredData);
       } else {
         console.log("Failed to fetch users");
         setLoading(false);
@@ -72,12 +68,12 @@ const RestrictedAccount = ({ navigation }) => {
     fetchAllUsers();
   }, []);
 
-  // handle remove account
-  const removeAccount = async (restrictedUserId) => {
+  // handle add account
+  const restrictAccount = async (restrictedUserId) => {
     const userId = userProfile._id;
 
     try {
-      const response = await fetch(`${baseUrl}/user/remove-restricted-account`, {
+      const response = await fetch(`${baseUrl}/user/restricted-account`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -89,7 +85,7 @@ const RestrictedAccount = ({ navigation }) => {
       if (response.ok) {
         Alert.alert(
           "User Restricted",
-          "Restricted remove successfully."
+          "The user has been restricted successfully."
         );
         // Remove the restricted user from the local userList state
         setUserList((prevList) =>
@@ -97,7 +93,7 @@ const RestrictedAccount = ({ navigation }) => {
         );
       } else {
         Alert.alert(
-          "Failed to remove Restrict User",
+          "Failed to Restrict User",
           "There was a problem restricting the user."
         );
       }
@@ -119,23 +115,27 @@ const RestrictedAccount = ({ navigation }) => {
       <Text>
         {item.firstName} {item.lastName}
       </Text>
-      <TouchableOpacity onPress={() => removeAccount(item._id)}>
-        <Text style={{ color: "red" }}>X</Text>
+      <TouchableOpacity onPress={() => restrictAccount(item._id)}>
+        <Text style={{ color: "red" }}>Restrict</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      <BackTopBar
+        headline="My Connections"
+        icon2=""
+        func={handleBackBtn}
+      />
 
       <View className="flex-row justify-between items-center mt-8">
         <TouchableOpacity>
           <Text className="text-slate-500 font-bold"></Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate("AllUsersList")}>
-          <Text className="text-slate-500 font-bold">Add</Text>
+        <TouchableOpacity onPress={handleBackBtn}>
+          <Text className="text-slate-500 font-bold">Close</Text>
         </TouchableOpacity>
       </View>
 
@@ -143,7 +143,7 @@ const RestrictedAccount = ({ navigation }) => {
         {loading ? (
           <LoadingSpinner />
         ) : userList.length === 0 ? (
-          <Text>No restricted account</Text>
+          <Text>No connections</Text>
         ) : (
           <FlatList
             data={userList}
@@ -156,5 +156,4 @@ const RestrictedAccount = ({ navigation }) => {
   );
 };
 
-
-export default RestrictedAccount;
+export default AllUsersList;

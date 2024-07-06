@@ -16,6 +16,7 @@ import {
   VerifyNumber,
   ChangePassword,
   ChooseNotificationType,
+  AllUsersList,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -105,6 +106,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="ChooseNotificationType"
         component={ChooseNotificationType}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AllUsersList"
+        component={AllUsersList}
         options={{ headerShown: false }}
         navigation={navigation}
       />
