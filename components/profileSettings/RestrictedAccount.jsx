@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import {
   View,
@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { BackTopBar } from "../home";
 import LoadingSpinner from "../LoadingSpinner";
 
@@ -22,12 +23,11 @@ const RestrictedAccount = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-  const { userProfile, token } = useLogin();
+  const { userProfile, setUserProfile, token } = useLogin();
   // restricted accounts list
 
   // component state
   const [userList, setUserList] = useState([]);
-  alert(userList.length)
   const [loading, setLoading] = useState(false);
 
   // handle fetch all users excluding logged in user
@@ -49,11 +49,6 @@ const RestrictedAccount = ({ navigation }) => {
 
       if (response) {
         const data = await response.json();
-        alert(data.length)
-        // filter out restricted users
-        // const filteredData = data.filter(
-        //   (user) => !restrictedAccounts.includes(user._id)
-        // );
         // update state
         setLoading(false);
         setUserList(data);
@@ -68,33 +63,44 @@ const RestrictedAccount = ({ navigation }) => {
   };
 
   // call fetch
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllUsers();
+    }, [])
+  );
 
   // handle remove account
   const removeAccount = async (restrictedUserId) => {
     const userId = userProfile._id;
 
     try {
-      const response = await fetch(`${baseUrl}/user/remove-restricted-account`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, restrictedUserId }),
-      });
+      const response = await fetch(
+        `${baseUrl}/user/remove-restricted-account`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, restrictedUserId }),
+        }
+      );
 
       if (response.ok) {
-        Alert.alert(
-          "User Restricted",
-          "Restricted remove successfully."
-        );
+        Alert.alert("User Restricted", "Restricted remove successfully.");
+
         // Remove the restricted user from the local userList state
         setUserList((prevList) =>
           prevList.filter((user) => user._id !== restrictedUserId)
         );
+        
+        // Update the userProfile state
+        setUserProfile((prevProfile) => ({
+          ...prevProfile,
+          restrictedAccount: prevProfile.restrictedAccount.filter(
+            (id) => id !== restrictedUserId
+          ),
+        }));
       } else {
         Alert.alert(
           "Failed to remove Restrict User",
@@ -155,6 +161,5 @@ const RestrictedAccount = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 
 export default RestrictedAccount;

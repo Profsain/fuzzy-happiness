@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import {
   View,
@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { BackTopBar } from "../home";
 import LoadingSpinner from "../LoadingSpinner";
 
@@ -22,7 +23,8 @@ const AllUsersList = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-  const { userProfile, token } = useLogin();
+    const { userProfile, token } = useLogin();
+    
   // restricted accounts list
     const restrictedAccounts = userProfile.restrictedAccount || [];
 
@@ -64,9 +66,11 @@ const AllUsersList = ({ navigation }) => {
   };
 
   // call fetch
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllUsers();
+    }, [])
+  );
 
   // handle add account
   const restrictAccount = async (restrictedUserId) => {

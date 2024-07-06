@@ -4,13 +4,21 @@ import {
   Text,
   SafeAreaView,
   TextInput,
-  TouchableOpacity,
   Alert,
 } from "react-native";
+import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
-import { secondaryColor } from "../../utils/appstyle";
+import LoadingSpinner from "../LoadingSpinner";
+import CustomButton from "../CustomButton";
+import { secondBgColor } from "../../utils/appstyle";
 
-const ReportProblem = () => {
+const ReportProblem = ({ navigation }) => {
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // extract from useLogin context
+  const { userProfile, token } = useLogin();
+
   const [reportProblem, setReportProblem] = useState("");
   const [reportError, setReportError] = useState("");
   const [isValid, setIsValid] = useState(false);
@@ -43,9 +51,56 @@ const ReportProblem = () => {
   };
 
   // handle send report
-  const handleSendReport = () => {
-    // send report
-    Alert.alert("Report Sent", "Your report has been sent successfully");
+  const handleSendReport = async () => {
+    setReportSent(true);
+
+    // use html template for email
+    const message = `
+  <div style="font-family: Arial, sans-serif; color: #333;">
+    <h1 style="color: #f9784b;">App Problems Report</h1>
+
+    <p>Dear Support Team,</p>
+    <p>Report from ${userProfile.firstName} | Phone Number:  ${userProfile.phoneNumber} | Email Address: ${userProfile.emailAddress}.</p>
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <p>Report Problem: ${reportProblem}</p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <p style="font-size: 12px; color: #666;">Best regards,<br>${userProfile.firstName} ${userProfile.lastName}</p>
+  </div>
+`;
+
+    const emailAddress = "admin@splinxplanet.com";
+
+    const data = {
+      email: emailAddress,
+      subject: "SplinX Planet User Report Problem",
+      html: message,
+    };
+
+    try {
+      const response = await fetch(`${baseUrl}/email/send-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setReportSent(false);
+        // show success alert and navigate to AccountSettings 
+        Alert.alert("Report Sent", "Report sent successfully", [
+          { text: "OK", onPress: () => navigation.navigate("AccountSettings") },
+        ]);
+      } else {
+        setReportSent(false);
+        Alert.alert("error", result.message);
+      }
+    } catch (error) {
+      Alert.alert("error", error);
+    }
   };
 
   return (
@@ -55,7 +110,7 @@ const ReportProblem = () => {
       <View className="mt-14 flex">
         <TextInput
           multiline={true}
-          numberOfLines={4}
+          numberOfLines={8}
           placeholder="Briefly explain what occur or what is not working as expected"
           className="border-b-2 border-slate-100 mt-2 text-lg"
           value={reportProblem}
@@ -66,12 +121,18 @@ const ReportProblem = () => {
           <Text className="text-red-500 text-sm">{reportError}</Text>
         )}
 
-        <TouchableOpacity
-          onPress={handleSendReport}
-          className="bg-blue-500 py-3 mt-14 rounded-lg"
-        >
-          <Text className="text-white text-center text-lg">Send Report</Text>
-        </TouchableOpacity>
+        <View className="mt-28">
+          {reportSent && <LoadingSpinner />}
+
+          {isValid ? (
+            <CustomButton label="Submit Report" buttonFunc={handleSendReport} />
+          ) : (
+            <CustomButton
+              label="Submit Report"
+              backgroundColor={secondBgColor}
+            />
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );
