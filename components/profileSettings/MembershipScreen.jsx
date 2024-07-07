@@ -30,7 +30,7 @@ const MembershipScreen = ({navigation}) => {
     
     // navigate to subscription screen and pass data
     navigation.navigate("SubscriptionScreen", { subscription });
-    alert(subscription.description);
+
   };
 
   return (
@@ -47,7 +47,7 @@ const MembershipScreen = ({navigation}) => {
               >
                 <View>
                   <Text className="font-medium text-lg">Platinum</Text>
-                  <Text>3 days trial then £9.99/month.</Text>
+                  <Text>3 days trial then $9.99/month.</Text>
                 </View>
                 <RadioIndicator style={styles.radioIndicator}>
                   <RadioIcon style={styles.radioIcon} as={CircleIcon} />
@@ -61,7 +61,7 @@ const MembershipScreen = ({navigation}) => {
               >
                 <View>
                   <Text className="font-medium text-lg">Platinum</Text>
-                  <Text>3 days trial then £53.94/6 months.</Text>
+                  <Text>3 days trial then $53.94/6 months.</Text>
                 </View>
                 <RadioIndicator style={styles.radioIndicator}>
                   <RadioIcon style={styles.radioIcon} as={CircleIcon} />
@@ -75,7 +75,7 @@ const MembershipScreen = ({navigation}) => {
               >
                 <View>
                   <Text className="font-medium text-lg">Platinum</Text>
-                  <Text>3 days trial then £95.88/1 year.</Text>
+                  <Text>3 days trial then $95.88/1 year.</Text>
                 </View>
                 <RadioIndicator style={styles.radioIndicator}>
                   <RadioIcon style={styles.radioIcon} as={CircleIcon} />
