@@ -17,6 +17,7 @@ import {
   ChangePassword,
   ChooseNotificationType,
   AllUsersList,
+  SubscriptionScreen,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -90,7 +91,7 @@ const SettingScreen = () => {
         options={{ headerShown: false }}
         navigation={navigation}
       />
-      
+
       <Stack.Screen
         name="VerifyNumber"
         component={VerifyNumber}
@@ -112,6 +113,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="AllUsersList"
         component={AllUsersList}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="SubscriptionScreen"
+        component={SubscriptionScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />

@@ -10,7 +10,7 @@ import { BackTopBar } from "../home";
 import useReceivedData from "../../hooks/useReceivedData";
 import { primeryColor } from "../../utils/appstyle";
 
-const VerifyNumber = ({ navigation, route }) => {
+const VerifyNumber = ({ navigation }) => {
   // extract received data
   const receivedData = useReceivedData();
 

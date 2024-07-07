@@ -77,10 +77,8 @@ const AccountSettings = ({ navigation }) => {
           iconLeft=""
           btnFunc={handleShareUserProfile}
         />
-        <View
-          className="flex flex-row justify-between items-center border px-4 rounded-xl border-slate-200 my-3"
-        >
-          <Text className=" text-xl">Location</Text>
+        <View className="flex flex-row justify-between items-center border px-4 rounded-xl border-slate-200 my-3">
+          <Text className="text-xl">Location</Text>
           <Switch value={isLocationEnabled} onValueChange={toggleLocation} />
         </View>
         <OptionButton
