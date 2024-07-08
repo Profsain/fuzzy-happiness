@@ -12,6 +12,7 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { View, TouchableOpacity, Alert } from "react-native";
 import { BackTopBar } from "../../components/home";
+import sendPushNofitication from "../../utils/sendPushNotification"
 
 const ChangePhoneNumber = ({ navigation }) => {
   // extract context
@@ -76,6 +77,13 @@ const ChangePhoneNumber = ({ navigation }) => {
     };
 
     try {
+      // send otp to phone
+      await sendPushNofitication(
+        userProfile._id,
+        "Splinx OTP",
+        `Your OTP is ${otp}`
+      );
+      
       const response = await fetch(`${baseUrl}/email/send-email`, {
         method: "POST",
         headers: {
@@ -98,9 +106,6 @@ const ChangePhoneNumber = ({ navigation }) => {
     } catch (error) {
       Alert.alert("error", error);
     }
-
-    // send otp to phone number
-    // navigate to verify number screen
   };
 
   const handleGetToken = () => {

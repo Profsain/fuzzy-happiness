@@ -5,6 +5,7 @@ import { BackTopBar } from "../home";
 import OptionButton from "./component/OptionButton";
 import { useLogin } from "../../context/LoginProvider";
 import handleSocialShare from "../../utils/socialSharefunc";
+import { primeryColor, secondaryColor } from "../../utils/appstyle";
 
 const AccountSettings = ({ navigation }) => {
   // handle back button
@@ -79,7 +80,12 @@ const AccountSettings = ({ navigation }) => {
         />
         <View className="flex flex-row justify-between items-center border px-4 rounded-xl border-slate-200 my-3">
           <Text className="text-xl">Location</Text>
-          <Switch value={isLocationEnabled} onValueChange={toggleLocation} />
+          <Switch
+            value={isLocationEnabled}
+            onValueChange={toggleLocation}
+            trackColor={{ false: "#767577", true: secondaryColor }}
+            thumbColor={isLocationEnabled ? primeryColor : "#f4f3f4"}
+          />
         </View>
         <OptionButton
           btnText="Report a Problem"

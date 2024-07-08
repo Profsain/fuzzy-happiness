@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// native notification
+import { registerIndieID } from "native-notify";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { Alert, Image, TouchableOpacity } from "react-native";
 import {
@@ -15,6 +17,23 @@ import { useNavigation } from "@react-navigation/native";
 
 const LoginInputScreen = () => {
   const navigation = useNavigation();
+
+  // native notify token
+  const token = process.env.NATIVE_NOTIFY_TOKEN;
+
+  // register user device
+  // Native Notify Indie Push Registration Code
+  const [userId, setUserId] = useState("");
+
+  const handleRegisterIndieID = async () => {
+    try {
+      await registerIndieID(userId, 22245, token);
+    } catch (error) {
+      console.log("Error unregistering device", error);
+    }
+  };
+
+  // End of Native Notify Code
 
   // base url
   const baseUrl = process.env.BASE_URL;
@@ -85,16 +104,13 @@ const LoginInputScreen = () => {
 
     // login logic
     try {
-      const response = await fetch(
-        `${baseUrl}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userInfo),
-        }
-      );
+      const response = await fetch(`${baseUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userInfo),
+      });
 
       if (response.ok) {
         // Login successful
@@ -105,6 +121,10 @@ const LoginInputScreen = () => {
         setUserProfile(data.userProfile);
         setIsLogin(true);
         setToken(data.token);
+
+        // set user id and call handleRegisterIndieID
+        setUserId(data.userProfile._id);
+        handleRegisterIndieID();
 
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");

@@ -69,7 +69,7 @@ const ReportProblem = ({ navigation }) => {
   </div>
 `;
 
-    const emailAddress = "admin@splinxplanet.com";
+    const emailAddress = "splinxplanent@gmail.com";
 
     const data = {
       email: emailAddress,
