@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLogin } from "../../context/LoginProvider";
-import { getItem } from "../../utils/asyncStorage";
+import { getItem, removeItem } from "../../utils/asyncStorage";
 import { Box, Text } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
@@ -97,6 +97,10 @@ const VerifyNumber = ({ navigation }) => {
 
         if (response.ok) {
           Alert.alert("Success", result.message);
+
+          // remove otp
+          await removeItem("otp");
+          
           // navigate to personal info screen
           navigation.navigate("PersonalInfoScreen");
         } else {
