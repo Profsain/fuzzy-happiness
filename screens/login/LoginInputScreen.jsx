@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // native notification
 import { registerIndieID } from "native-notify";
+import axios from "axios";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { Alert, Image, TouchableOpacity } from "react-native";
 import {
@@ -14,24 +15,13 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
+import sendPushNotification from "../../utils/sendPushNotification"
 
 const LoginInputScreen = () => {
   const navigation = useNavigation();
 
   // native notify token
-  const token = process.env.NATIVE_NOTIFY_TOKEN;
-
-  // register user device
-  // Native Notify Indie Push Registration Code
-  const [userId, setUserId] = useState("");
-
-  const handleRegisterIndieID = async () => {
-    try {
-      await registerIndieID(userId, 22245, token);
-    } catch (error) {
-      console.log("Error unregistering device", error);
-    }
-  };
+  const notifyToken = process.env.NATIVE_NOTIFY_TOKEN;
 
   // End of Native Notify Code
 
@@ -123,8 +113,12 @@ const LoginInputScreen = () => {
         setToken(data.token);
 
         // set user id and call handleRegisterIndieID
-        setUserId(data.userProfile._id);
-        handleRegisterIndieID();
+        // set user id
+        const userId = data.userProfile._id;
+
+        await registerIndieID(`${userId}`, 22245, notifyToken);
+        sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
+        // End of Native Notify Code
 
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");

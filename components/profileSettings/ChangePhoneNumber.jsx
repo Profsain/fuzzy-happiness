@@ -1,8 +1,6 @@
 import React, { useState, useRef } from "react";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { firebaseConfig } from "../../config";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+// import "firebase/compat/auth";
+import axios from "axios";
 import { useLogin } from "../../context/LoginProvider";
 import { setItem } from "../../utils/asyncStorage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
@@ -12,7 +10,7 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { View, TouchableOpacity, Alert } from "react-native";
 import { BackTopBar } from "../../components/home";
-import sendPushNofitication from "../../utils/sendPushNotification"
+import sendPushNotification from "../../utils/sendPushNotification";
 
 const ChangePhoneNumber = ({ navigation }) => {
   // extract context
@@ -28,7 +26,6 @@ const ChangePhoneNumber = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
-  const recaptchaVerifier = useRef(null);
 
   const handleChangeValue = (text) => {
     setPhoneValue(text);
@@ -76,14 +73,8 @@ const ChangePhoneNumber = ({ navigation }) => {
       html: message,
     };
 
+    
     try {
-      // send otp to phone
-      await sendPushNofitication(
-        userProfile._id,
-        "Splinx OTP",
-        `Your OTP is ${otp}`
-      );
-      
       const response = await fetch(`${baseUrl}/email/send-email`, {
         method: "POST",
         headers: {
@@ -95,6 +86,9 @@ const ChangePhoneNumber = ({ navigation }) => {
 
       const result = await response.json();
       if (response.ok) {
+        // send otp to phone
+        sendPushNotification(userProfile._id, "Splinx Planet", `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`);
+        
         setLoading(false);
         navigationToScreen(navigation, "VerifyNumber", {
           phoneNumber,
