@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import sendPushNotification from "../../utils/sendPushNotification"
 
 const LoginInputScreen = () => {
+
+  // navigation
   const navigation = useNavigation();
 
   // native notify token
@@ -117,7 +119,7 @@ const LoginInputScreen = () => {
         const userId = data.userProfile._id;
 
         await registerIndieID(`${userId}`, 22245, notifyToken);
-        sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
+        // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
         // End of Native Notify Code
 
         //navigate to TabNavigation Screen

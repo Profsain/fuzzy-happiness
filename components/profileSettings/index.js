@@ -14,4 +14,6 @@ export { default as ChangePassword } from './ChangePassword';
 export { default as ChooseNotificationType } from './ChooseNotificationType';
 export { default as AllUsersList } from './AllUsersList';
 export { default as SubscriptionScreen } from './SubscriptionScreen';
+export { default as PaymentScreen } from './PaymentScreen';
+export { default as PaymentSuccessScreen } from './PaymentSuccessScreen';
 

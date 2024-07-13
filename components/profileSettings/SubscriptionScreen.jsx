@@ -7,18 +7,32 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
+import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
-// mock data
-import subscriptionData from "./subscriptionData";
+import LoadingSpinner from "../LoadingSpinner";
+// flutterwave integration
+import { WebView } from "react-native-webview";
+
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import { AntDesign } from "@expo/vector-icons";
 
 const SubscriptionScreen = ({ navigation, route }) => {
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // extract from useLogin context
+  const { userProfile } = useLogin();
+  const { emailAddress, firstName, lastName, phoneNumber } = userProfile;
+
   const [activeTab, setActiveTab] = useState("Platinum");
-    const receivedData = route.params.subscription;
-    const {price, description} = receivedData;
+  const [planData, setPlanData] = useState({});
+  const [processing, setProcessing] = useState(false);
+
+  const receivedData = route.params.subscription;
+  const { price, amount, description, planName, interval, id } = receivedData;
 
   // handle back button
   const handleBackBtn = () => {
@@ -26,10 +40,101 @@ const SubscriptionScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
+  // handle create-plan request
+  const handleCreatePlan = async (planName, amount, interval) => {
+    // call create-plan and get the plan id
+    try {
+      const data = {
+        name: planName,
+        amount,
+        interval,
+        currency: "USD",
+      };
+
+      const response = await fetch(`${baseUrl}/flw-api/create-plan`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // update state
+        setPlanData(data);
+        console.log("Plan created successfully");
+        return data;
+      } else {
+        console.log("Failed to create plan");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const initiatePayment = async (
+    amount,
+    email,
+    name,
+    phonenumber,
+    description,
+    payment_plan
+  ) => {
+
+    try {
+      const response = await fetch(`${baseUrl}/flw-api/create-payment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount,
+          currency: "USD",
+          email,
+          name,
+          phonenumber,
+          description,
+          payment_plan,
+        }),
+      });
+
+      const data = await response.json();
+      const { link } = data.data;
+      // alert("Payment link: " + link);
+      navigation.navigate("PaymentScreen", { paymentLink: link });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // handle subscription
-  const handleSubscription = () => {
-    // navigate to subscription screen
-    alert(values);
+  const handleSubscription = async () => {
+    setProcessing(true);
+    try {
+      const plan = await handleCreatePlan(planName, amount, interval);
+
+      if (plan && plan.data.id) {
+      
+        await initiatePayment(
+          plan.data.amount,
+          emailAddress,
+          `${firstName} ${lastName}`,
+          phoneNumber,
+          planName,
+          plan.data.id
+        );
+      } else {
+        console.log("Failed to create payment");
+        setProcessing(false);
+      }
+    } catch (error) {
+      Alert.alert("Failed to subscribe");
+      setProcessing(false);
+    }
+
+    // set processing to false
+    setProcessing(false);
   };
 
   return (
@@ -124,10 +229,18 @@ const SubscriptionScreen = ({ navigation, route }) => {
               </View>
 
               {/* subscribe button */}
-              <View className="my-8">
-                <CustomButton label="Subscribe Now" />
+              <View className="mt-8 mb-16">
+                {/* show loading spinner */}
+                {processing ? (
+                  <LoadingSpinner />
+                ) : (
+                  <CustomButton
+                    label="Subscribe Now"
+                    buttonFunc={handleSubscription}
+                  />
+                )}
 
-                <Text>
+                <Text className="mt-8">
                   This is a 12 month plan. By proceeding you have read and agree
                   to the Terms and Conditions.
                 </Text>
@@ -200,6 +313,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
               {/* subscribe button */}
               <View className="my-8">
+                {/* flutterwave component */}
                 <CustomButton label="Upgrade Now" />
 
                 <Text>

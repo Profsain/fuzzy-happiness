@@ -18,6 +18,8 @@ import {
   ChooseNotificationType,
   AllUsersList,
   SubscriptionScreen,
+  PaymentScreen,
+  PaymentSuccessScreen,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -119,6 +121,18 @@ const SettingScreen = () => {
       <Stack.Screen
         name="SubscriptionScreen"
         component={SubscriptionScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="PaymentScreen"
+        component={PaymentScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="PaymentSuccessScreen"
+        component={PaymentSuccessScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />
