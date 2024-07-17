@@ -112,7 +112,19 @@ const SubscriptionScreen = ({ navigation, route }) => {
   const handleSubscription = async () => {
     setProcessing(true);
     try {
-      const plan = await handleCreatePlan(planName, amount, interval);
+      //check activeTab is Baller
+      // pass planName, amount, interval direct
+      let plan = null;
+      if (activeTab === "Platinum") {
+        plan = await handleCreatePlan(planName, amount, interval);
+      } else {
+        const planName =
+          "Splinx-Planet yearly subscription plan: Ballers upgrade 29.99 usd/month";
+        const amount = 26.99;
+        const interval = "monthly"
+        plan = await handleCreatePlan(planName, amount, interval);
+      }
+      // const plan = await handleCreatePlan(planName, amount, interval);
 
       if (plan && plan.data.id) {
       
@@ -121,7 +133,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
           emailAddress,
           `${firstName} ${lastName}`,
           phoneNumber,
-          planName,
+          plan.data.name, // get planName from plan.data
           plan.data.id
         );
       } else {
@@ -313,8 +325,15 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
               {/* subscribe button */}
               <View className="my-8">
-                {/* flutterwave component */}
-                <CustomButton label="Upgrade Now" />
+                {/* show loading spinner */}
+                {processing ? (
+                  <LoadingSpinner />
+                ) : (
+                  <CustomButton
+                    label="Subscribe Now"
+                    buttonFunc={handleSubscription}
+                  />
+                )}
 
                 <Text>
                   This is a 12 month plan. By proceeding you have read and agree

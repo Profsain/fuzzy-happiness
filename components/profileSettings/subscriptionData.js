@@ -34,7 +34,7 @@
     },
     {
       id: 4,
-      planName: "Splinx-Planet yearly subscription plan: Ballers upgrade 359.88 usd/year",
+      planName: "Splinx-Planet yearly subscription plan: Ballers upgrade 29.99 usd/month",
       type: "yearly",
       period: "12 months",
       price: "$29.99",
