@@ -102,6 +102,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
       const data = await response.json();
       const { link } = data.data;
       // alert("Payment link: " + link);
+      // const id = link.split("/").pop();
       navigation.navigate("PaymentScreen", { paymentLink: link });
     } catch (error) {
       console.error(error);

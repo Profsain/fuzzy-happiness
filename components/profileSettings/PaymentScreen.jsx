@@ -8,6 +8,12 @@ const PaymentScreen = ({navigation, route}) => {
   const handleNavigationStateChange = (navState) => {
     // check how to get and pass navState
     if (navState.url.includes("https://your-app.com/payment-success")) {
+
+      // get id
+      const id = paymentLink.split("/").pop();
+      alert("Payment successful with id: " + id);
+      // verify transaction
+      // update user subscription
       navigation.navigate("PaymentSuccessScreen");
     }
   };

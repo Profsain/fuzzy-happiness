@@ -25,7 +25,7 @@
       id: 3,
       planName: "Splinx-Planet yearly subscription plan: Platinum 95.88 usd/year",
       type: "one-year",
-      interval: "monthly",
+      interval: "yearly",
       period: "12 months",
       price: "$95.88/year",
       amount: 95.88,
