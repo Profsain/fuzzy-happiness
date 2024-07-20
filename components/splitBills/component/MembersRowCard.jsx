@@ -8,12 +8,19 @@ import {
 } from "@gluestack-ui/themed";
 import { primeryColor } from "../../../utils/appstyle";
 
-const MembersRowCard = ({ imgUrl, memberName }) => {
+const MembersRowCard = ({
+  imgUrl,
+  memberName,
+  memberId,
+  toggleMemberSelection,
+}) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
+    toggleMemberSelection(memberId);
   };
+  
   return (
     <View className="flex flex-row justify-between items-center border p-2 mb-3 rounded-md border-gray-300">
       <View className="flex flex-row items-center">

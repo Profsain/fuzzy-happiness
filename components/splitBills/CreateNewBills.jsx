@@ -7,13 +7,17 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserEvents } from "../../store/eventSlice";
-import { fetchUsersByIds, selectAllUsers } from "../../store/fetchUsersByIdSlice";
+import {
+  fetchUsersByIds,
+  selectAllUsers,
+} from "../../store/fetchUsersByIdSlice";
 import { useLogin } from "../../context/LoginProvider";
 import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { toggleOpenCreateNewBill } from "../../store/openScreenSlice";
@@ -42,7 +46,6 @@ const CreateNewBills = () => {
     dispatch(fetchUserEvents(userId));
   }, [userId]);
 
-
   // form state
   const [selectedEvent, setSelectedEvent] = useState(null);
   // find selected event
@@ -57,7 +60,7 @@ const CreateNewBills = () => {
   // check if event is selected and update form state
   useEffect(() => {
     if (event) {
-      setEventCost(event.eventCost || 0.0);
+      setEventCost("$" + event.eventCost || 0.0);
       setEventName(event.eventName);
       setCreatedBy(userProfile.firstName + " " + userProfile.lastName);
       // event members id. This will be used to fetch members
@@ -70,57 +73,140 @@ const CreateNewBills = () => {
   const users = useSelector(selectAllUsers);
   const userStatus = useSelector((state) => state.users.status);
   const userError = useSelector((state) => state.users.error);
-  // alert(JSON.stringify(userError));
 
-  // fetch user info
-  const fetchUsers = async () => {
+  // handle fetch all users excluding logged in user
+  const [userList, setUserList] = useState([]);
+  const fetchAllUsers = async () => {
+    const userId = userProfile._id;
+
     try {
-      const response = await fetch(`${baseUrl}/user/fetch-users-info`, {
-        method: "POST",
+      const response = await fetch(`${baseUrl}/user/all-users/${userId}`, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userIds: membersId }),
       });
 
-      if (!response.ok) {
-        throw new Error(JSON.stringify(response));
+      if (response) {
+        const data = await response.json();
+        // update state
+        setUserList(data);
+      } else {
+        console.log("Failed to fetch users");
       }
-
-      const data = await response.json();
-      alert(JSON.stringify(data));
-      return data.users;
     } catch (error) {
-      alert(JSON.stringify(error));
-      console.error("Failed to fetch users", error);
+      console.log("An error occurred while fetching users", error);
     }
   };
-
+  // call fetch
   useEffect(() => {
-    if (membersId.length > 0) {
-      // dispatch(fetchUsersByIds(membersId));
-      fetchUsers();
-    }
+    fetchAllUsers();
   }, [membersId]);
+
+  // fetch all user and filter members
+  // map through userList list and filter members
+  const members = userList.filter((user) => membersId.includes(user._id));
+  // alert(JSON.stringify(members));
 
   const [selectedMembers, setSelectedMembers] = useState([]);
 
+  // handle select and deselect members
+  const toggleMemberSelection = (memberId) => {
+    setSelectedMembers((prevSelectedMembers) =>
+      prevSelectedMembers.includes(memberId)
+        ? prevSelectedMembers.filter((id) => id !== memberId)
+        : [...prevSelectedMembers, memberId]
+    );
+  };
+
+  // set split percentage based on the number of selected members
+  useEffect(() => {
+    if (selectedMembers.length > 0) {
+      const percent = 100 / selectedMembers.length;
+      setSplitPercentage(percent);
+    } else {
+      setSplitPercentage(0);
+    }
+  }, [selectedMembers]);
+
+  // alert(JSON.stringify(splitPercentage));
   // handle back to prev screen when device back button press
   useBackHandler([() => dispatch(toggleOpenCreateNewBill())]);
 
   // handle create new bill
-  const handleCreateNewBill = () => {
-    // check if user is subscriber
-    // create new bill
-    Alert.alert("create new bill");
+  const handleCreateNewBill = async () => {
+    if (!selectedEvent) {
+      Alert.alert("Error", "Please select an event.");
+      return;
+    }
+
+    if (selectedMembers.length === 0) {
+      Alert.alert(
+        "Error",
+        "Please select at least one member to split the cost."
+      );
+      return;
+    }
+
+    // Prepare the split percentages
+    const splitPercentages = {};
+    selectedMembers.forEach((memberId) => {
+      splitPercentages[memberId] = 100 / selectedMembers.length;
+    });
+
+    // Prepare the request body
+    const requestBody = {
+      splitPercentages,
+    };
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/event/split-cost/${selectedEvent}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Event cost split successfully.");
+        // clear form state
+        setSelectedEvent(null);
+        setEventCost("");
+        setEventName("");
+        setCreatedBy("");
+        setSplitPercentage(0);
+        setNote("");
+        setSelectedMembers([]);
+
+        // navigate to split bill screen
+        dispatch(toggleOpenCreateNewBill());
+      } else {
+        Alert.alert(
+          "Error",
+          data.message || "An error occurred while splitting the cost."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while splitting the cost.");
+      console.log(error);
+    }
   };
 
   // event items
-  const eventItems = events.map((event) => ({
-    label: event.eventName,
-    value: event._id,
-  }));
+  const eventItems = events
+    .filter((event) => !event.isEventCostSplitted)
+    .map((event) => ({
+      label: event.eventName,
+      value: event._id,
+    }));
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -143,15 +229,20 @@ const CreateNewBills = () => {
 
           <CustomInput placeholder="Event Name" inputValue={eventName} />
 
-          <CustomInput placeholder="Total Amount" inputValue={eventCost} />
+          <View className="px-2 py-3 border border-slate-300 rounded-lg mb-4">
+            <Text className="text-lg">{ eventCost}</Text>
+          </View>
 
           <CustomInput placeholder="Created by" inputValue={createdBy} />
-
-          <CustomInput
-            placeholder="Split Percentage"
-            keyboardType="numeric"
-            inputValue={splitPercentage}
-          />
+          {/* show event split percent */}
+          <View>
+            {splitPercentage > 0 && (
+              <Text className="mb-6 text-orange-400">
+                {" "}
+                Each members pays {splitPercentage}% of the event cost{" "}
+              </Text>
+            )}
+          </View>
 
           <TextInput
             multiline
@@ -169,24 +260,33 @@ const CreateNewBills = () => {
             action=""
           />
 
-          <MembersRowCard />
-          <MembersRowCard
-            imgUrl="https://img.freepik.com/free-photo/portrait-young-handsome-african-man-blue-wall_176420-2339.jpg?t=st=1710626498~exp=1710630098~hmac=96457b13d44d42d906ab4cc9429f68b45ed3670f33b4a7390f4181e0cd9a3bb1&w=826"
-            memberName="Grace Pero"
-          />
-          <MembersRowCard
-            imgUrl="https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=826&t=st=1710626441~exp=1710627041~hmac=91402668e99223790db54de3553a9c5e61a11defabbb9e6e4ef0f16b28c1ce87"
-            memberName="Fred James"
-          />
-          <MembersRowCard
-            imgUrl="https://img.freepik.com/free-photo/carefree-relaxed-pretty-young-mixed-race-female-wearing-big-round-eyeglasses-smiling-broadly-feeling-excited-about-spending-vacations-abroad_273609-1260.jpg?t=st=1710626535~exp=1710630135~hmac=4733b7502db243a164e78fd0ae3c8da5edd2539cdd6e0da4879cd4b1239a357d&w=826"
-            memberName="Ekemini Rico"
+          {members.length === 0 && (
+            <View>
+              <Text className="text-lg font-bold text-orange-400">
+                No members to split with.
+              </Text>
+              <Text className="mb-6 font-bold text-slate-500">
+                Select event to split with members
+              </Text>
+            </View>
+          )}
+          <FlatList
+            data={members}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <MembersRowCard
+                imgUrl={item.profileImg}
+                memberName={`${item.firstName} ${item.lastName}`}
+                memberId={item._id}
+                toggleMemberSelection={toggleMemberSelection}
+              />
+            )}
           />
         </View>
 
         {/* create button */}
         <View className="flex justify-center items-center mt-8">
-          <CustomButton title="Create" onPress={handleCreateNewBill} />
+          <CustomButton label="Create" buttonFunc={handleCreateNewBill} />
         </View>
       </ScrollView>
     </SafeAreaView>
