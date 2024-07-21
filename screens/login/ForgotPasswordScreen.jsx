@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert } from "react-native";
+import { Alert, ScrollView } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -54,7 +54,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         setLoading(false);
       }
     } catch (error) {
-      Alert.alert("Error", JSON.stringify(error));
+      Alert.alert("Error", "An error occurred. Please try again later.");
       setLoading(false);
     }
   };
@@ -121,12 +121,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
   };
 
   return (
-    <Box width="100%" justifyContent="center" p={24}>
+    <ScrollView>
+      <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Forgot Password?" />
 
       {/* form section */}
       <VStack space="xl" mt={15}>
-        <Text fontSize={16} textAlign="center">
+        <Text fontSize={16} textAlign="center" mb={28}>
           Enter your registered email address that you use with your account to
           continue.
         </Text>
@@ -155,18 +156,16 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Box>
 
         {/* remember password? Login */}
-        <Box mt={140}>
+        <Box mt={120}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >
             <Text
               size="sm"
-              style={{ color: "#000", textAlign: "center", marginTop: 6 }}
+              style={{ color: "#000", textAlign: "center"}}
             >
               Remember Password?{" "}
               <Text
-                size="sm"
-                style={{ color: "#000", textAlign: "center", marginTop: 6 }}
                 onPress={() => navigationToScreen(navigation, "LoginUser")}
               >
                 Login
@@ -176,6 +175,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Box>
       </VStack>
     </Box>
+    </ScrollView>
   );
 };
 
