@@ -1,45 +1,46 @@
 import React, { useState, useRef } from "react";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { firebaseConfig } from "../config";
 import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 import PhoneInput from "react-native-phone-number-input";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
-import { View, TouchableOpacity } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
+import { firebaseConfig } from "../config";
+
+// Initialize Firebase if it hasn't been initialized yet
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const SignUpScreen = ({ navigation }) => {
-  const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
+  const [isValid, setIsValid] = useState(false);
   const [phoneValue, setPhoneValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
   const [error, setError] = useState("");
-  // loading spinner
   const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
+  const recaptchaVerifier = useRef(null);
 
-  // handle phone number change
   const handleChangeValue = (text) => {
     setPhoneValue(text);
 
     if (text.length === 0) {
       setError("Phone Number is required");
-      return;
+      setIsValid(false);
     } else if (text.length < 10) {
       setError("Phone Number must be 10 digits");
-      return;
+      setIsValid(false);
     } else {
       setError("");
       setIsValid(true);
     }
   };
 
-  // send token to phone number
-  const recaptchaVerifier = useRef(null);
-
   const sendVerificationCode = async (phoneNumber) => {
-    // set loading to true
     setLoading(true);
     try {
       const phoneProvider = new firebase.auth.PhoneAuthProvider();
@@ -48,39 +49,24 @@ const SignUpScreen = ({ navigation }) => {
         recaptchaVerifier.current
       );
 
+      Alert.alert("Verification code has been sent to your phone.");
+
       if (verificationToken) {
-        // navigate to token screen
         const data = {
           phone: formattedValue,
           verificationId: verificationToken,
         };
 
         navigationToScreen(navigation, "TokenScreen", data);
-
-        // set loading to false
         setLoading(false);
       }
     } catch (error) {
-      console.log("Error", error.message);
+      Alert.alert("Error", error.message);
+      setLoading(false);
     }
   };
 
-  // async function sendVerificationCode(phoneNumber) {
-  //   try {
-  //     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-  //     // Save confirmation to state or context for later use
-  //     setConfirmation(confirmation);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //     console.log("Confirmation", confirmation);
-  //   } catch (error) {
-  //     console.error("Error sending verification code: ", error);
-  //     // Handle error
-  //   }
-  // }
-
-  // handle send token
   const handleGetToken = () => {
-    // call sendVerificationCode function
     sendVerificationCode(formattedValue);
   };
 
@@ -88,7 +74,6 @@ const SignUpScreen = ({ navigation }) => {
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Phone Number" />
 
-      {/* form section */}
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter your mobile number to get a token.</Text>
 
@@ -104,7 +89,6 @@ const SignUpScreen = ({ navigation }) => {
             }}
             withDarkTheme
             withShadow
-            // autoFocus
           />
           {error && (
             <Text size="sm" style={{ color: "#ea9977" }}>
@@ -112,14 +96,12 @@ const SignUpScreen = ({ navigation }) => {
             </Text>
           )}
 
-          {/* recaptcha component */}
           <FirebaseRecaptchaVerifierModal
             ref={recaptchaVerifier}
             firebaseConfig={firebaseConfig}
           />
         </Box>
 
-        {/* next button */}
         <Box mt={160}>
           {!isValid ? (
             <CustomButton
@@ -138,7 +120,6 @@ const SignUpScreen = ({ navigation }) => {
           )}
         </Box>
 
-        {/* remember password? Login */}
         <Box mt={160}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}

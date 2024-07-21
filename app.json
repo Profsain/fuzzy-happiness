@@ -29,13 +29,16 @@
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.profsain.SplinxPlanet"
+      "package": "com.profsain.SplinxPlanet",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
       [
         "expo-contacts",
         {

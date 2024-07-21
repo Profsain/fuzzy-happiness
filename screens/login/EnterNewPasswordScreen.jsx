@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
-import { Box, Text, VStack} from "@gluestack-ui/themed";
+import { getItem, removeItem } from "../../utils/asyncStorage";
+import { Alert, TouchableOpacity } from "react-native";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,
   CustomHeadings,
@@ -10,6 +11,7 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const EnterNewPasswordScreen = () => {
   const navigation = useNavigation();
@@ -25,13 +27,17 @@ const EnterNewPasswordScreen = () => {
   const [codeError, setCodeError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const code = "123456";
+  const otpCode = getItem("otp");
+
   const handleCodeChange = (text) => {
     setVerificationCode(text);
     if (text.length === 0) {
       setCodeError("6 digit code is required");
-    } else if (text !== code) {
+    } else if (text !== otpCode) {
       setCodeError("Please enter a valid verification code");
     } else {
       setCodeError("");
@@ -58,12 +64,62 @@ const EnterNewPasswordScreen = () => {
     }
   };
 
+  // handle confirm password
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text);
+    if (text !== password) {
+      setPasswordError("Passwords do not match");
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setPasswordError("");
+      setConfirmPasswordError("");
+      setIsAllValid(true);
+    }
+  };
+
+  // extract received data
+  const receivedData = useReceivedData();
+  const baseUrl = process.env.BASE_URL;
+
   // handle password change
-  const handlePasswordUpdate = () => {
+  const handlePasswordUpdate = async () => {
+    setLoading(true);
+    const emailAddress = receivedData.emailAddress;
     // verify code
-    // if code is valid, update password
-    // navigate to LoginUser
-    navigation.replace("LoginUser");
+    if (verificationCode !== otpCode) {
+      setCodeError("Please enter a valid verification code");
+      return;
+    }
+
+    try {
+      const data = {
+        newPassword: password,
+        emailAddress: emailAddress,
+      };
+
+      const response = await fetch(`${baseUrl}/user/forgot-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        setCodeError(result.message);
+        return;
+      }
+
+      setLoading(false);
+      // remove otp
+      await removeItem("otp");
+      // navigate to LoginUser
+      navigation.replace("LoginUser");
+    } catch (error) {
+      Alert.alert("Error", JSON.stringify(error));
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,6 +143,15 @@ const EnterNewPasswordScreen = () => {
           inputValue={password}
           handleTextChange={handlePasswordChange}
           error={passwordError}
+        />
+
+        <PasswordInput
+          showPassword={showPassword}
+          handleState={handleState}
+          placeholder="Confirm New Password"
+          inputValue={password}
+          handleTextChange={handleConfirmPasswordChange}
+          error={confirmPasswordError}
         />
 
         {/* next button */}
