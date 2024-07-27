@@ -25,19 +25,20 @@ const LoginScreen = ({ navigation }) => {
       </Box>
 
       <View style={styles.btnContainer}>
-        <CustomButton label="Log in" buttonFunc={handleLogin} />
+        <CustomButton label="Log in" buttonFunc={handleLogin} mt=
+        {38}/>
         <CustomButton
           label="Sign up"
           backgroundColor={secondaryColor}
           color="#000"
           buttonFunc={handleSignUp}
         />
-        <CustomButton
+        {/* <CustomButton
           label="Move to"
           backgroundColor={secondaryColor}
           color="#000"
           buttonFunc={() => navigationToScreen(navigation, "TabNavigation")}
-        /> 
+        />  */}
       </View>
     </SafeAreaView>
   );

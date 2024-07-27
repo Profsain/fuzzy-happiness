@@ -2,12 +2,14 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   HomeScreen,
+  HomeNavigator,
   BillsPayScreen,
   SettingScreen,
   ChatComScreen,
   CommunityScreen,
 } from "../screens";
-import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +31,7 @@ const TabNavigation = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeNavigator}
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color }) => (

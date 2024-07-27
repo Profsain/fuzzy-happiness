@@ -10,6 +10,7 @@ const CustomButton = ({
   label = "Click me",
   color = "#fff",
   mr,
+  mt = 25,
   fSize = 18,
   bradius = 25
 }) => {
@@ -22,7 +23,7 @@ const CustomButton = ({
       alignItems: "center",
       justifyContent: "center",
       marginTop: 5,
-      marginBottom: 15,
+      marginBottom: mt,
       marginRight: mr,
     },
     label: {
