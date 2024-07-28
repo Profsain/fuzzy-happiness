@@ -41,7 +41,12 @@ const fetchData = async () => {
   }
 };
 
-const CreateNewEvent = ({ setBack }) => {
+const CreateNewEvent = ({ navigation }) => {
+  // handle back to prev screen
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   const { token, userProfile } = useLogin();
   const headlineText = `Create New Event`;
   const [showDateModal, setShowDateModal] = useState(false);
@@ -49,18 +54,18 @@ const CreateNewEvent = ({ setBack }) => {
   const [listItems, setListItems] = useState([]);
 
   // handle back to prev screen when device back button press
-  useEffect(() => {
-    const backAction = () => {
-      return true;
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     return true;
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
 
-    return () => backHandler.remove();
-  }, []);
+  //   return () => backHandler.remove();
+  // }, []);
 
   // fetch event categories and update listItems
   useEffect(() => {
@@ -243,7 +248,7 @@ const CreateNewEvent = ({ setBack }) => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar headline={headlineText} func={setBack} />
+        <BackTopBar headline={headlineText} func={handleBack} />
 
         {/* form input section */}
         <ScrollView className="mt-4">

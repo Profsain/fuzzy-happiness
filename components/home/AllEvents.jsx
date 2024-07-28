@@ -1,28 +1,29 @@
-import { View, Alert, SafeAreaView, FlatList } from "react-native";
-import React, {useState} from "react";
+import { View, SafeAreaView, FlatList, Text, Alert } from "react-native";
+import React, { useState } from "react";
 import BackTopBar from "./BackTopBar";
 import EventCard from "./EventCard";
-import SingleEvent from "./SingleEvent";
 
-const AllEvents = ({
-  eventList,
-  setBack,
-  headlineText,
-  openSingleEvent,
-  setOpenSingleEvent,
-  openEventRegister,
-  setOpenEventRegister,
-}) => {
+const AllEvents = ({ navigation, route }) => {
+  // handle back to prev screen
+  const handleBack = () => {
+    navigation.goBack();
+  }
+
+  // extract route params
+  const { headText, eventList } = route.params;
+  // Alert.alert("eventList", JSON.stringify(eventList));
+ 
   // state for event details
   const [eventDetails, setEventDetails] = useState({});
+
   // handle open event details
   const handleOpenSingleEvent = (id) => {
     // set event details
     const event = eventList.find((event) => event.id === id);
     setEventDetails(event);
-
-    // set open single event to true
-    setOpenSingleEvent(() => !openSingleEvent);
+  
+    // navigate to single event and pass event details
+    navigation.navigate("SingleEvent", { eventDetails: event });
   };
 
   const renderEvents = ({ item }) => (
@@ -43,31 +44,29 @@ const AllEvents = ({
 
   return (
     <>
-      {/* open single event */}
-      {openSingleEvent ? (
-        <SingleEvent
-          setBack={setOpenSingleEvent}
-          event={eventDetails}
-          setOpenSingleEvent={setOpenSingleEvent}
-          openEventRegister={openEventRegister}
-          setOpenEventRegister={setOpenEventRegister}
-        />
-      ) : (
-        <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-          {/* top bar  */}
+      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+        {/* top bar  */}
 
-          <BackTopBar headline={headlineText} func={setBack} />
-          <View className="mt-8">
-            <FlatList
-              data={eventList}
-              renderItem={renderEvents}
-              keyExtractor={(item) => item.id || item._id}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-            />
-          </View>
-        </SafeAreaView>
-      )}
+        <BackTopBar headline={headText} func={handleBack} />
+        <View className="mt-8">
+
+          {/* show message if no events */}
+          {eventList.length === 0 && (
+            <View className="flex-1 justify-center items-center">
+              <Text className="text-lg">No events available</Text>
+            </View>
+          )}
+
+          {/* show events */}
+          <FlatList
+            data={eventList}
+            renderItem={renderEvents}
+            keyExtractor={(item) => item.id || item._id}
+            showsVerticalScrollIndicator={false}
+            numColumns={2}
+          />
+        </View>
+      </SafeAreaView>
     </>
   );
 };

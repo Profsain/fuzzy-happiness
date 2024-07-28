@@ -1,9 +1,16 @@
-
-import React from 'react'
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import HomeScreen from "../screens/HomeScreen";
-import {AllEvent, CreateNewEvent, MySingleEvent, SingleEvent, SearchResult, EventRegistration} from "../component/home";
+
+import {
+  HomeScreen,
+  AllEvents,
+  CreateNewEvent,
+  MySingleEvent,
+  SingleEvent,
+  SearchResult,
+  EventRegistration,
+} from "../components/home";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -17,8 +24,8 @@ const HomeNavigator = () => {
         navigation={navigation}
       />
       <Stack.Screen
-        name="AllEvent"
-        component={AllEvent}
+        name="AllEvents"
+        component={AllEvents}
         options={{ headerShown: false }}
         navigation={navigation}
       />
@@ -54,6 +61,6 @@ const HomeNavigator = () => {
       />
     </Stack.Navigator>
   );
-}
+};
 
-export default HomeNavigator
+export default HomeNavigator;

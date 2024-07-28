@@ -1,29 +1,47 @@
 import { View, Alert, SafeAreaView, FlatList } from "react-native";
-import React, {useState} from "react";
+import React, { useState, useCallback } from "react";
+import { useNavigation } from "@react-navigation/native";
 import BackTopBar from "./BackTopBar";
 import EventCard from "./EventCard";
 import SingleEvent from "./SingleEvent";
 
 const SearchResult = ({
   eventList,
-  setBack,
   headlineText,
-  openSingleEvent,
-  setOpenSingleEvent,
-  openEventRegister,
-  setOpenEventRegister,
 }) => {
+  const navigation = useNavigation();
+
+  // handle back to prev screen
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   // state for event details
   const [eventDetails, setEventDetails] = useState({});
   // handle open event details
-  const handleOpenSingleEvent = (id) => {
-    // set event details
-    const event = eventList.find((event) => event.id === id);
-    setEventDetails(event);
+  const handleOpenSingleEvent = useCallback(
+    (id) => {
+      const event = eventList.find((event) => {
+        // check if event._id is empty and use event.id
+        if (event._id) {
+          return event._id === id;
+        } else {
+          return event.id === id;
+        }
+      });
 
-    // set open single event to true
-    setOpenSingleEvent(() => !openSingleEvent);
-  };
+      navigation.navigate("SingleEvent", { eventDetails: event });
+    },
+    [eventList]
+  );
+  // const handleOpenSingleEvent = (id) => {
+  //   // set event details
+  //   const event = eventList.find((event) => event.id === id);
+  //   setEventDetails(event);
+
+  //   // set open single event to true
+  //   setOpenSingleEvent(() => !openSingleEvent);
+  // };
 
   const renderEvents = ({ item }) => (
     <EventCard
@@ -32,27 +50,17 @@ const SearchResult = ({
           ? item.eventImage
           : "https://img.freepik.com/free-photo/medium-shot-people-with-vr-glasses_23-2150433375.jpg?t=st=1708723420~exp=1708727020~hmac=9096dbce4e7a09ca0c3d54e14edff136a83b68c1bbceb01e22626488aa8ca9db&w=740"
       }
-      category={item.eventCategory}
+      category={item.eventCategory || "General"}
       title={item.eventName}
       location={item.eventLocation}
       date={item.eventDate}
       time={item.eventTime}
-      func={() => handleOpenSingleEvent(item.id)}
+      func={() => handleOpenSingleEvent(item.id || item._id)}
     />
   );
 
   return (
     <>
-      {/* open single event */}
-      {openSingleEvent ? (
-        <SingleEvent
-          setBack={setOpenSingleEvent}
-          event={eventDetails}
-          setOpenSingleEvent={setOpenSingleEvent}
-          openEventRegister={openEventRegister}
-          setOpenEventRegister={setOpenEventRegister}
-        />
-      ) : (
         <SafeAreaView className="flex-1  bg-white">
           {/* top bar  */}
 
@@ -67,7 +75,7 @@ const SearchResult = ({
             />
           </View>
         </SafeAreaView>
-      )}
+      
     </>
   );
 };
