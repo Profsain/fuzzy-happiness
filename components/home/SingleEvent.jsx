@@ -10,14 +10,12 @@ import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
-import EventRegistration from "./EventRegistration";
 // icons
 import { Fontisto } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import formatDate from "../../utils/dateConverter";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
 import handleSocialShare from "../../utils/socialSharefunc";
 import { Feather } from "@expo/vector-icons";
 import { secondBgColor } from "../../utils/appstyle";
@@ -76,12 +74,22 @@ const SingleEvent = ({navigation, route}) => {
 
   // handle invite to event
   const handleShareEvent = () => {
-    const appUrl = "https://www.google.com";
-    const message = `Join me at ${eventName} event. Download the app to register and join the event ${appUrl}`;
+    // Base URL for deep linking
+    const deepLinkBaseUrl = "splinx://event/";
+
+    // URL to redirect to the app store if the app is not installed
+    const appStoreUrl = Platform.select({
+      ios: "https://apps.apple.com/app/splinx",
+      android: "https://play.google.com/store/apps/details?id=com.splinx",
+    });
+
+    // Event URL with deep link
+    const eventUrl = `${deepLinkBaseUrl}${eventDetails._id}`;
+    const message = `Join me at ${eventName} event. Download the Splinx app to register and join the event: ${eventUrl}. If you don't have the app, download it here: ${appStoreUrl}`;
     handleSocialShare(message);
   };
 
-    // check if login user is an event member
+  // check if login user is an event member
   const isUserMember = eventDetails.eventMembers.some(
     (member) => member.user === userProfile._id
   );

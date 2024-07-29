@@ -210,10 +210,7 @@ const HomeScreen = ({ navigation }) => {
         <Text className="text-lg">No search results found</Text>
       )}
       {searchResults.length > 0 ? (
-        <SearchResult
-          eventList={searchResults}
-          headlineText="Search Results"
-        />
+        <SearchResult eventList={searchResults} headlineText="Search Results" />
       ) : (
         <ScrollView>
           {/* Carousel section */}
@@ -278,7 +275,11 @@ const HomeScreen = ({ navigation }) => {
                     .slice(0, 30)}
                   renderItem={({ item }) => (
                     <EventCard
-                      img={item.eventImage}
+                      img={
+                        item.eventImage
+                          ? item.eventImage
+                          : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      }
                       category={item.eventCategory}
                       title={item.eventName}
                       location={item.eventLocation}
