@@ -1,18 +1,16 @@
 import { View, Text, SafeAreaView } from "react-native";
 import React, {useState} from "react";
-import { useDispatch } from "react-redux";
-import { toggleOpenTransferScreen } from "../../store/openScreenSlice";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 
-const TransferMoney = () => {
-  const dispatch = useDispatch();
+const TransferMoney = ({navigation}) => {
 
   // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenTransferScreen())]);
+  const handleBack = () => {
+    navigation.goBack();
+  }
 
   // component state
   // open bottom sheet
@@ -31,10 +29,7 @@ const TransferMoney = () => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar */}
-        <BackTopBar
-          headline="Transfer Money"
-          func={() => dispatch(toggleOpenTransferScreen())}
-        />
+        <BackTopBar headline="Transfer Money" func={handleBack} />
 
         {/* wallet balance */}
         <Text className="font-semibold text-lg text-center my-8">
@@ -54,7 +49,12 @@ const TransferMoney = () => {
 
       {/* bottom sheet */}
       {isModalVisible && (
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={toggleModal} heading="Transfer Completed" message="Transfer successful: $50.00 sent to pascal"/>
+        <SuccessBottomSheet
+          isVisible={isModalVisible}
+          onClose={toggleModal}
+          heading="Transfer Completed"
+          message="Transfer successful: $50.00 sent to pascal"
+        />
       )}
     </>
   );

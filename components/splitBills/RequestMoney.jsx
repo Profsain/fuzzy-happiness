@@ -1,8 +1,5 @@
 import { View, Text, SafeAreaView, ScrollView } from "react-native";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { toggleOpenRequestScreen } from "../../store/openScreenSlice";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
@@ -10,11 +7,12 @@ import MembersRowCard from "./component/MembersRowCard";
 import { HorizontalTitle } from "../home";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 
-const RequestMoney = () => {
-  const dispatch = useDispatch();
+const RequestMoney = ({ navigation }) => {
 
   // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenRequestScreen())]);
+  const handleBack = () => {
+    navigation.goBack();
+  };
 
   // component state
   // open bottom sheet
@@ -33,10 +31,7 @@ const RequestMoney = () => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar */}
-        <BackTopBar
-          headline="Request Money"
-          func={() => dispatch(toggleOpenRequestScreen())}
-        />
+        <BackTopBar headline="Request Money" func={handleBack} />
         <ScrollView>
           {/* wallet balance */}
           <View className="my-4 flex flex-row justify-between items-center">
@@ -57,11 +52,7 @@ const RequestMoney = () => {
 
           {/* member list section to select from flatList scrollable*/}
           <View>
-            <HorizontalTitle
-              title="Select members"
-              icon=""
-              action=""
-            />
+            <HorizontalTitle title="Select members" icon="" action="" />
 
             <MembersRowCard />
             <MembersRowCard
@@ -87,7 +78,12 @@ const RequestMoney = () => {
 
       {/* bottom sheet */}
       {isModalVisible && (
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={toggleModal} heading="Request Sent" message="Your request has been sent. We'll notify you once it's accepted or declined"/>
+        <SuccessBottomSheet
+          isVisible={isModalVisible}
+          onClose={toggleModal}
+          heading="Request Sent"
+          message="Your request has been sent. We'll notify you once it's accepted or declined"
+        />
       )}
     </>
   );

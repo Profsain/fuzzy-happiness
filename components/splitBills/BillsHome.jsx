@@ -7,14 +7,6 @@ import {
   Alert,
 } from "react-native";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  toggleOpenAllGroup,
-  toggleOpenGroupDetails,
-  toggleOpenCreateNewBill,
-  toggleOpenTransactionScreen,
-  toggleOpenTransactionHistory,
-} from "../../store/openScreenSlice";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
@@ -23,12 +15,12 @@ import GroupBillsCard from "./component/GroupBillsCard";
 import EventBillCard from "./component/EventBillCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 
-const BillsHome = () => {
-  const dispatch = useDispatch();
+const BillsHome = ({navigation}) => {
 
   // handle create new bill
   const handleCreateNewBill = () => {
-    dispatch(toggleOpenCreateNewBill());
+    // navigate to create new bill screen
+    navigation.navigate("CreateNewBills");
   };
 
   // handle pay someone
@@ -70,7 +62,7 @@ const BillsHome = () => {
             mr={12}
             backgroundColor="white"
             label="Wallet"
-            buttonFunc={() => dispatch(toggleOpenTransactionScreen())}
+            buttonFunc={() => navigation.navigate("TransactionScreen")}
           />
           <CustomButton
             color="black"
@@ -79,7 +71,7 @@ const BillsHome = () => {
             fSize={12}
             backgroundColor="white"
             label="Transaction History"
-            buttonFunc={() => dispatch(toggleOpenTransactionHistory())}
+            buttonFunc={() => navigation.navigate("TransactionHistory")}
           />
         </View>
       </View>
@@ -89,7 +81,7 @@ const BillsHome = () => {
         <HorizontalTitle
           title="Groups"
           action="View all"
-          func={() => dispatch(toggleOpenAllGroup())}
+          func={() => navigation.navigate("BillsGroup")}
         />
         <View className="flex flex-row">
           <View className="h-24 w-24 bg-gray-200 rounded-2xl p-3 flex justify-center items-center">
@@ -109,8 +101,8 @@ const BillsHome = () => {
             </Text>
           </View>
           {/* group bills card flatlist */}
-          <GroupBillsCard func={() => dispatch(toggleOpenGroupDetails())} />
-          <GroupBillsCard func={() => dispatch(toggleOpenGroupDetails())} />
+          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
+          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
         </View>
 
         {/* friends own section */}

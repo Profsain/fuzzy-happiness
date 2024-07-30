@@ -1,18 +1,16 @@
 import { View, Text, SafeAreaView } from "react-native";
 import React, {useState} from "react";
-import { useDispatch } from "react-redux";
-import { toggleOpenTopUpScreen } from "../../store/openScreenSlice";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 
-const AddMoney = () => {
-  const dispatch = useDispatch();
+const AddMoney = ({navigation}) => {
 
   // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenTopUpScreen())]);
+  const handleBack = () => {
+    navigation.goBack();
+  }
 
   // component state
   // open bottom sheet
@@ -31,10 +29,7 @@ const AddMoney = () => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar */}
-        <BackTopBar
-          headline="Top up"
-          func={() => dispatch(toggleOpenTopUpScreen())}
-        />
+        <BackTopBar headline="Top up" func={handleBack} />
 
         {/* wallet balance */}
         <Text className="font-semibold text-lg text-center my-8">
