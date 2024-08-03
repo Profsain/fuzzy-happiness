@@ -14,9 +14,51 @@ import { primeryColor } from "../../utils/appstyle";
 import GroupBillsCard from "./component/GroupBillsCard";
 import EventBillCard from "./component/EventBillCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
+import LoadingSpinner from "../LoadingSpinner";
+import { useLogin } from "../../context/LoginProvider";
 
-const BillsHome = ({navigation}) => {
+const BillsHome = ({ navigation }) => {
+  const { userProfile, setUserProfile, token } = useLogin();
+  const { isWalletCreated, phoneNumber, _id } = userProfile;
+  // base url
+  const baseUrl = process.env.BASE_URL;
 
+  // component state
+  const [processing, setProcessing] = useState(false);
+
+  // handle activate wallet
+  const handleActivateWallet = async () => {
+    setProcessing(true);
+    // create new wallet account
+    try {
+      const response = await fetch(`${baseUrl}/wallet/create-wallet/${_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // update userProfile context
+        setUserProfile({ ...userProfile, isWalletCreated: true, walletAccountNumber: data.accountNumber });
+        
+        Alert.alert("Success", "Wallet account activated successfully", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("TransactionScreen"),
+          },
+        ]);
+        // Alert.alert("Wallet ", JSON.stringify(data));
+        setProcessing(false);
+      }
+    } catch (error) {
+      Alert.alert("Error", JSON.stringify(error.message));
+      setProcessing(false);
+      throw new Error(error.message);
+    }
+  };
   // handle create new bill
   const handleCreateNewBill = () => {
     // navigate to create new bill screen
@@ -54,16 +96,32 @@ const BillsHome = ({navigation}) => {
         <Text className="text-2xl font-bold text-slate-600">$ 0.00</Text>
 
         <View className="flex flex-row justify-end mt-6">
-          <CustomButton
-            color="black"
-            width={60}
-            height={34}
-            fSize={12}
-            mr={12}
-            backgroundColor="white"
-            label="Wallet"
-            buttonFunc={() => navigation.navigate("TransactionScreen")}
-          />
+          {isWalletCreated ? (
+            <CustomButton
+              color="black"
+              width={60}
+              height={34}
+              fSize={12}
+              mr={12}
+              backgroundColor="white"
+              label="Wallet"
+              buttonFunc={() => navigation.navigate("TransactionScreen")}
+            />
+          ) : !processing ? (
+            <CustomButton
+              color="black"
+              width={120}
+              height={34}
+              fSize={12}
+              mr={12}
+              backgroundColor="white"
+              label="Activate Wallet"
+              buttonFunc={handleActivateWallet}
+            />
+          ) : (
+            <LoadingSpinner text="" color="white" />
+          )}
+
           <CustomButton
             color="black"
             width={120}

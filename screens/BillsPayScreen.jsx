@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { Alert } from "react-native";
 import {
   AddMoney,
   BillsHome,

@@ -14,10 +14,6 @@ import {
   EventCard,
   HomeCarousel,
   HorizontalTitle,
-  AllEvents,
-  SingleEvent,
-  CreateNewEvent,
-  MySingleEvent,
   SearchResult,
 } from ".";
 import eventData from "../../mockdata/eventData";
@@ -207,7 +203,7 @@ const HomeScreen = ({ navigation }) => {
       {searching && <LoadingSpinner text="Searching..." />}
       {/* if searchResult empty */}
       {searchResults.length === 0 && searchTerm && !searching && (
-        <Text className="text-lg">No search results found</Text>
+        <Text className="text-lg my-28">No search results found</Text>
       )}
       {searchResults.length > 0 ? (
         <SearchResult eventList={searchResults} headlineText="Search Results" />
