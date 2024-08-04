@@ -6,14 +6,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { toggleOpenTransactionScreen } from "../../../store/openScreenSlice";
+import {useNavigation} from '@react-navigation/native'
 import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "../../CustomButton";
 import { primeryColor } from "../../../utils/appstyle";
 
 const SuccessBottomSheet = ({ isVisible, onClose, heading, message }) => {
-  const dispatch = useDispatch();
+
+  const navigation = useNavigation();
+
   const translateY = useRef(new Animated.Value(400)).current;
 
   useEffect(() => {
@@ -35,10 +36,7 @@ const SuccessBottomSheet = ({ isVisible, onClose, heading, message }) => {
   // handle done button
   const handleDone = () => {
     onClose();
-    // dispatch to transaction screen
-    // dispatch(toggleOpenTransactionScreen());
-    // clear the input fields
-    // get balance update
+    navigation.navigate("TransactionScreen");
   };
 
 

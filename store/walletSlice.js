@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-  // base url
-  const baseUrl = process.env.BASE_URL;
-  
+// base URL
+const baseUrl = process.env.BASE_URL; 
 
 const initialState = {
   wallet: {},
@@ -12,15 +11,16 @@ const initialState = {
 };
 
 export const fetchWallet = createAsyncThunk(
-  'events/fetchWallet',
+  'wallet/fetchWallet', // Updated to match the slice name
   async (userId) => {
-    const response = await axios.get(`${baseUrl}//wallet/get-wallet/${userId}`);
-    return response.data;
+    const response = await axios.get(`${baseUrl}/wallet/get-wallet/${userId}`);
+    alert("id", userId);
+    return response;
   }
 );
 
 const walletSlice = createSlice({
-  name: 'wallet',
+  name: 'wallet', // Updated to match the thunk name
   initialState,
   reducers: {},
   extraReducers: (builder) => {

@@ -1,3 +1,4 @@
+
 import {
   View,
   Text,
@@ -7,7 +8,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, {useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet } from "../../store/walletSlice";
 import { useLogin } from "../../context/LoginProvider";
@@ -18,50 +19,40 @@ import { Fontisto } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
 import { BackTopBar } from "../home";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
+import useFetchWallet from "../../hooks/useFetchWallet";
 
 const TransactionScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const wallet = useSelector((state) => state.wallet);
+  // base URL
+  const baseUrl = process.env.BASE_URL; 
+  const { userProfile, token } = useLogin();
+  const userId = userProfile._id;
 
-  useEffect(() => {
-    dispatch(fetchWallet())
-  }, [])
-  
-  // destructure wallet data
-  Alert.alert("Wallet Now i", JSON.stringify(wallet));
-  // const { balance } = wallet;
+  // call useFetchWallet
+  const wallet = useFetchWallet();
 
-  // handle back to prev screen when device back button press
   const handleBack = () => {
     navigation.goBack();
   };
 
-  // handle make transaction
   const handleTransactionHistory = () => {
     navigation.navigate("TransactionHistory");
   };
 
-  // handle change payment method
   const handleChangePaymentMethod = () => {
-    Alert.alert("payment method changed");
+    Alert.alert("Payment method changed");
   };
 
-  // handle invite members
   const handleWalletSettings = () => {
-    Alert.alert("Wallet settings ");
+    Alert.alert("Wallet settings");
   };
 
-  // handle faq
   const handleFaq = () => {
     Alert.alert("FAQ");
   };
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      {/* top bar */}
       <BackTopBar headline="Wallet" func={handleBack} />
-
-      {/* top card */}
       <View
         className="h-40 rounded-lg my-6"
         style={{ backgroundColor: primeryColor }}
@@ -76,11 +67,14 @@ const TransactionScreen = ({ navigation }) => {
                 <Text className="text-white font-medium text-base">
                   Splinx Balance
                 </Text>
-                <Text className="mt-1 font-semibold text-xl">$700.00</Text>
+                <Text className="mt-1 font-semibold text-xl">
+                  {wallet ? `$${wallet?.balance?.toFixed(2)}` : "$0.00"}
+                </Text>
               </View>
-              <Text className="text-white font-normal text-xs">14/11/2024</Text>
+              <Text className="text-white font-normal text-xs">
+                {new Date().toLocaleDateString()}
+              </Text>
             </View>
-            {/* round button section */}
             <View className="flex flex-row justify-end mt-7">
               <TouchableOpacity
                 className="flex items-center mr-3"
@@ -113,8 +107,6 @@ const TransactionScreen = ({ navigation }) => {
           </View>
         </ImageBackground>
       </View>
-
-      {/* action button section */}
       <View className="mt-6">
         <BillsHorizontalBtn
           text="Transaction History"
