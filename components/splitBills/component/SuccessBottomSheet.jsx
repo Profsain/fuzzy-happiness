@@ -11,7 +11,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "../../CustomButton";
 import { primeryColor } from "../../../utils/appstyle";
 
-const SuccessBottomSheet = ({ isVisible, onClose, heading, message }) => {
+const SuccessBottomSheet = ({ isVisible, onClose, heading, message, handleOk }) => {
 
   const navigation = useNavigation();
 
@@ -61,7 +61,7 @@ const SuccessBottomSheet = ({ isVisible, onClose, heading, message }) => {
           </Text>
         </View>
 
-        <CustomButton label="Done" buttonFunc={handleDone} />
+        <CustomButton label="Done" buttonFunc={handleOk} />
       </View>
     </Animated.View>
   );

@@ -66,6 +66,12 @@ const TransferMoney = ({ navigation }) => {
     navigation.goBack();
   };
 
+  // handle bottom sheet  done
+  const handleDone = () => {
+    toggleModal();
+    navigation.navigate("TransactionScreen");
+  }
+
   // Toggle modal visibility
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
@@ -246,6 +252,7 @@ const TransferMoney = ({ navigation }) => {
         <SuccessBottomSheet
           isVisible={isModalVisible}
           onClose={toggleModal}
+          handleOk={handleDone}
           heading="Transfer Completed"
           message={`Transfer successful: $${amount} sent to ${selectedUser.firstName}`}
         />

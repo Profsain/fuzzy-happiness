@@ -68,7 +68,7 @@ const TransactionScreen = ({ navigation }) => {
                   Splinx Balance
                 </Text>
                 <Text className="mt-1 font-semibold text-xl">
-                  {wallet ? `$${wallet?.balance?.toFixed(2)}` : "$0.00"}
+                  ${wallet?.balance?.toFixed(2) || "0.00"}
                 </Text>
               </View>
               <Text className="text-white font-normal text-xs">

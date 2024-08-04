@@ -1,86 +1,238 @@
-import { View, Text, SafeAreaView, ScrollView } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  FlatList,
+  Alert,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import useFetchWallet from "../../hooks/useFetchWallet";
+import useFetchAllUsers from "../../hooks/useFetchAllUser";
+import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
+import { secondaryColor } from "../../utils/appstyle";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import MembersRowCard from "./component/MembersRowCard";
 import { HorizontalTitle } from "../home";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
+import calculateRequestMoney from "./methods/calculateRequestMoney";
+import sendPushNotification from "../../utils/sendPushNotification";
+import LoadingSpinner from "../LoadingSpinner";
 
 const RequestMoney = ({ navigation }) => {
+  const wallet = useFetchWallet();
 
-  // handle back to prev screen when device back button press
+  // calculate money received and outstanding
+  const { receivedAmount, pendingAmount } = calculateRequestMoney(
+    wallet?.moneyRequest
+  );
+
+  const userList = useFetchAllUsers();
+  const { userProfile, token } = useLogin();
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // Handle back to previous screen when device back button is pressed
   const handleBack = () => {
     navigation.goBack();
   };
 
-  // component state
-  // open bottom sheet
+  // Component state
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [processing, setProcessing] = useState(false);
+  const [isAllFieldsFilled, setIsAllFieldsFilled] = useState(false);
+  const [errorMessages, setErrorMessages] = useState("");
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  // handle add money
-  const handleRequest = () => {
-    toggleModal();
+  // handle validation
+  useEffect(() => {
+    if (userName && amount && note) {
+      setIsAllFieldsFilled(true);
+      setErrorMessages("");
+    } else {
+      setIsAllFieldsFilled(false);
+      setErrorMessages("All fields are required");
+    }
+  }, [userName, amount, note]);
+
+  const handleSelectUser = (user) => {
+    setSelectedUser(user);
+    setUserName(`@${user.firstName}`);
   };
+
+  // update user name
+  const handleUserName = (text) => {
+    setUserName(text);
+  };
+
+  // update amount
+  const handleAmount = (text) => {
+    setAmount(`$${text}`);
+  };
+
+  // update note
+  const handleNote = (text) => {
+    setNote(text);
+  };
+
+  // handle request
+  const handleRequest = async () => {
+    setProcessing(true);
+    // send request
+    try {
+      const requestData = {
+        requesteeId: selectedUser._id,
+        amount: Number(amount),
+        description: note,
+      };
+
+      const response = await fetch(
+        `${baseUrl}/wallet/request-money/${userProfile._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // send notification
+        // send notification
+        sendPushNotification({
+          to: selectedUser._id,
+          title: "Request Money",
+          body: `You have received a request for $${amount} from ${userProfile.firstName}.`,
+        });
+
+        // send success notification to user
+        sendPushNotification({
+          to: userProfile._id,
+          title: "Request Money",
+          body: `You have sent a request for $${amount} to ${selectedUser.firstName}.`,
+        });
+
+        setProcessing(false);
+        toggleModal();
+      } else {
+        setProcessing(false);
+        Alert.alert("Warning", "This user has not activated their wallet yet and cannot receive money requests");
+      }
+    } catch (error) {
+      setProcessing(false);
+      Alert.alert(
+        "Error",
+        "Network error occurred while processing your request. Try again later"
+      );
+    }
+  };
+
+  // handle bottom sheet done
+  const handleDone = () => {
+    toggleModal();
+    navigation.goBack();
+  };
+
+  // Render user item
+  const renderUserItem = ({ item }) => (
+    <MembersRowCard
+      imgUrl={item.profileImg}
+      memberName={item.firstName}
+      memberId={item.id}
+      isSelected={selectedUser?._id === item._id}
+      onSelect={() => handleSelectUser(item)}
+    />
+  );
 
   return (
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-        {/* top bar */}
+        {/* Top bar */}
         <BackTopBar headline="Request Money" func={handleBack} />
         <ScrollView>
-          {/* wallet balance */}
+          {/* Wallet balance */}
           <View className="my-4 flex flex-row justify-between items-center">
-            <View className="flex  content-center items-end">
+            <View className="flex content-center items-end">
               <Text className="font-semibold text-lg">Received</Text>
-              <Text className="font-semibold text-xs"> $600.00</Text>
+              <Text className="font-semibold text-xs">
+                ${receivedAmount.toFixed(2) || "$0.00"}
+              </Text>
             </View>
-            <View className="flex  content-center items-end">
+            <View className="flex content-center items-end">
               <Text className="font-semibold text-lg">Outstanding</Text>
-              <Text className="font-semibold text-xs">$800.00</Text>
+              <Text className="font-semibold text-xs">
+                ${pendingAmount.toFixed(2) || "$0.00"}
+              </Text>
             </View>
           </View>
 
-          {/* add money section */}
-          <CustomInput mb={24} placeholder="Event Name" />
-          <CustomInput mb={24} placeholder="Amount" keyboardType="numeric" />
-          <CustomInput placeholder="Note" />
+          {/* Add money section */}
+          <Text className="font-xs text-orange-300">{errorMessages || ""}</Text>
 
-          {/* member list section to select from flatList scrollable*/}
+          <CustomInput
+            mb={24}
+            placeholder="Username"
+            inputValue={userName}
+            handleTextChange={handleUserName}
+          />
+          <CustomInput
+            mb={24}
+            placeholder="Amount"
+            keyboardType="numeric"
+            inputValue={amount}
+            handleTextChange={handleAmount}
+          />
+          <CustomInput
+            placeholder="Note"
+            inputValue={note}
+            handleTextChange={handleNote}
+          />
+
+          {/* Member list section */}
           <View>
             <HorizontalTitle title="Select members" icon="" action="" />
-
-            <MembersRowCard />
-            <MembersRowCard
-              imgUrl="https://img.freepik.com/free-photo/portrait-young-handsome-african-man-blue-wall_176420-2339.jpg?t=st=1710626498~exp=1710630098~hmac=96457b13d44d42d906ab4cc9429f68b45ed3670f33b4a7390f4181e0cd9a3bb1&w=826"
-              memberName="Grace Pero"
-            />
-            <MembersRowCard
-              imgUrl="https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=826&t=st=1710626441~exp=1710627041~hmac=91402668e99223790db54de3553a9c5e61a11defabbb9e6e4ef0f16b28c1ce87"
-              memberName="Fred James"
-            />
-            <MembersRowCard
-              imgUrl="https://img.freepik.com/free-photo/carefree-relaxed-pretty-young-mixed-race-female-wearing-big-round-eyeglasses-smiling-broadly-feeling-excited-about-spending-vacations-abroad_273609-1260.jpg?t=st=1710626535~exp=1710630135~hmac=4733b7502db243a164e78fd0ae3c8da5edd2539cdd6e0da4879cd4b1239a357d&w=826"
-              memberName="Ekemini Rico"
+            <FlatList
+              data={userList}
+              renderItem={renderUserItem}
+              keyExtractor={(item) => item._id}
+              extraData={selectedUser}
             />
           </View>
 
-          {/* add money button */}
+          {/* Request money button */}
           <View className="my-8">
-            <CustomButton label="Send Request" buttonFunc={handleRequest} />
+            {processing && <LoadingSpinner />}
+            {isAllFieldsFilled ? (
+              <CustomButton label="Send Request" buttonFunc={handleRequest} />
+            ) : (
+              <CustomButton
+                label="Send Request"
+                color="#000"
+                backgroundColor={secondaryColor}
+              />
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
 
-      {/* bottom sheet */}
+      {/* Bottom sheet */}
       {isModalVisible && (
         <SuccessBottomSheet
           isVisible={isModalVisible}
-          onClose={toggleModal}
+          handleOk={handleDone}
           heading="Request Sent"
           message="Your request has been sent. We'll notify you once it's accepted or declined"
         />
