@@ -19,6 +19,7 @@ import {
 import eventData from "../../mockdata/eventData";
 import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
+import sortEventsByDate from "../../utils/sortEventsByDate";
 
 const HomeScreen = ({ navigation }) => {
   const { userProfile, token } = useLogin();
@@ -69,7 +70,7 @@ const HomeScreen = ({ navigation }) => {
         setState((prevState) => ({
           ...prevState,
           fetchEventData: data.events,
-          allAppEvents: allEvents,
+          allAppEvents: sortEventsByDate(allEvents),
           myEvents: filterEventsByCreator(data.events, userProfile._id),
           eventsLoading: false,
         }));
@@ -206,7 +207,10 @@ const HomeScreen = ({ navigation }) => {
         <Text className="text-lg my-28">No search results found</Text>
       )}
       {searchResults.length > 0 ? (
-        <SearchResult eventList={searchResults} headlineText="Search Results" />
+        <SearchResult
+          eventList={sortEventsByDate(searchResults)}
+          headlineText="Search Results"
+        />
       ) : (
         <ScrollView>
           {/* Carousel section */}
@@ -233,7 +237,7 @@ const HomeScreen = ({ navigation }) => {
                 {state.eventsLoading && <LoadingSpinner text="" />}
                 <View>
                   <FlatList
-                    data={state.myEvents}
+                    data={sortEventsByDate(state.myEvents)}
                     renderItem={({ item }) => (
                       <EventCard
                         img={
