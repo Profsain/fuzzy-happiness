@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { getItem, removeItem } from "../../utils/asyncStorage";
 import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, CustomInput } from "../../components";
@@ -14,7 +15,6 @@ const TokenScreen = () => {
   // data from signUp screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
-  const verificationId = receivedData.verificationId;
 
   // navigation
   const navigation = useNavigation();
@@ -68,29 +68,46 @@ const TokenScreen = () => {
   };
 
   // handle confirm token
-  const handleConfirmToken = () => {
-    const credential = firebase.auth.PhoneAuthProvider.credential(
-      verificationId,
-      tokenValue
-    );
-    firebase
-      .auth()
-      .signInWithCredential(credential)
-      .then((result) => {
-        // do something with the result
-        if (result) {
-          const data = {
-            phoneNumber: phoneNumber,
-          };
+  const handleConfirmToken = async () => {
+    try {
+      // get otp from local storage
+      const otp = await getItem("otp");
+
+      if (otp == tokenValue) {
+        const data = {
+          phoneNumber: phoneNumber,
+        };
+
+        navigation.replace("AddEmailScreen", data);
+
+        // remove otp
+        await removeItem("otp");
+      }
+    } catch (error) {
+      setError("Invalid Token Code");
+    }
+   
+    // const credential = firebase.auth.PhoneAuthProvider.credential(
+    //   verificationId,
+    //   tokenValue
+    // );
+    // firebase
+    //   .auth()
+    //   .signInWithCredential(credential)
+    //   .then((result) => {
+    //     // do something with the result
+    //     if (result) {
+    //       const data = {
+    //         phoneNumber: phoneNumber,
+    //       };
          
-          navigation.replace("AddEmailScreen", data);
-        }
-      })
-      .catch((error) => {
-        // do something with the error
-        setError(error.message);
-        console.log("Error", error);
-      });
+    //       navigation.replace("AddEmailScreen", data);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     // do something with the error
+    //     setError("Invalid Token Code");
+    //   });
   };
 
   // handle token resend

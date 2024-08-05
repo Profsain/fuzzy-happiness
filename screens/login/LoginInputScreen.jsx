@@ -15,7 +15,6 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
-import sendPushNotification from "../../utils/sendPushNotification"
 
 const LoginInputScreen = () => {
 
