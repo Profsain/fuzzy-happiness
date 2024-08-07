@@ -17,6 +17,8 @@ const CustomSwitch = ({ switchText, notification, setNotification }) => {
       [notificationName]: notificationValue,
     };
 
+    Alert.alert("Notification", JSON.stringify(updateData));
+
     try {
       const response = await fetch(
         `${baseUrl}/user/update-user/${userProfile._id}`,
@@ -41,10 +43,10 @@ const CustomSwitch = ({ switchText, notification, setNotification }) => {
         setUserProfile(updatedProfile);
         Alert.alert("Success", "Notification preference saved");
       } else {
-        Alert.alert("Error", result.error || result.message);
+        Alert.alert("Error 1", result.error || result.message);
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error catch", error.message);
     }
   };
 

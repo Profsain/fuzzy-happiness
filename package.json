@@ -68,7 +68,9 @@
     "react-native-ui-datepicker": "^2.0.1",
     "react-native-virtualized-view": "^1.0.0",
     "react-native-webview": "^13.6.4",
-    "react-redux": "^9.1.0"
+    "react-redux": "^9.1.0",
+    "expo-auth-session": "~5.4.0",
+    "expo-apple-authentication": "~6.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

@@ -78,7 +78,13 @@ const LoginInputScreen = () => {
   };
 
   // handle social login
-  const handleSocialLogin = () => {
+  const handleFacebookLogin = () => {
+    Alert.alert("Social Login");
+  };
+  const handleGoogleLogin = () => {
+    Alert.alert("Social Login");
+  };
+  const handleAppleLogin = () => {
     Alert.alert("Social Login");
   };
 
@@ -202,15 +208,15 @@ const LoginInputScreen = () => {
           justifyContent="space-around"
           alignItems="center"
         >
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleFacebookLogin}>
             <Image size="sm" source={require("../../assets/facebook.png")} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleGoogleLogin}>
             <Image size="sm" source={require("../../assets/google.png")} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleAppleLogin}>
             <Image size="sm" source={require("../../assets/apple.png")} />
           </TouchableOpacity>
         </Box>

@@ -12,6 +12,12 @@ const PaymentSuccessScreen = ({ navigation }) => {
     navigation.navigate("ProfileHome");
   };
 
+  // verify successful payment transaction
+
+  const verifyPayment = () => {
+  };
+
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       <View style={styles.container}>

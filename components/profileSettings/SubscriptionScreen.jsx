@@ -26,18 +26,20 @@ const SubscriptionScreen = ({ navigation, route }) => {
   // extract from useLogin context
   const { userProfile } = useLogin();
   const { emailAddress, firstName, lastName, phoneNumber } = userProfile;
+  const receivedData = route.params.subscription;
+  const { price, amount, description, planName, interval, title, id } =
+    receivedData;
 
   const [activeTab, setActiveTab] = useState("Platinum");
   const [planData, setPlanData] = useState({});
   const [processing, setProcessing] = useState(false);
 
-  const receivedData = route.params.subscription;
-  const { price, amount, description, planName, interval, id } = receivedData;
-
   // handle back button
   const handleBackBtn = () => {
     // navigate back
     navigation.goBack();
+    // set active tab to null
+    setActiveTab("Platinum");
   };
 
   // handle create-plan request
@@ -63,6 +65,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
         const data = await response.json();
         // update state
         setPlanData(data);
+
         console.log("Plan created successfully");
         return data;
       } else {
@@ -81,7 +84,6 @@ const SubscriptionScreen = ({ navigation, route }) => {
     description,
     payment_plan
   ) => {
-
     try {
       const response = await fetch(`${baseUrl}/flw-api/create-payment`, {
         method: "POST",
@@ -101,7 +103,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
       const data = await response.json();
       const { link } = data.data;
-      // alert("Payment link: " + link);
+      // Alert.alert("Payment Link", JSON.stringify(data));
       // const id = link.split("/").pop();
       navigation.navigate("PaymentScreen", { paymentLink: link });
     } catch (error) {
@@ -118,17 +120,16 @@ const SubscriptionScreen = ({ navigation, route }) => {
       let plan = null;
       if (activeTab === "Platinum") {
         plan = await handleCreatePlan(planName, amount, interval);
-      } else {
+      } else if (activeTab === "Ballers") {
         const planName =
-          "Splinx-Planet yearly subscription plan: Ballers upgrade 29.99 usd/month";
-        const amount = 26.99;
-        const interval = "monthly"
+          "Splinx-Planet yearly subscription plan: Ballers upgrade 14.99 usd/month";
+        const amount = 14.99;
+        const interval = "monthly";
         plan = await handleCreatePlan(planName, amount, interval);
       }
       // const plan = await handleCreatePlan(planName, amount, interval);
-
+      // Alert.alert("Plan created successfully", JSON.stringify(plan));
       if (plan && plan.data.id) {
-      
         await initiatePayment(
           plan.data.amount,
           emailAddress,
@@ -190,7 +191,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
               style={{ backgroundColor: primeryColor }}
               className="p-3 pb-0 my-4 rounded-xl h-40"
             >
-              <Text className="text-xl font-bold text-white">Platinum</Text>
+              <Text className="text-xl font-bold text-white">{title}</Text>
               <Text className="text-xs font-bold text-white">{price}</Text>
 
               <View className="mt-12">
@@ -267,13 +268,13 @@ const SubscriptionScreen = ({ navigation, route }) => {
               className="p-3 pb-0 my-4 rounded-xl h-40"
             >
               <Text className="text-xl font-bold text-white">Ballers</Text>
-              <Text className="text-xs font-bold text-white">$29.99/month</Text>
+              <Text className="text-xs font-bold text-white">$14.99/month</Text>
 
               <View className="mt-12">
                 <View className="flex flex-row items-center">
                   <AntDesign name="gift" size={14} color="white" />
                   <Text className="text-xs text-white ml-2">
-                    3 days trial then $29.99/month.
+                    {description}
                   </Text>
                 </View>
                 <Image

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { getItem, removeItem } from "../../utils/asyncStorage";
-import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../../components";
+import { CustomButton, CustomHeadings } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
@@ -86,28 +85,6 @@ const TokenScreen = () => {
     } catch (error) {
       setError("Invalid Token Code");
     }
-   
-    // const credential = firebase.auth.PhoneAuthProvider.credential(
-    //   verificationId,
-    //   tokenValue
-    // );
-    // firebase
-    //   .auth()
-    //   .signInWithCredential(credential)
-    //   .then((result) => {
-    //     // do something with the result
-    //     if (result) {
-    //       const data = {
-    //         phoneNumber: phoneNumber,
-    //       };
-         
-    //       navigation.replace("AddEmailScreen", data);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     // do something with the error
-    //     setError("Invalid Token Code");
-    //   });
   };
 
   // handle token resend
