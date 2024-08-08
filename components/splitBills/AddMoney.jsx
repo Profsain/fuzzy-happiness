@@ -47,7 +47,10 @@ const AddMoney = ({ navigation }) => {
   // open bottom sheet
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [amount, setAmount] = useState(null);
+  const [amountError, setAmountError] = useState("");
   const [note, setNote] = useState("")
+  const [isValid, setIsValid] = useState(false)
+  const [processing, setProcessing] = useState(false);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
@@ -57,6 +60,8 @@ const AddMoney = ({ navigation }) => {
   // update amount
   const handleAmount = (text) => {
     setAmount(`$${text}`);
+    // validate
+    
   };
 
   // update note
@@ -64,8 +69,53 @@ const AddMoney = ({ navigation }) => {
     setNote(text);
   };
 
+  // initiate funding 
+   const initiatePayment = async (
+     amount,
+     email,
+     name,
+     phonenumber,
+     description,
+   ) => {
+     try {
+       const response = await fetch(`${baseUrl}/flw-api/fund-wallet`, {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           amount,
+           currency: "USD",
+           email,
+           name,
+           phonenumber,
+           description
+         }),
+       });
+
+       const data = await response.json();
+       const { link } = data.data;
+       // Alert.alert("Payment Link", JSON.stringify(data));
+
+       navigation.navigate("AddMoneyPayScreen", { paymentLink: link });
+     } catch (error) {
+       console.error(error);
+     }
+   };
+
   // handle add money
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
+    setProcessing(true);
+
+    // call initiate payment
+    await initiatePayment(
+      amount,
+      emailAddress,
+      `${firstName} ${lastName}`,
+      phoneNumber,
+      `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`,
+    );
+    // for testing
     navigation.navigate("AddMoneySuccess");
   };
 
@@ -84,6 +134,7 @@ const AddMoney = ({ navigation }) => {
         <CustomInput
           mb={24}
           placeholder="Amount"
+          error={amountError}
           keyboardType="numeric"
           inputValue={amount}
           handleTextChange={handleAmount}

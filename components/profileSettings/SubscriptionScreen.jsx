@@ -13,9 +13,6 @@ import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
 import LoadingSpinner from "../LoadingSpinner";
-// flutterwave integration
-import { WebView } from "react-native-webview";
-
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import { AntDesign } from "@expo/vector-icons";
 

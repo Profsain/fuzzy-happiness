@@ -10,40 +10,24 @@ const AddMoneySuccess = ({ navigation }) => {
   const { userProfile, token } = useLogin();
   const {_id, emailAddress, firstName, lastName, phoneNumber} = userProfile;
 
-  // component state
   // open bottom sheet
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const toggleModal = () => {
+  // verify funding payment and update user database
+
+  // handle bottom sheet done btn
+  const handleDoneBtn = () => {
     setIsModalVisible(!isModalVisible);
-  };
+    navigation.navigate("TransactionScreen")
+  }
 
   return (
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={toggleModal} />
+        <SuccessBottomSheet isVisible={isModalVisible} onClose={handleDoneBtn} />
       </SafeAreaView>
-
-      {/* bottom sheet */}
-      {isModalVisible && (
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={toggleModal} />
-      )}
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  paymentButton: {
-    backgroundColor: "#FF5C01",
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  paymentButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default AddMoneySuccess;

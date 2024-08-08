@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   AddMoney,
   AddMoneySuccess,
+  AddMoneyPayScreen,
   BillsHome,
   BillsGroup,
   BillsDetails,
@@ -46,6 +47,12 @@ const BillsPayScreen = () => {
       <Stack.Screen
         name="AddMoneySuccess"
         component={AddMoneySuccess}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AddMoneyPayScreen"
+        component={AddMoneyPayScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />
