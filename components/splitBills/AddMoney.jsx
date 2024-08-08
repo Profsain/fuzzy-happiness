@@ -1,28 +1,72 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
 import React, {useState} from "react";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
+import useFetchWallet from "../../hooks/useFetchWallet";
+import { useLogin } from "../../context/LoginProvider";
+// flutterwave import
+import { PayWithFlutterwave } from "flutterwave-react-native";
 
-const AddMoney = ({navigation}) => {
+const AddMoney = ({ navigation }) => {
+  // base URL
+  const baseUrl = process.env.BASE_URL;
+  const merchantId = process.env.FW_MERCHANT_ID;
+  const { userProfile, token } = useLogin();
+  const {_id, emailAddress, firstName, lastName, phoneNumber} = userProfile;
+
+  // call useFetchWallet
+  const wallet = useFetchWallet();
+
+  /* An example function called when transaction is completed successfully or canceled */
+  // const handleOnRedirect = (data) => {
+  //   Alert.alert("Funded Data", JSON.stringify(data))
+  //   console.log(data);
+  // };
+
+  /* An example function to generate a random transaction reference */
+  // const generateTransactionRef = (length) => {
+  //   let result = "";
+  //   let characters =
+  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  //   let charactersLength = characters.length;
+  //   for (let i = 0; i < length; i++) {
+  //     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  //   }
+  //   return `flw_tx_ref_${result}`;
+  // };
 
   // handle back to prev screen when device back button press
+  
   const handleBack = () => {
     navigation.goBack();
-  }
+  };
 
   // component state
   // open bottom sheet
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [amount, setAmount] = useState(null);
+  const [note, setNote] = useState("")
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+ 
+  // update amount
+  const handleAmount = (text) => {
+    setAmount(`$${text}`);
+  };
+
+  // update note
+  const handleNote = (text) => {
+    setNote(text);
+  };
+
   // handle add money
   const handleAddMoney = () => {
-    toggleModal();
+    navigation.navigate("AddMoneySuccess");
   };
 
   return (
@@ -33,16 +77,50 @@ const AddMoney = ({navigation}) => {
 
         {/* wallet balance */}
         <Text className="font-semibold text-lg text-center my-8">
-          Balance $200.00
+          Balance ${wallet?.balance?.toFixed(2) || "0.00"}
         </Text>
 
         {/* add money section */}
-        <CustomInput mb={24} placeholder="Amount" keyboardType="numeric" />
-        <CustomInput placeholder="Note" />
+        <CustomInput
+          mb={24}
+          placeholder="Amount"
+          keyboardType="numeric"
+          inputValue={amount}
+          handleTextChange={handleAmount}
+        />
+        <CustomInput
+          placeholder="Note"
+          inputValue={note}
+          handleTextChange={handleNote}
+        />
 
         {/* add money button */}
         <View className="mt-28">
           <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
+
+          {/* <PayWithFlutterwave
+            onRedirect={handleOnRedirect}
+            options={{
+              tx_ref: generateTransactionRef(10),
+              authorization: `${merchantId}`,
+              customer: {
+                email: emailAddress,
+              },
+              amount: 2000,
+              currency: "USD",
+              payment_options: "card",
+            }}
+            customButton={(props) => (
+              <TouchableOpacity
+                style={styles.paymentButton}
+                onPress={props.onPress}
+                isBusy={props.isInitializing}
+                disabled={props.disabled}
+              >
+                <Text style={styles.paymentButtonText}>Pay $500</Text>
+              </TouchableOpacity>
+            )}
+          /> */}
         </View>
       </SafeAreaView>
 
@@ -53,5 +131,19 @@ const AddMoney = ({navigation}) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  paymentButton: {
+    backgroundColor: "#FF5C01",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  paymentButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
 
 export default AddMoney;

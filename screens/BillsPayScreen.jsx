@@ -1,9 +1,8 @@
-import React, {useState, useEffect} from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { Alert } from "react-native";
 import {
   AddMoney,
+  AddMoneySuccess,
   BillsHome,
   BillsGroup,
   BillsDetails,
@@ -41,6 +40,12 @@ const BillsPayScreen = () => {
       <Stack.Screen
         name="AddMoney"
         component={AddMoney}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AddMoneySuccess"
+        component={AddMoneySuccess}
         options={{ headerShown: false }}
         navigation={navigation}
       />

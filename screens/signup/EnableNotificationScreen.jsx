@@ -39,7 +39,7 @@ const EnableNotificationScreen = ({ navigation }) => {
       {/* form section */}
       <VStack space="xl" mt={5}>
         <Text fontSize={14}>
-          Receive instant updates on split notifications, upcoming events, and
+          Receive instant in app notification updates on split bills, upcoming events, and
           community alerts. Stay connected with your groups and never miss a
           moment.
         </Text>

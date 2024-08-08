@@ -40,6 +40,9 @@ const COLUMN_COUNT = 3;
 const ITEM_SIZE = width / COLUMN_COUNT;
 
 const UserProfileScreen = () => {
+   // base url
+  const baseUrl = process.env.BASE_URL;
+
   const navigation = useNavigation();
   // received data from previous screen
   const receivedData = useReceivedData();
@@ -220,11 +223,12 @@ const UserProfileScreen = () => {
     const registerUser = async () => {
       try {
         const response = await fetch(
-          "https://splinx-server.onrender.com/auth/register",
+          `${baseUrl}/auth/register`,
           requestOptions
         );
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          Alert.alert("Error", JSON.stringify(response.message));
+          // throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.text();
 
