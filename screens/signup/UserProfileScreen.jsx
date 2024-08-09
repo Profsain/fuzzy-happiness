@@ -238,7 +238,8 @@ const UserProfileScreen = () => {
         // navigate to invite friends screen
         navigation.replace("InviteFriendsScreen");
       } catch (error) {
-        console.error("Error:", error);
+        Alert.alert("Error", "An error occurred, please try again");
+        setSubmitting(false);
       }
     };
 

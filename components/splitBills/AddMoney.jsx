@@ -1,20 +1,30 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import React, {useState} from "react";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert
+} from "react-native";
+import React, { useState } from "react";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 import useFetchWallet from "../../hooks/useFetchWallet";
 import { useLogin } from "../../context/LoginProvider";
+import { secondaryColor } from "../../utils/appstyle";
 // flutterwave import
 import { PayWithFlutterwave } from "flutterwave-react-native";
+import LoadingSpinner from "../LoadingSpinner";
+import { set } from "@gluestack-style/react";
 
 const AddMoney = ({ navigation }) => {
   // base URL
   const baseUrl = process.env.BASE_URL;
   const merchantId = process.env.FW_MERCHANT_ID;
   const { userProfile, token } = useLogin();
-  const {_id, emailAddress, firstName, lastName, phoneNumber} = userProfile;
+  const { _id, emailAddress, firstName, lastName, phoneNumber } = userProfile;
 
   // call useFetchWallet
   const wallet = useFetchWallet();
@@ -38,7 +48,7 @@ const AddMoney = ({ navigation }) => {
   // };
 
   // handle back to prev screen when device back button press
-  
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -46,22 +56,27 @@ const AddMoney = ({ navigation }) => {
   // component state
   // open bottom sheet
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [amount, setAmount] = useState(null);
+  const [amount, setAmount] = useState("");
   const [amountError, setAmountError] = useState("");
-  const [note, setNote] = useState("")
-  const [isValid, setIsValid] = useState(false)
+  const [note, setNote] = useState("");
+  const [isValid, setIsValid] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
- 
   // update amount
   const handleAmount = (text) => {
-    setAmount(`$${text}`);
+    setAmount(text);
     // validate
-    
+    if (text < 1) {
+      setAmountError("Amount must be greater than 0");
+      setIsValid(false);
+    } else {
+      setAmountError("");
+      setIsValid(true);
+    }
   };
 
   // update note
@@ -69,39 +84,49 @@ const AddMoney = ({ navigation }) => {
     setNote(text);
   };
 
-  // initiate funding 
-   const initiatePayment = async (
-     amount,
-     email,
-     name,
-     phonenumber,
-     description,
-   ) => {
-     try {
-       const response = await fetch(`${baseUrl}/flw-api/fund-wallet`, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           amount,
-           currency: "USD",
-           email,
-           name,
-           phonenumber,
-           description
-         }),
-       });
+  // initiate funding
+  const initiatePayment = async (
+    amount,
+    email,
+    name,
+    phonenumber,
+    description
+  ) => {
+    try {
+      // Alert.alert("pass data", JSON.stringify(description))
+      const response = await fetch(`${baseUrl}/flw-api/fund-wallet`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount,
+          currency: "USD",
+          email,
+          name,
+          phonenumber,
+          description,
+        }),
+      });
 
-       const data = await response.json();
-       const { link } = data.data;
-       // Alert.alert("Payment Link", JSON.stringify(data));
+      if (response.ok) {
+        const data = await response.json();
+        const { link } = data.data;
+        // Alert.alert("Payment Link", JSON.stringify(link.split("/").pop()));
 
-       navigation.navigate("AddMoneyPayScreen", { paymentLink: link });
-     } catch (error) {
-       console.error(error);
-     }
-   };
+         navigation.navigate("AddMoneyPayScreen", { paymentLink: link, data });
+        setProcessing(false);
+      } else {
+        Alert.alert("Funding Error", "Transaction failed. Please try again");
+        setProcessing(false);
+      }
+     
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Transaction failed. Please try again");
+      setProcessing(false);
+    }
+  };
 
   // handle add money
   const handleAddMoney = async () => {
@@ -109,14 +134,12 @@ const AddMoney = ({ navigation }) => {
 
     // call initiate payment
     await initiatePayment(
-      amount,
+      Number(amount),
       emailAddress,
       `${firstName} ${lastName}`,
       phoneNumber,
-      `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`,
+      `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`
     );
-    // for testing
-    navigation.navigate("AddMoneySuccess");
   };
 
   return (
@@ -147,7 +170,12 @@ const AddMoney = ({ navigation }) => {
 
         {/* add money button */}
         <View className="mt-28">
-          <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
+          {processing && <LoadingSpinner />}
+          {isValid ? (
+            <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
+          ) : (
+            <CustomButton label="Add Money" backgroundColor={secondaryColor} />
+          )}
 
           {/* <PayWithFlutterwave
             onRedirect={handleOnRedirect}

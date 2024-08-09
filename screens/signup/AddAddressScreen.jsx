@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import * as Location from 'expo-location';
-import axios from 'axios';
-import { CountrySelector, CustomButton, CustomHeadings, CustomInput } from "../../components";
+import * as Location from "expo-location";
+import axios from "axios";
+import {
+  CountrySelector,
+  CustomButton,
+  CustomHeadings,
+  CustomInput,
+  LoadingSpinner,
+} from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import useReceivedData from "../../hooks/useReceivedData";
+import { Alert } from "react-native";
 
 const AddAddressScreen = ({ navigation }) => {
   const receivedData = useReceivedData();
@@ -16,13 +23,15 @@ const AddAddressScreen = ({ navigation }) => {
   const [cityError, setCityError] = useState("");
   const [address, setAddress] = useState("");
   const [addressError, setAddressError] = useState("");
-  const [currency, setCurrency] = useState({ code: "", symbol: "" });
+  const [currency, setCurrency] = useState("");
+  const [currencySymbol, setCurrencySymbol] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permission to access location was denied');
+      if (status !== "granted") {
+        alert("Permission to access location was denied");
         return;
       }
 
@@ -34,14 +43,22 @@ const AddAddressScreen = ({ navigation }) => {
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
     try {
+      setLoading(true);
+
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.GOOGLE_MAP_API_KEY}`
       );
       const data = await response.json();
       if (data.results.length > 0) {
         const addressComponents = data.results[0].address_components;
-        const country = addressComponents.find(component => component.types.includes("country"))?.long_name || "";
-        const city = addressComponents.find(component => component.types.includes("locality"))?.long_name || "";
+        const country =
+          addressComponents.find((component) =>
+            component.types.includes("country")
+          )?.long_name || "";
+        const city =
+          addressComponents.find((component) =>
+            component.types.includes("locality")
+          )?.long_name || "";
         const address = data.results[0].formatted_address;
 
         setCountry(country);
@@ -49,6 +66,7 @@ const AddAddressScreen = ({ navigation }) => {
         setAddress(address);
         getCurrencyFromCountry(country);
         setIsValid(true);
+        setLoading(false);
       }
     } catch (error) {
       console.error(error);
@@ -57,12 +75,15 @@ const AddAddressScreen = ({ navigation }) => {
 
   const getCurrencyFromCountry = async (country) => {
     try {
-      const response = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
+      const response = await axios.get(
+        `https://restcountries.com/v3.1/name/${country}`
+      );
       const countryData = response.data[0];
       const currencyCode = Object.keys(countryData.currencies)[0];
       const currencySymbol = countryData.currencies[currencyCode].symbol;
 
-      setCurrency({ code: currencyCode, symbol: currencySymbol });
+      setCurrency(currencyCode);
+      setCurrencySymbol(currencySymbol);
     } catch (error) {
       console.error(error);
     }
@@ -94,7 +115,9 @@ const AddAddressScreen = ({ navigation }) => {
       city,
       homeAddress: address,
       currency,
+      currencySymbol,
     };
+    // Alert.alert("Data", JSON.stringify(data));
     navigationToScreen(navigation, "BioScreen", data);
   };
 
@@ -116,13 +139,14 @@ const AddAddressScreen = ({ navigation }) => {
           error={cityError}
         />
         <CustomInput
-          placeholder="Home Address"
+          placeholder="Your Address"
           type="text"
           inputValue={address}
           handleTextChange={handleAddressChange}
           error={addressError}
         />
         <Box mt={90}>
+          {loading && <LoadingSpinner />}
           {!isValid ? (
             <CustomButton
               label="Next"
@@ -139,4 +163,3 @@ const AddAddressScreen = ({ navigation }) => {
 };
 
 export default AddAddressScreen;
-

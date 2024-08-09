@@ -51,7 +51,7 @@ const SignUpScreen = ({ navigation }) => {
 
     try {
       await registerIndieID(`${phoneNumber}`, 22245, notifyToken);
-      
+
       // send otp to phone
       sendPushNotification(
         phoneNumber,
@@ -62,7 +62,6 @@ const SignUpScreen = ({ navigation }) => {
       navigationToScreen(navigation, "TokenScreen", data);
       setLoading(false);
     } catch (error) {
-
       Alert.alert("Error", error.message);
       setLoading(false);
     }

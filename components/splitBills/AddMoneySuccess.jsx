@@ -1,32 +1,49 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import React, {useState} from "react";
-
+import React, { useState, useEffect } from "react";
+import { View, Text, SafeAreaView, Alert } from "react-native";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 import { useLogin } from "../../context/LoginProvider";
 
-const AddMoneySuccess = ({ navigation }) => {
-  // base URL
+const AddMoneySuccess = ({ navigation, route }) => {
+  const { transactionId, data } = route.params; // Get transaction ID from route params
   const baseUrl = process.env.BASE_URL;
-  const { userProfile, token } = useLogin();
-  const {_id, emailAddress, firstName, lastName, phoneNumber} = userProfile;
+  const { userProfile } = useLogin();
+  const [isModalVisible, setIsModalVisible] = useState(true);
 
-  // open bottom sheet
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  useEffect(() => {
+    const verifyTransaction = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/verify-transaction/${transactionId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${userProfile.token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        // Handle transaction verification data here
+        Alert.alert("Transaction Verification", JSON.stringify(data));
+        console.log("Transaction Verification:", data);
+      } catch (error) {
+        console.error("Error verifying transaction:", error);
+      }
+    };
 
-  // verify funding payment and update user database
+    if (transactionId) {
+      verifyTransaction();
+    }
+  }, [transactionId]);
 
-  // handle bottom sheet done btn
   const handleDoneBtn = () => {
     setIsModalVisible(!isModalVisible);
-    navigation.navigate("TransactionScreen")
-  }
+    navigation.navigate("TransactionScreen");
+  };
 
   return (
-    <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={handleDoneBtn} />
-      </SafeAreaView>
-    </>
+    <SafeAreaView style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
+      <SuccessBottomSheet isVisible={isModalVisible} handleOk={handleDoneBtn} />
+    </SafeAreaView>
   );
 };
 

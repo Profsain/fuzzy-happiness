@@ -76,7 +76,7 @@ const RequestMoney = ({ navigation }) => {
 
   // update amount
   const handleAmount = (text) => {
-    setAmount(`$${text}`);
+    setAmount(text);
   };
 
   // update note

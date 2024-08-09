@@ -52,9 +52,13 @@ const BillsHome = ({ navigation }) => {
         ]);
         // Alert.alert("Wallet ", JSON.stringify(data));
         setProcessing(false);
+      } else {
+        const error = await response.json();
+        Alert.alert("Error yy", JSON.stringify(error));
+        setProcessing(false);
       }
     } catch (error) {
-      Alert.alert("Error", JSON.stringify(error.message));
+      Alert.alert("Error xx", JSON.stringify(error.message));
       setProcessing(false);
       throw new Error(error.message);
     }
