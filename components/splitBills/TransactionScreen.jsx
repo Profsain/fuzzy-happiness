@@ -25,7 +25,7 @@ const TransactionScreen = ({ navigation }) => {
   // base URL
   const baseUrl = process.env.BASE_URL; 
   const { userProfile, token } = useLogin();
-  const userId = userProfile._id;
+  const {currency, currencySymbol} = userProfile;
 
   // call useFetchWallet
   const wallet = useFetchWallet();
@@ -68,7 +68,7 @@ const TransactionScreen = ({ navigation }) => {
                   Splinx Balance
                 </Text>
                 <Text className="mt-1 font-semibold text-xl">
-                  ${wallet?.balance?.toFixed(2) || "0.00"}
+                  {currencySymbol || "$"}{wallet?.balance?.toFixed(2) || "0.00"}
                 </Text>
               </View>
               <Text className="text-white font-normal text-xs">
@@ -123,7 +123,7 @@ const TransactionScreen = ({ navigation }) => {
           func={handleChangePaymentMethod}
         />
         <BillsHorizontalBtn
-          text="Wallet Settings"
+          text="Settings"
           iconLeft={<Fontisto name="wallet" size={18} color={primeryColor} />}
           func={handleWalletSettings}
         />

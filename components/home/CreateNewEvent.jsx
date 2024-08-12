@@ -176,6 +176,22 @@ const CreateNewEvent = ({ navigation }) => {
     setShowTimeModal(true);
   };
 
+  // handle rule info
+  const handleRuleInfo = () => {
+    Alert.alert(
+      "Event Rules",
+      "Event rules are the guidelines that participants must follow during the event. It could include dress code, no smoking, no alcohol, etc."
+    );
+  };
+
+  // handle event budget info
+  const handleEventBudgetInfo = () => { 
+    Alert.alert(
+      "Event Budget",
+      "The event budget is the total amount you plan to spend on the event, which will be split among the event participants. It includes costs such as the venue, food, drinks, entertainment, and more."
+    );
+  };
+
   // handle create new event
   const handleCreateNewEvent = () => {
     // set submitting to true
@@ -215,7 +231,7 @@ const CreateNewEvent = ({ navigation }) => {
         // set submitting to false
         setSubmitting(false);
 
-         const message = `
+        const message = `
       <div style="font-family: Arial, sans-serif; color: #333;">
         <h1 style="color: #f9784b;">Splinx Event</h1>
         <p>Dear ${userProfile.firstName},</p>
@@ -226,32 +242,32 @@ const CreateNewEvent = ({ navigation }) => {
       </div>
     `;
 
-         const emailResponse = await fetch(
-           `${process.env.BASE_URL}/email/send-email`,
-           {
-             method: "POST",
-             headers: {
-               "Content-Type": "application/json",
-               Authorization: `Bearer ${token}`,
-             },
-             body: JSON.stringify({
-               email: userProfile.emailAddress,
-               subject: "SplinX Planet Event ",
-               html: message,
-             }),
-           }
-         );
+        const emailResponse = await fetch(
+          `${process.env.BASE_URL}/email/send-email`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              email: userProfile.emailAddress,
+              subject: "SplinX Planet Event ",
+              html: message,
+            }),
+          }
+        );
 
-         if (emailResponse.ok) {
-           await sendPushNotification(
-             userProfile._id,
-             "Splinx Planet",
-             `${formData.eventName} created successful. Hurray!😍.`
-           );
-         } else {
-           const emailError = await emailResponse.json();
-           console.error("Email error:", emailError.message);
-         }
+        if (emailResponse.ok) {
+          await sendPushNotification(
+            userProfile._id,
+            "Splinx Planet",
+            `${formData.eventName} created successful. Hurray!😍.`
+          );
+        } else {
+          const emailError = await emailResponse.json();
+          console.error("Email error:", emailError.message);
+        }
 
         // navigate to previous screen
         Alert.alert("Success", "Event created successfully", [
@@ -335,16 +351,25 @@ const CreateNewEvent = ({ navigation }) => {
             {/* event cost */}
             <View className="mt-4">
               <Text className="text-lg font-semibold">Event Cost</Text>
-              <TextInput
-                multiline={true}
-                placeholder="Enter total cost of the event"
-                className="border-b-2 border-slate-100 mt-2 text-lg"
-                value={eventData.eventCost}
-                onChangeText={(text) =>
-                  handleEventDataChange("eventCost", text)
-                }
-                keyboardType="numeric"
-              />
+              <View className="flex flex-row items-center justify-between pr-4">
+                <TextInput
+                  multiline={true}
+                  placeholder="Enter total budget for the event"
+                  className="border-b-2 border-slate-100 mt-2 text-lg"
+                  value={eventData.eventCost}
+                  onChangeText={(text) =>
+                    handleEventDataChange("eventCost", text)
+                  }
+                  keyboardType="numeric"
+                />
+                <TouchableOpacity onPress={handleEventBudgetInfo}>
+                  <AntDesign
+                    name="infocirlceo"
+                    size={24}
+                    color={primeryColor}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* event date */}
@@ -396,15 +421,24 @@ const CreateNewEvent = ({ navigation }) => {
               <Text className="text-lg font-semibold">
                 Set Your Event Rules
               </Text>
-              <TextInput
-                multiline={true}
-                placeholder="Enter event rules"
-                className="border-b-2 border-slate-100 mt-2 text-lg"
-                value={eventData.eventUserRules}
-                onChangeText={(text) =>
-                  handleEventDataChange("eventUserRules", text)
-                }
-              />
+              <View className="flex flex-row items-center justify-between pr-4">
+                <TextInput
+                  multiline={true}
+                  placeholder="Enter event rules"
+                  className="border-b-2 border-slate-100 mt-2 text-lg"
+                  value={eventData.eventUserRules}
+                  onChangeText={(text) =>
+                    handleEventDataChange("eventUserRules", text)
+                  }
+                />
+                <TouchableOpacity onPress={handleRuleInfo}>
+                  <AntDesign
+                    name="infocirlceo"
+                    size={24}
+                    color={primeryColor}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* event hashtags */}

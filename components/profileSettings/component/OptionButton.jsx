@@ -8,7 +8,7 @@ const OptionButton = ({
   btnFunc,
   btnText,
   iconLeft = <AntDesign name="user" size={24} color={primeryColor} />,
-  iconRight = <FontAwesome6 name="greater-than" size={18} color="black" />,
+  iconRight = <FontAwesome6 name="greater-than" size={16} color="black" />,
 }) => {
   return (
     <TouchableOpacity
@@ -17,7 +17,7 @@ const OptionButton = ({
     >
       <View className="flex flex-row justify-between items-center">
         {iconLeft}
-        <Text className=" text-xl">{btnText || "Add Button Text"}</Text>
+        <Text className="">{btnText || "Add Button Text"}</Text>
       </View>
       {iconRight}
     </TouchableOpacity>

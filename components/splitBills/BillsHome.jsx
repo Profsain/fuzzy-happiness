@@ -19,7 +19,7 @@ import { useLogin } from "../../context/LoginProvider";
 
 const BillsHome = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
-  const { isWalletCreated, phoneNumber, _id } = userProfile;
+  const { isWalletCreated, phoneNumber, _id, currency, currencySymbol } = userProfile;
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -97,7 +97,7 @@ const BillsHome = ({ navigation }) => {
         <Text className="text-xl font-semibold pb-2 text-slate-600">
           Total Spent
         </Text>
-        <Text className="text-2xl font-bold text-slate-600">$ 0.00</Text>
+        <Text className="text-2xl font-bold text-slate-600">{currencySymbol || "$"}0.00</Text>
 
         <View className="flex flex-row justify-end mt-6">
           {isWalletCreated ? (

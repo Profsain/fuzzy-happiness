@@ -33,6 +33,7 @@ const TokenScreen = () => {
       try {
         const otp = await getItem("otp");
         if (otp) {
+          Alert.alert("Splinx OTP", `Your OTP is ${otp}`);
           setAutoFillOtp(otp);
         }
       } catch (error) { 

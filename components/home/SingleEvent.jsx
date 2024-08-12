@@ -85,7 +85,7 @@ const SingleEvent = ({navigation, route}) => {
 
     // Event URL with deep link
     const eventUrl = `${deepLinkBaseUrl}${eventDetails._id}`;
-    const message = `Join me at ${eventName} event. Download the Splinx app to register and join the event: ${eventUrl}. If you don't have the app, download it here: ${appStoreUrl}`;
+    const message = `${userProfile.firstName} has invited you to ${eventName} event. Download the Splinx app to register and join the event: ${eventUrl}. If you don't have the app, download it here: ${appStoreUrl}`;
     handleSocialShare(message);
   };
 

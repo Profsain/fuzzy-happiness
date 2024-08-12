@@ -23,10 +23,11 @@ import {
   View,
   ScrollView,
   Dimensions,
+  Alert,
 } from "react-native";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
-import handleListUpdate from "../../utils/handlyListUpdate";
+import handleListUpdate from "../../utils/handleListUpdate";
 import { useNavigation } from "@react-navigation/native";
 import useReceivedData from "../../hooks/useReceivedData";
 
@@ -40,18 +41,13 @@ const COLUMN_COUNT = 3;
 const ITEM_SIZE = width / COLUMN_COUNT;
 
 const UserProfileScreen = () => {
-   // base url
   const baseUrl = process.env.BASE_URL;
-
   const navigation = useNavigation();
-  // received data from previous screen
   const receivedData = useReceivedData();
 
-  // loading spinner
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // form state
   const { firstName, lastName, country, city } = receivedData;
   const [avatarUri, setAvatarUri] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
@@ -59,19 +55,21 @@ const UserProfileScreen = () => {
   const [ageError, setAgeError] = useState("");
   const [bio, setBio] = useState("");
   const [bioError, setBioError] = useState("");
-  const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
+  const [isValid, setIsValid] = useState(false);
 
-  // render interest items
   const [bgColor, setBgColor] = useState(secondaryColor);
   const [color, setColor] = useState(textColor);
-  const selectedColor = "#e9e9e9";
   const [interestList, setInterestList] = useState([]);
+  const [tagList, setTagList] = useState([]);
 
-  // handle add and remove interest from interest list
   const handleInterest = (id) => {
     handleListUpdate(id, interestData, setInterestList);
+    Alert.alert("Interest", JSON.stringify(interestList));
   };
-  // map through interestData and return item
+
+  const handleTag = (id) => {
+    handleListUpdate(id, hashtagsData, setTagList);
+  };
 
   const renderInterest = interestData.map((item) => (
     <CustomButton
@@ -90,12 +88,6 @@ const UserProfileScreen = () => {
     />
   ));
 
-  // render tags items
-  const [tagList, setTagList] = useState([]);
-  // handle add and remove interest from interest list
-  const handleTag = (id) => {
-    handleListUpdate(id, hashtagsData, setTagList);
-  };
   const renderTags = hashtagsData.map((item) => (
     <CustomButton
       key={item.id}
@@ -105,7 +97,7 @@ const UserProfileScreen = () => {
       label={`#${initialToUpperCase(item.tag)}`}
       color={color}
       backgroundColor={
-        tagList.some((interest) => interest.id === item.id)
+        tagList.some((tag) => tag.id === item.id)
           ? secondBgColor
           : secondaryColor
       }
@@ -115,8 +107,6 @@ const UserProfileScreen = () => {
 
   const handleAgeChange = (text) => {
     setAge(text);
-
-    // handle error
     if (text.length < 1) {
       setAgeError("Age is required");
       setIsValid(false);
@@ -127,8 +117,6 @@ const UserProfileScreen = () => {
 
   const handleBioChange = (text) => {
     setBio(text);
-
-    // handle error
     if (text.length < 1) {
       setBioError("Bio is required");
       setIsValid(false);
@@ -141,13 +129,9 @@ const UserProfileScreen = () => {
     }
   };
 
-  // load profile image from device
   const handlePhoto = async () => {
-    // set loading to true
     setLoading(true);
-
     let result = await ImagePicker.launchImageLibraryAsync({
-      // mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -156,11 +140,6 @@ const UserProfileScreen = () => {
 
     if (!result.canceled) {
       setAvatarUri(result.assets[0].uri);
-
-      // set loading to false
-      setLoading(false);
-
-      // upload photo to cloudinary
       let base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
       let data = {
         file: base64Img,
@@ -170,12 +149,9 @@ const UserProfileScreen = () => {
       uploadPhoto(data);
     }
 
-    if(result.canceled) {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
-  // upload profile photo to cloudinary
   const uploadPhoto = async (data) => {
     let CLOUDINARY_URL =
       "https://api.cloudinary.com/v1_1/dvwxyofm2/image/upload";
@@ -189,61 +165,48 @@ const UserProfileScreen = () => {
     })
       .then(async (r) => {
         let data = await r.json();
-
         setProfileImg(data.secure_url);
       })
       .catch((err) => console.log("err", err));
   };
 
-  // handle new user registration
   const handleCreateAccount = async () => {
-    // set submitting to true
     setSubmitting(true);
+    try {
+      const data = {
+        ...receivedData,
+        profileImg,
+        age,
+        bio,
+        interestList,
+        tagList,
+      };
+      Alert.alert("Data", JSON.stringify(data));
 
-    // send data to backend database
-    const data = {
-      ...receivedData,
-      profileImg,
-      age,
-      bio,
-      interestList,
-      tagList,
-    };
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(data),
+        redirect: "follow",
+      };
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(data),
-      redirect: "follow",
-    };
-
-    const registerUser = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/auth/register`,
-          requestOptions
-        );
-        if (!response.ok) {
-          Alert.alert("Error", JSON.stringify(response.message));
-          // throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.text();
-
-        // set submitting to false
-        setSubmitting(false);
-
-        // navigate to invite friends screen
-        navigation.replace("InviteFriendsScreen");
-      } catch (error) {
-        Alert.alert("Error", "An error occurred, please try again");
-        setSubmitting(false);
+      const response = await fetch(
+        `${baseUrl}/auth/register`,
+        requestOptions
+      );
+      if (!response.ok) {
+        Alert.alert("Error", "Registration failed");
       }
-    };
-
-    registerUser();
+      const result = await response.text();
+      setSubmitting(false);
+      navigation.replace("InviteFriendsScreen");
+    } catch (error) {
+      Alert.alert("Error", "An error occurred, please try again");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -254,7 +217,6 @@ const UserProfileScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <VStack space="2xl" flex={1}>
-          {/* profile avatar */}
           <HStack space="2xl">
             <TouchableOpacity onPress={handlePhoto}>
               {avatarUri === null ? (
@@ -286,7 +248,6 @@ const UserProfileScreen = () => {
               </Text>
             </VStack>
           </HStack>
-          {/* add age and bio */}
           <Box>
             <CustomInput
               placeholder="Add age"
@@ -306,47 +267,37 @@ const UserProfileScreen = () => {
             />
           </Box>
 
-          {/* action button */}
-          {/* <CustomButton
-            label="Create Account"
-            buttonFunc={handleCreateAccount}
-          /> */}
-        </VStack>
+          <VStack space="2xl" mt={24} flex={1}>
+            <Box>
+              <CustomHeadings title="My Interests" />
+              <View style={styles.container}>{renderInterest}</View>
+            </Box>
 
-        <VStack space="2xl" mt={24} flex={1}>
-          {/* interest section */}
-          <Box>
-            <CustomHeadings title="My Interests" />
+            <Box>
+              <CustomHeadings title="Hashtags" />
+              <View style={styles.container}>{renderTags}</View>
+            </Box>
 
-            <View style={styles.container}>{renderInterest}</View>
-          </Box>
-
-          {/* hash tags section */}
-          <Box>
-            <CustomHeadings title="Hashtags" />
-            <View style={styles.container}>{renderTags}</View>
-          </Box>
-
-          {/* action button */}
-          <Box>
-            {!isValid ? (
-              <CustomButton
-                label="Create Account"
-                backgroundColor={secondaryColor}
-              />
-            ) : (
-              <Box>
-                {submitting ? (
-                  <LoadingSpinner text="Creating Profile" />
-                ) : (
-                  <CustomButton
-                    label="Create Account"
-                    buttonFunc={handleCreateAccount}
-                  />
-                )}
-              </Box>
-            )}
-          </Box>
+            <Box>
+              {!isValid ? (
+                <CustomButton
+                  label="Create Account"
+                  backgroundColor={secondaryColor}
+                />
+              ) : (
+                <Box>
+                  {submitting ? (
+                    <LoadingSpinner text="Creating Profile" />
+                  ) : (
+                    <CustomButton
+                      label="Create Account"
+                      buttonFunc={handleCreateAccount}
+                    />
+                  )}
+                </Box>
+              )}
+            </Box>
+          </VStack>
         </VStack>
       </ScrollView>
     </Box>
@@ -379,4 +330,5 @@ const styles = StyleSheet.create({
     borderColor: "gray",
   },
 });
+
 export default UserProfileScreen;

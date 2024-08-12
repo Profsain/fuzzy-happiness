@@ -3,6 +3,7 @@ import React from 'react'
 import { useLogin } from '../../context/LoginProvider'
 import { BackTopBar } from '../home'
 import OptionButton from './component/OptionButton'
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const ProfileHome = ({ navigation }) => {
   // extract context 
@@ -37,6 +38,16 @@ const ProfileHome = ({ navigation }) => {
     navigation.navigate("LoginScreen");
   }
 
+  // handle faq
+  const handleFaq = () => {
+    Alert.alert("FAQ under construction");
+  }
+
+  // handle live chat
+  const handleLiveChat = () => {
+    Alert.alert("Live Chat Support under construction");
+  }
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       <View>
@@ -66,9 +77,25 @@ const ProfileHome = ({ navigation }) => {
           btnFunc={handleAccount}
         />
         <OptionButton
+          btnText="FAQ"
+          iconLeft=""
+          iconRight={
+            <AntDesign name="questioncircleo" size={18} color="black" />
+          }
+          btnFunc={handleFaq}
+        />
+        <OptionButton
+          btnText="Live Chat Support"
+          iconLeft=""
+          iconRight={
+            <AntDesign name="customerservice" size={18} color="black" />
+          }
+          btnFunc={handleLiveChat}
+        />
+        <OptionButton
           btnText="Log out"
           iconLeft=""
-          iconRight=""
+          iconRight={<AntDesign name="logout" size={18} color="black" />}
           btnFunc={handleLogout}
         />
       </View>

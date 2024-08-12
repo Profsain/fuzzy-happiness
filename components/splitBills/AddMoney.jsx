@@ -24,7 +24,7 @@ const AddMoney = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
   const merchantId = process.env.FW_MERCHANT_ID;
   const { userProfile, token } = useLogin();
-  const { _id, emailAddress, firstName, lastName, phoneNumber } = userProfile;
+  const { _id, emailAddress, firstName, lastName, phoneNumber, currency, currencySymbol } = userProfile;
 
   // call useFetchWallet
   const wallet = useFetchWallet();
@@ -150,7 +150,7 @@ const AddMoney = ({ navigation }) => {
 
         {/* wallet balance */}
         <Text className="font-semibold text-lg text-center my-8">
-          Balance ${wallet?.balance?.toFixed(2) || "0.00"}
+          Balance { currencySymbol || "$"}{wallet?.balance?.toFixed(2) || "0.00"}
         </Text>
 
         {/* add money section */}
