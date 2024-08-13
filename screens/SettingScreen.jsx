@@ -20,6 +20,7 @@ import {
   SubscriptionScreen,
   PaymentScreen,
   PaymentSuccessScreen,
+  LiveChatSupport,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -133,6 +134,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="PaymentSuccessScreen"
         component={PaymentSuccessScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="LiveChatSupport"
+        component={LiveChatSupport}
         options={{ headerShown: false }}
         navigation={navigation}
       />

@@ -45,7 +45,8 @@ const ProfileHome = ({ navigation }) => {
 
   // handle live chat
   const handleLiveChat = () => {
-    Alert.alert("Live Chat Support under construction");
+    // Alert.alert("Live Chat Support under construction");
+    navigation.navigate("LiveChatSupport");
   }
 
   return (
