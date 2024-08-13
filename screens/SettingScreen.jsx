@@ -21,6 +21,7 @@ import {
   PaymentScreen,
   PaymentSuccessScreen,
   LiveChatSupport,
+  FaqScreen,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -140,6 +141,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="LiveChatSupport"
         component={LiveChatSupport}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="FaqScreen"
+        component={FaqScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />

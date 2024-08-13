@@ -40,12 +40,11 @@ const ProfileHome = ({ navigation }) => {
 
   // handle faq
   const handleFaq = () => {
-    Alert.alert("FAQ under construction");
+     navigation.navigate("FaqScreen");
   }
 
   // handle live chat
   const handleLiveChat = () => {
-    // Alert.alert("Live Chat Support under construction");
     navigation.navigate("LiveChatSupport");
   }
 
