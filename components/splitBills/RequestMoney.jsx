@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  FlatList,
-  Alert,
-} from "react-native";
+import { View, Text, SafeAreaView, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import useFetchWallet from "../../hooks/useFetchWallet";
 import useFetchAllUsers from "../../hooks/useFetchAllUser";
@@ -26,11 +19,12 @@ const RequestMoney = ({ navigation }) => {
 
   // calculate money received and outstanding
   const { receivedAmount, pendingAmount } = calculateRequestMoney(
-    wallet?.moneyRequest
+    wallet?.moneyRequests
   );
 
   const userList = useFetchAllUsers();
   const { userProfile, token } = useLogin();
+  const { currencySymbol } = wallet;
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -107,10 +101,9 @@ const RequestMoney = ({ navigation }) => {
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json();
 
-        // send notification
+      if (response.ok) {
         // send notification
         sendPushNotification({
           to: selectedUser._id,
@@ -129,7 +122,10 @@ const RequestMoney = ({ navigation }) => {
         toggleModal();
       } else {
         setProcessing(false);
-        Alert.alert("Warning", "This user has not activated their wallet yet and cannot receive money requests");
+        Alert.alert(
+          "Warning",
+          "This user has not activated their wallet yet and cannot receive money requests"
+        );
       }
     } catch (error) {
       setProcessing(false);
@@ -162,70 +158,71 @@ const RequestMoney = ({ navigation }) => {
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* Top bar */}
         <BackTopBar headline="Request Money" func={handleBack} />
-        <ScrollView>
-          {/* Wallet balance */}
-          <View className="my-4 flex flex-row justify-between items-center">
-            <View className="flex content-center items-end">
-              <Text className="font-semibold text-lg">Received</Text>
-              <Text className="font-semibold text-xs">
-                ${receivedAmount.toFixed(2) || "$0.00"}
-              </Text>
-            </View>
-            <View className="flex content-center items-end">
-              <Text className="font-semibold text-lg">Outstanding</Text>
-              <Text className="font-semibold text-xs">
-                ${pendingAmount.toFixed(2) || "$0.00"}
-              </Text>
-            </View>
+
+        {/* Wallet balance */}
+        <View className="my-4 flex flex-row justify-between items-center">
+          <View className="flex content-center items-end">
+            <Text className="font-semibold text-lg">Received</Text>
+            <Text className="font-semibold text-xs">
+              {currencySymbol || "$"}
+              {receivedAmount.toFixed(2) || "0.00"}
+            </Text>
           </View>
+          <View className="flex content-center items-end">
+            <Text className="font-semibold text-lg">Outstanding</Text>
+            <Text className="font-semibold text-xs">
+              {currencySymbol || "$"}
+              {pendingAmount.toFixed(2) || "0.00"}
+            </Text>
+          </View>
+        </View>
 
-          {/* Add money section */}
-          <Text className="font-xs text-orange-300">{errorMessages || ""}</Text>
+        {/* Add money section */}
+        <Text className="font-xs text-orange-300">{errorMessages || ""}</Text>
 
-          <CustomInput
-            mb={24}
-            placeholder="Username"
-            inputValue={userName}
-            handleTextChange={handleUserName}
-          />
-          <CustomInput
-            mb={24}
-            placeholder="Amount"
-            keyboardType="numeric"
-            inputValue={amount}
-            handleTextChange={handleAmount}
-          />
-          <CustomInput
-            placeholder="Note"
-            inputValue={note}
-            handleTextChange={handleNote}
-          />
+        <CustomInput
+          mb={24}
+          placeholder="Username"
+          inputValue={userName}
+          handleTextChange={handleUserName}
+        />
+        <CustomInput
+          mb={24}
+          placeholder="Amount"
+          keyboardType="numeric"
+          inputValue={amount}
+          handleTextChange={handleAmount}
+        />
+        <CustomInput
+          placeholder="Note"
+          inputValue={note}
+          handleTextChange={handleNote}
+        />
 
-          {/* Member list section */}
-          <View>
-            <HorizontalTitle title="Select members" icon="" action="" />
-            <FlatList
-              data={userList}
-              renderItem={renderUserItem}
-              keyExtractor={(item) => item._id}
-              extraData={selectedUser}
+        {/* Member list section */}
+        <View className="flex-1">
+          <HorizontalTitle title="Select members" icon="" action="" />
+          <FlatList
+            data={userList}
+            renderItem={renderUserItem}
+            keyExtractor={(item) => item._id}
+            extraData={selectedUser}
+          />
+        </View>
+
+        {/* Request money button */}
+        <View className="my-8">
+          {processing && <LoadingSpinner />}
+          {isAllFieldsFilled ? (
+            <CustomButton label="Send Request" buttonFunc={handleRequest} />
+          ) : (
+            <CustomButton
+              label="Send Request"
+              color="#000"
+              backgroundColor={secondaryColor}
             />
-          </View>
-
-          {/* Request money button */}
-          <View className="my-8">
-            {processing && <LoadingSpinner />}
-            {isAllFieldsFilled ? (
-              <CustomButton label="Send Request" buttonFunc={handleRequest} />
-            ) : (
-              <CustomButton
-                label="Send Request"
-                color="#000"
-                backgroundColor={secondaryColor}
-              />
-            )}
-          </View>
-        </ScrollView>
+          )}
+        </View>
       </SafeAreaView>
 
       {/* Bottom sheet */}

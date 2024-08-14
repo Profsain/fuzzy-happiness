@@ -111,7 +111,6 @@ const LoginInputScreen = () => {
 
       if (response.ok) {
         // Login successful
-        setLoading(false);
         setLoginMsg("");
         const data = await response.json();
         // store user data in context, navigate to the next home screen.
@@ -129,11 +128,11 @@ const LoginInputScreen = () => {
 
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
+        setLoading(false);
       } else {
         // Login failed
         setLoading(false);
         const errorData = await response.json();
-        console.log("Login failed:", errorData.message);
         setLoginMsg(
           "Login failed: User not found or password is incorrect. Please try again."
         );

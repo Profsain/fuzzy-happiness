@@ -7,7 +7,6 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import React, { useState, useMemo } from "react";
 import { BackTopBar } from "../home";
@@ -19,6 +18,7 @@ import useFetchWallet from "../../hooks/useFetchWallet";
 import useFetchAllUsers from "../../hooks/useFetchAllUser";
 import sendPushNotification from "../../utils/sendPushNotification";
 import { useLogin } from "../../context/LoginProvider";
+import LoadingSpinner from "../LoadingSpinner";
 
 const TransferMoney = ({ navigation }) => {
   const wallet = useFetchWallet();
@@ -28,13 +28,13 @@ const TransferMoney = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // Destructuring
-  const { balance } = wallet;
+  const { balance, currencySymbol } = wallet;
 
   // Component state
   const [amount, setAmount] = useState("");
   const [receiverAccount, setReceiverAccount] = useState("");
   const [note, setNote] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null); // Change to null to easily check for selected user
+  const [selectedUser, setSelectedUser] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
   const [balanceError, setBalanceError] = useState("");
@@ -44,8 +44,7 @@ const TransferMoney = ({ navigation }) => {
 
   // Handle set amount
   const handleAmount = (value) => {
-    setAmount(value);
-
+    setAmount(Number(value));
     // check if amount is less than balance
     if (Number(value) > Number(balance)) {
       setBalanceError("Insufficient balance");
@@ -66,11 +65,11 @@ const TransferMoney = ({ navigation }) => {
     navigation.goBack();
   };
 
-  // handle bottom sheet  done
+  // Handle bottom sheet done
   const handleDone = () => {
     toggleModal();
     navigation.navigate("TransactionScreen");
-  }
+  };
 
   // Toggle modal visibility
   const toggleModal = () => {
@@ -85,7 +84,7 @@ const TransferMoney = ({ navigation }) => {
     try {
       const transferData = {
         toAccountNumber: receiverAccount,
-        amount: amount,
+        amount: Number(amount),
         name: selectedUser.firstName,
         email: selectedUser.emailAddress,
         currency: "USD",
@@ -103,9 +102,8 @@ const TransferMoney = ({ navigation }) => {
           body: JSON.stringify(transferData),
         }
       );
-
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         // send notification
         sendPushNotification({
           to: selectedUser._id,
@@ -124,11 +122,12 @@ const TransferMoney = ({ navigation }) => {
         toggleModal();
       } else {
         setProcessing(false);
-        Alert.alert("Error", "An error occurred while processing your request");
+        // Alert.alert("Error", "An error occurred while processing your request");
+        Alert.alert("Transfer Error", data.error);
       }
-    } catch (error) {
+    } catch(error) {
       setProcessing(false);
-      Alert.alert("Error", "An error occurred while processing your request");
+      Alert.alert("Network Error", "An error occurred while processing your request. Try again later");
     }
   };
 
@@ -138,6 +137,7 @@ const TransferMoney = ({ navigation }) => {
 
     if (user.walletAccountNumber) {
       setReceiverAccount(user.walletAccountNumber);
+      setMessage("")
     } else {
       setReceiverAccount("");
       setMessage("User does not have a wallet account");
@@ -176,75 +176,75 @@ const TransferMoney = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView style={styles.container}>
         {/* Top bar */}
         <BackTopBar headline="Transfer Money" func={handleBack} />
 
-        <ScrollView>
-          {/* Wallet balance */}
-          <Text style={styles.balanceText}>
-            Balance {wallet ? `$${wallet?.balance?.toFixed(2)}` : "$0.00"}
+        {/* Wallet balance */}
+        <Text style={styles.balanceText}>
+          Balance{" "}
+          {wallet ? `${currencySymbol || "$"}${wallet?.balance?.toFixed(2)}` : "0.00"}
+        </Text>
+
+        {/* Add money section */}
+        <Text style={styles.errorText}>{balanceError}</Text>
+        <CustomInput
+          mb={24}
+          placeholder="Amount"
+          keyboardType="numeric"
+          inputValue={amount}
+          handleTextChange={handleAmount}
+        />
+
+        {message ? (
+          <Text style={styles.errorText}>{message}</Text>
+        ) : (
+          <Text style={styles.infoText}>
+            Select user below to prefill wallet id.
           </Text>
+        )}
 
-          {/* Add money section */}
-          <Text className="font-xs text-orange-300">{balanceError}</Text>
-          <CustomInput
-            mb={24}
-            placeholder="Amount"
-            keyboardType="numeric"
-            inputValue={amount}
-            handleTextChange={handleAmount}
-          />
+        <CustomInput
+          mb={24}
+          placeholder="Receiver Splinx Wallet ID"
+          inputValue={receiverAccount}
+        />
 
-          {message ? (
-            <Text className="font-xs text-orange-300">{message}</Text>
+        <CustomInput
+          placeholder="Note"
+          inputValue={note}
+          handleTextChange={handleNote}
+        />
+
+        {/* Search bar */}
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search user..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        {/* User list */}
+        <FlatList
+          data={filteredUsers}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.userList}
+        />
+
+        {/* Transfer button */}
+        <View style={styles.buttonContainer}>
+          {processing && <LoadingSpinner />}
+          {canProceed ? (
+            <CustomButton label="Transfer" buttonFunc={handleTransfer} />
           ) : (
-            <Text className="font-xs text-slate-400">
-              Select user below to prefill wallet id.
-            </Text>
+            <CustomButton
+              label="Transfer"
+              backgroundColor={secondaryColor}
+              color="#000"
+            />
           )}
-
-          <CustomInput
-            mb={24}
-            placeholder="Receiver Splinx Wallet ID"
-            inputValue={receiverAccount}
-          />
-
-          <CustomInput
-            placeholder="Note"
-            inputValue={note}
-            handleTextChange={handleNote}
-          />
-
-          {/* Search bar */}
-          <TextInput
-            style={styles.searchBar}
-            placeholder="Search user..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-
-          {/* User list */}
-          <FlatList
-            data={filteredUsers}
-            renderItem={renderItem}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.userList}
-          />
-
-          {/* Transfer button */}
-          <View style={styles.buttonContainer}>
-            {canProceed ? (
-              <CustomButton label="Transfer" buttonFunc={handleTransfer} />
-            ) : (
-              <CustomButton
-                label="Transfer"
-                backgroundColor={secondaryColor}
-                color="#000"
-              />
-            )}
-          </View>
-        </ScrollView>
+        </View>
       </SafeAreaView>
 
       {/* Bottom sheet */}
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 14,
+    paddingTop: 34,
     backgroundColor: "white",
   },
   balanceText: {
@@ -298,13 +298,21 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   selectedButton: {
-    backgroundColor: primeryColor, // Change background color for the selected button
+    backgroundColor: primeryColor,
   },
   selectedButtonText: {
-    color: "#fff", // Change text color for the selected button
+    color: "#fff",
   },
   buttonContainer: {
     marginTop: 24,
+  },
+  errorText: {
+    fontSize: 12,
+    color: "red",
+  },
+  infoText: {
+    fontSize: 12,
+    color: "#666",
   },
 });
 

@@ -35,7 +35,7 @@ const ProfileHome = ({ navigation }) => {
     setIsLogin(false);
     setUserProfile({});
     // navigate to login screen
-    navigation.navigate("LoginScreen");
+    navigation.navigate("LoginUser");
   }
 
   // handle faq

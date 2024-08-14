@@ -71,12 +71,12 @@ const BillsHome = ({ navigation }) => {
 
   // handle pay someone
   const handlePaySomeone = () => {
-    Alert.alert("Pay someone");
+    navigation.navigate("TransferMoney");
   };
 
   // handle request money
   const handleRequestMoney = () => {
-    Alert.alert("Request money");
+    navigation.navigate("RequestPay");
   };
 
   // handle view all recent bills
