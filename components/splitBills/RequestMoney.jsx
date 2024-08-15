@@ -1,5 +1,6 @@
 import { View, Text, SafeAreaView, FlatList, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import useFetchWallet from "../../hooks/useFetchWallet";
 import useFetchAllUsers from "../../hooks/useFetchAllUser";
 import { useLogin } from "../../context/LoginProvider";
@@ -15,7 +16,14 @@ import sendPushNotification from "../../utils/sendPushNotification";
 import LoadingSpinner from "../LoadingSpinner";
 
 const RequestMoney = ({ navigation }) => {
-  const wallet = useFetchWallet();
+  // call useFetchWallet
+  const { wallet, fetchWallet } = useFetchWallet();
+  // re-fetch wallet on screen focus
+  const fetchWalletData = useCallback(() => {
+    fetchWallet(); // Call fetchWallet from the hook
+  }, [fetchWallet]);
+
+  useFocusEffect(fetchWalletData);
 
   // calculate money received and outstanding
   const { receivedAmount, pendingAmount } = calculateRequestMoney(
@@ -24,7 +32,7 @@ const RequestMoney = ({ navigation }) => {
 
   const userList = useFetchAllUsers();
   const { userProfile, token } = useLogin();
-  const { currencySymbol } = wallet;
+   const { currency, currencySymbol } = userProfile;
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -108,14 +116,14 @@ const RequestMoney = ({ navigation }) => {
         sendPushNotification({
           to: selectedUser._id,
           title: "Request Money",
-          body: `You have received a request for $${amount} from ${userProfile.firstName}.`,
+          body: `You have received a request for {currencySymbol || "$"}${amount} from ${userProfile.firstName}.`,
         });
 
         // send success notification to user
         sendPushNotification({
           to: userProfile._id,
           title: "Request Money",
-          body: `You have sent a request for $${amount} to ${selectedUser.firstName}.`,
+          body: `You have sent a request for {currencySymbol || "$"}${amount} to ${selectedUser.firstName}.`,
         });
 
         setProcessing(false);

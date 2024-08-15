@@ -8,9 +8,8 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
-import React, {useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchWallet } from "../../store/walletSlice";
+import React, { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useLogin } from "../../context/LoginProvider";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -28,7 +27,13 @@ const TransactionScreen = ({ navigation }) => {
   const {currency, currencySymbol} = userProfile;
 
   // call useFetchWallet
-  const wallet = useFetchWallet();
+ const { wallet, fetchWallet } = useFetchWallet();
+  // re-fetch wallet on screen focus
+   const fetchWalletData = useCallback(() => {
+     fetchWallet(); // Call fetchWallet from the hook
+   }, [fetchWallet]);
+
+   useFocusEffect(fetchWalletData);
 
   const handleBack = () => {
     navigation.goBack();

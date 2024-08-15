@@ -8,12 +8,13 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { BackTopBar } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 import { primeryColor, secondaryColor } from "../../utils/appstyle";
+import { useFocusEffect } from "@react-navigation/native";
 import useFetchWallet from "../../hooks/useFetchWallet";
 import useFetchAllUsers from "../../hooks/useFetchAllUser";
 import sendPushNotification from "../../utils/sendPushNotification";
@@ -21,7 +22,15 @@ import { useLogin } from "../../context/LoginProvider";
 import LoadingSpinner from "../LoadingSpinner";
 
 const TransferMoney = ({ navigation }) => {
-  const wallet = useFetchWallet();
+  // call useFetchWallet
+  const { wallet, fetchWallet } = useFetchWallet();
+  // re-fetch wallet on screen focus
+  const fetchWalletData = useCallback(() => {
+    fetchWallet(); // Call fetchWallet from the hook
+  }, [fetchWallet]);
+
+  useFocusEffect(fetchWalletData);
+
   const userList = useFetchAllUsers();
   const { userProfile, token } = useLogin();
   // base url
@@ -108,14 +117,18 @@ const TransferMoney = ({ navigation }) => {
         sendPushNotification({
           to: selectedUser._id,
           title: "Money Transfer",
-          body: `You have received $${amount} from ${userProfile.firstName}`,
+          body: `You have received ${currencySymbol || "$"}${amount} from ${
+            userProfile.firstName
+          }`,
         });
 
         // send success notification to user
         sendPushNotification({
           to: userProfile._id,
           title: "Money Transfer",
-          body: `You have sent $${amount} to ${selectedUser.firstName}`,
+          body: `You have sent ${currencySymbol || "$"}${amount} to ${
+            selectedUser.firstName
+          }`,
         });
 
         setProcessing(false);
@@ -125,9 +138,12 @@ const TransferMoney = ({ navigation }) => {
         // Alert.alert("Error", "An error occurred while processing your request");
         Alert.alert("Transfer Error", data.error);
       }
-    } catch(error) {
+    } catch (error) {
       setProcessing(false);
-      Alert.alert("Network Error", "An error occurred while processing your request. Try again later");
+      Alert.alert(
+        "Network Error",
+        "An error occurred while processing your request. Try again later"
+      );
     }
   };
 
@@ -137,7 +153,7 @@ const TransferMoney = ({ navigation }) => {
 
     if (user.walletAccountNumber) {
       setReceiverAccount(user.walletAccountNumber);
-      setMessage("")
+      setMessage("");
     } else {
       setReceiverAccount("");
       setMessage("User does not have a wallet account");
@@ -183,7 +199,9 @@ const TransferMoney = ({ navigation }) => {
         {/* Wallet balance */}
         <Text style={styles.balanceText}>
           Balance{" "}
-          {wallet ? `${currencySymbol || "$"}${wallet?.balance?.toFixed(2)}` : "0.00"}
+          {wallet
+            ? `${currencySymbol || "$"}${wallet?.balance?.toFixed(2)}`
+            : "0.00"}
         </Text>
 
         {/* Add money section */}
@@ -253,8 +271,10 @@ const TransferMoney = ({ navigation }) => {
           isVisible={isModalVisible}
           onClose={toggleModal}
           handleOk={handleDone}
-          heading="Transfer Completed"
-          message={`Transfer successful: $${amount} sent to ${selectedUser.firstName}`}
+          heading="Transaction Completed"
+          message={`Transfer successful: ${
+            currencySymbol || "$"
+          }${amount} sent to ${selectedUser.firstName}`}
         />
       )}
     </>

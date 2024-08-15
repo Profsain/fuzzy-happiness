@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useLogin } from '../context/LoginProvider'; 
 
@@ -9,7 +9,7 @@ const useFetchWallet = () => {
   const userId = userProfile._id;
   const [wallet, setWallet] = useState({});
 
-  const fetchWallet = async () => { 
+  const fetchWallet = useCallback(async () => { 
     try {
       const response = await fetch(`${baseUrl}/wallet/get-wallet/${userId}`, {
         method: "GET",
@@ -28,13 +28,14 @@ const useFetchWallet = () => {
     } catch (error) {
       Alert.alert("Error", JSON.stringify(error.message));
     }
-  };
+  }, [userId, token]);
 
+  // Fetch wallet data on initial load
   useEffect(() => {
     fetchWallet();
-  }, []);
+  }, [fetchWallet]);
 
-  return wallet;
+  return { wallet, fetchWallet };
 };
 
 export default useFetchWallet;
