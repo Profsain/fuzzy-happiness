@@ -48,11 +48,11 @@ const TransactionScreen = ({ navigation }) => {
   };
 
   const handleWalletSettings = () => {
-    Alert.alert("Wallet settings");
+    navigation.navigate("ProfileHome");
   };
 
   const handleFaq = () => {
-    Alert.alert("FAQ");
+    navigation.navigate("FaqScreen");
   };
 
   return (

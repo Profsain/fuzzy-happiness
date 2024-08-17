@@ -39,7 +39,7 @@ const AddMoneyPayScreen = ({ navigation, route }) => {
     // Check for the redirect URL in the WebView navigation state
     if (
       navState.url ===
-      "myapp://com.profsain.splinxplanet/wallet-payment-success"
+      "com.splinxplanet.app/wallet-payment-success"
     ) {
       // Extract transaction ID from the URL if needed
       const transactionId = new URL(navState.url).searchParams.get(

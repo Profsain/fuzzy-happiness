@@ -22,32 +22,11 @@ import { set } from "@gluestack-style/react";
 const AddMoney = ({ navigation }) => {
   // base URL
   const baseUrl = process.env.BASE_URL;
-  const merchantId = process.env.FW_MERCHANT_ID;
   const { userProfile, token } = useLogin();
   const { _id, emailAddress, firstName, lastName, phoneNumber, currency, currencySymbol } = userProfile;
 
   // call useFetchWallet
   const wallet = useFetchWallet();
-
-  /* An example function called when transaction is completed successfully or canceled */
-  // const handleOnRedirect = (data) => {
-  //   Alert.alert("Funded Data", JSON.stringify(data))
-  //   console.log(data);
-  // };
-
-  /* An example function to generate a random transaction reference */
-  // const generateTransactionRef = (length) => {
-  //   let result = "";
-  //   let characters =
-  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  //   let charactersLength = characters.length;
-  //   for (let i = 0; i < length; i++) {
-  //     result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  //   }
-  //   return `flw_tx_ref_${result}`;
-  // };
-
-  // handle back to prev screen when device back button press
 
   const handleBack = () => {
     navigation.goBack();

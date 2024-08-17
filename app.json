@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Splinx-Planet",
+    "scheme": "myapp",
     "slug": "Splinx-Planet",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,15 +12,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#fdccbb"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
       },
-      "bundleIdentifier": "com.profsain.splinxplanet"
+      "bundleIdentifier": "com.splinxplanet.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +29,7 @@
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.profsain.SplinxPlanet",
+      "package": "com.splinxplanet.app",
       "googleServicesFile": "./google-services.json"
     },
     "web": {

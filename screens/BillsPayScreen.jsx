@@ -13,6 +13,8 @@ import {
   RequestPay,
   TransferMoney
 } from "../components/splitBills";
+import ProfileHome from "../components/profileSettings/ProfileHome";
+import FaqScreen from "../components/profileSettings/FaqScreen";
 
 const BillsPayScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -83,6 +85,18 @@ const BillsPayScreen = () => {
       <Stack.Screen
         name="TransferMoney"
         component={TransferMoney}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="ProfileHome"
+        component={ProfileHome}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="FaqScreen"
+        component={FaqScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />

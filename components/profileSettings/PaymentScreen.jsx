@@ -1,19 +1,26 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { Alert, SafeAreaView } from "react-native";
 import { WebView } from "react-native-webview";
+import verifyTransaction from "../../utils/verifyTransaction";
+import { useLogin } from "../../context/LoginProvider";
 
 const PaymentScreen = ({navigation, route}) => {
   const { paymentLink } = route.params;
+  const { userProfile, token } = useLogin
 
-  const handleNavigationStateChange = (navState) => {
+  const handleNavigationStateChange = async (navState) => {
     // check how to get and pass navState
-    if (navState.url.includes("https://your-app.com/payment-success")) {
-
+    if (navState.url.includes("myapp://splinxplanet/payment-success")) {
       // get id
-      const id = paymentLink.split("/").pop();
+      const transactionId = paymentLink.split("/").pop();
       alert("Payment successful with id: " + id);
       // verify transaction
-      // update user subscription
+      const verifyPayment = await verifyTransaction(transactionId);
+      if (verifyPayment.status === "success") {
+        // update user subscription
+        Alert.alert("Payment Successful", JSON.stringify(verifyPayment));
+        // navigation.navigate("PaymentSuccessScreen");
+      }
       navigation.navigate("PaymentSuccessScreen");
     }
   };
