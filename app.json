@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "Splinx-Planet",
-    "scheme": "myapp",
+    "scheme": "splinxplanet",
+    "platforms": ["ios", "android", "web"],
     "slug": "Splinx-Planet",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -73,7 +73,8 @@
     "expo-crypto": "~12.8.1",
     "expo-random": "~13.6.0",
     "expo-web-browser": "~12.8.2",
-    "expo-updates": "~0.24.13"
+    "expo-updates": "~0.24.13",
+    "expo-linking": "~6.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
