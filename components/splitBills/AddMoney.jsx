@@ -82,56 +82,9 @@ const AddMoney = ({ navigation }) => {
     setNote(text);
   };
 
-  const initiatePayment = async (
-    amount,
-    email,
-    name,
-    phonenumber,
-    description
-  ) => {
-    try {
-      const response = await fetch(`${baseUrl}/flw-api/fund-wallet`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount,
-          currency: "USD",
-          email,
-          name,
-          phonenumber,
-          description,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const { link } = data.data;
-        setPaymentLink(link);
-        setProcessing(false);
-        setWebViewVisible(true);
-      } else {
-        Alert.alert("Funding Error", "Transaction failed. Please try again");
-        setProcessing(false);
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Transaction failed. Please try again");
-      setProcessing(false);
-    }
-  };
-
   const handleAddMoney = async () => {
     setProcessing(true);
     setWebViewVisible(true);
-    // await initiatePayment(
-    //   Number(amount),
-    //   emailAddress,
-    //   `${firstName} ${lastName}`,
-    //   phoneNumber,
-    //   `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`
-    // );
   };
 
   // Handle balance update

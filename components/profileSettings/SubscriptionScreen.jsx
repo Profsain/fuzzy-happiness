@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,28 +8,68 @@ import {
   Image,
   ScrollView,
   Alert,
+  Modal,
 } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
 import LoadingSpinner from "../LoadingSpinner";
+import { WebView } from "react-native-webview";
+import sendPushNotification from "../../utils/sendPushNotification";
+import SuccessBottomSheet from "../splitBills/component/SuccessBottomSheet";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import { AntDesign } from "@expo/vector-icons";
+import convertCurrency from "../../utils/convertCurrency";
 
 const SubscriptionScreen = ({ navigation, route }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
+  const fwPublicKey = process.env.FW_PUBLIC_KEY;
 
   // extract from useLogin context
-  const { userProfile } = useLogin();
-  const { emailAddress, firstName, lastName, phoneNumber } = userProfile;
+  const { userProfile, token } = useLogin();
+  const {
+    emailAddress,
+    firstName,
+    lastName,
+    phoneNumber,
+    currencySymbol,
+    currency,
+  } = userProfile;
   const receivedData = route.params.subscription;
   const { price, amount, description, planName, interval, title, id } =
     receivedData;
 
+  const [convertedAmount, setConvertedAmount] = useState(null);
   const [activeTab, setActiveTab] = useState("Platinum");
   const [planData, setPlanData] = useState({});
   const [processing, setProcessing] = useState(false);
+  const [webViewVisible, setWebViewVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // check if currency is not USD and convert amount
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      if (currency !== "USD") {
+        const convertedAmount = await convertCurrency(amount, "USD", currency);
+        setConvertedAmount(Math.ceil(convertedAmount));
+      } else {
+        setConvertedAmount(null);
+      }
+    };
+
+    fetchExchangeRates();
+  }, [currency]);
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  // Handle bottom sheet done
+  const handleDone = () => {
+    toggleModal();
+    navigation.navigate("ProfileHome");
+  };
 
   // handle back button
   const handleBackBtn = () => {
@@ -47,7 +87,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
         name: planName,
         amount,
         interval,
-        currency: "USD",
+        currency: currency || "USD",
       };
 
       const response = await fetch(`${baseUrl}/flw-api/create-plan`, {
@@ -73,40 +113,170 @@ const SubscriptionScreen = ({ navigation, route }) => {
     }
   };
 
-  const initiatePayment = async (
-    amount,
-    email,
-    name,
-    phonenumber,
-    description,
-    payment_plan
-  ) => {
+  // new implementation
+  // Handle plan update
+  const handleUpdatePlan = async () => {
+    // Make API call
     try {
-      const response = await fetch(`${baseUrl}/flw-api/create-payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount,
-          currency: "USD",
-          email,
-          name,
-          phonenumber,
-          description,
-          payment_plan,
-        }),
-      });
+      // update isSubscriber and subscriptionPlan
+      const updateData = {
+        isSubscriber: true,
+        subscriptionPlan: planData.data.name
+      };
 
-      const data = await response.json();
-      const { link } = data.data;
-      // Alert.alert("Payment Link", JSON.stringify(data));
-      // const id = link.split("/").pop();
-      navigation.navigate("PaymentScreen", { paymentLink: link });
+      const response = await fetch(
+        `${baseUrl}/user/update-user/${userProfile._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
+
+      const result = await response.json();
     } catch (error) {
-      console.error(error);
+      Alert.alert("Network Error", JSON.stringify(error));
     }
   };
+
+  const handleMessage = async (event) => {
+    const data = event.nativeEvent.data;
+
+    if (data === "Payment cancelled!") {
+      alert("Payment was cancelled!");
+      setWebViewVisible(false);
+      setProcessing(false);
+    } else {
+      const paymentData = JSON.parse(data);
+      if (paymentData.status === "successful") {
+        setWebViewVisible(false);
+        // update subscription plan balance
+        await handleUpdatePlan();
+        // show success modal
+        setIsModalVisible(true);
+
+        setProcessing(false);
+      } else {
+        alert("Payment failed. Please try again.");
+      }
+    }
+  };
+
+  const generateTxRef = () => {
+    const chars =
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
+    for (let i = 32; i > 0; --i)
+      result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+  };
+
+  const flutterwaveHTML = `
+  <html>
+    <head>
+      <script src="https://checkout.flutterwave.com/v3.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+          background-color: #f8f8f8;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          height: 100vh;
+          width: 100vw;
+          margin: 0;
+          box-sizing: border-box;
+        }
+        form {
+          background-color: #ffffff;
+          border-radius: 10px;
+          padding: 20px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          max-width: 400px;
+        }
+        #start-payment-button {
+          background-color: #f15a22;
+          color: white;
+          border: none;
+          padding: 15px;
+          border-radius: 25px;
+          cursor: pointer;
+          font-size: 1.2rem;
+          width: 100%;
+          max-width: 300px;
+          margin-top: 20px;
+        }
+        #start-payment-button:hover {
+          background-color: #d14c1b;
+        }
+        .order-details {
+          font-size: 1.5rem;
+          margin: 20px 0;
+          width: 100%;
+        }
+        @media (max-width: 600px) {
+          .order-details {
+            font-size: 1.2rem;
+          }
+          #start-payment-button {
+            font-size: 1rem;
+            padding: 10px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <form>
+        <div class="order-details">
+          Complete your payment to subscribe to: ${
+            planData?.data?.name
+          }
+        </div>
+        <button type="button" id="start-payment-button" onclick="makePayment()">Pay Now with Flutterwave</button>
+      </form>
+      <script>
+        function makePayment() {
+          FlutterwaveCheckout({
+            public_key: "${fwPublicKey}",
+            tx_ref: "${generateTxRef()}",
+            amount: "${planData?.data?.amount}",
+            currency: "${currency || "USD"}",
+            payment_plan: "${planData?.data?.id}",
+            payment_options: "card",
+            meta: {
+              source: "docs-inline-test",
+              consumer_mac: "92a3-912ba-1192a",
+            },
+            customer: {
+              email: "${emailAddress}",
+              phone_number: "${phoneNumber}",
+              name: "${firstName} ${lastName}",
+            },
+            customizations: {
+              title: "Splinx Wallet",
+              description: "Fund Wallet",
+              logo: "https://checkout.flutterwave.com/assets/img/rave-logo.png",
+            },
+            callback: function (data){
+              window.ReactNativeWebView.postMessage(JSON.stringify(data));
+            },
+            onclose: function() {
+              window.ReactNativeWebView.postMessage("Payment cancelled!");
+            }
+          });
+        }
+      </script>
+    </body>
+  </html>
+`;
 
   // handle subscription
   const handleSubscription = async () => {
@@ -116,7 +286,8 @@ const SubscriptionScreen = ({ navigation, route }) => {
       // pass planName, amount, interval direct
       let plan = null;
       if (activeTab === "Platinum") {
-        plan = await handleCreatePlan(planName, amount, interval);
+        const planAmount = convertedAmount ? convertedAmount : amount;
+        plan = await handleCreatePlan(planName, planAmount, interval);
       } else if (activeTab === "Ballers") {
         const planName =
           "Splinx-Planet yearly subscription plan: Ballers upgrade 14.99 usd/month";
@@ -124,19 +295,11 @@ const SubscriptionScreen = ({ navigation, route }) => {
         const interval = "monthly";
         plan = await handleCreatePlan(planName, amount, interval);
       }
-      // const plan = await handleCreatePlan(planName, amount, interval);
-      // Alert.alert("Plan created successfully", JSON.stringify(plan));
+    
       if (plan && plan.data.id) {
-        await initiatePayment(
-          plan.data.amount,
-          emailAddress,
-          `${firstName} ${lastName}`,
-          phoneNumber,
-          plan.data.name, // get planName from plan.data
-          plan.data.id
-        );
+        setWebViewVisible(true);
+
       } else {
-        console.log("Failed to create payment");
         setProcessing(false);
       }
     } catch (error) {
@@ -149,201 +312,237 @@ const SubscriptionScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <BackTopBar headline="Subscribe Now" icon2="" func={handleBackBtn} />
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Platinum" && styles.activeTab]}
-          onPress={() => setActiveTab("Platinum")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "Platinum" && styles.activeTabText,
-            ]}
+    <>
+      <SafeAreaView style={styles.container}>
+        <BackTopBar headline="Subscribe Now" icon2="" func={handleBackBtn} />
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "Platinum" && styles.activeTab]}
+            onPress={() => setActiveTab("Platinum")}
           >
-            Platinum
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Ballers" && styles.activeTab]}
-          onPress={() => setActiveTab("Ballers")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "Ballers" && styles.activeTabText,
-            ]}
-          >
-            Ballers
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Render content based on active tab */}
-      <View style={styles.content}>
-        {activeTab === "Platinum" ? (
-          <ScrollView>
-            <View
-              style={{ backgroundColor: primeryColor }}
-              className="p-3 pb-0 my-4 rounded-xl h-40"
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "Platinum" && styles.activeTabText,
+              ]}
             >
-              <Text className="text-xl font-bold text-white">{title}</Text>
-              <Text className="text-xs font-bold text-white">{price}</Text>
+              Your Plan
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "Ballers" && styles.activeTab]}
+            onPress={() => setActiveTab("Ballers")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "Ballers" && styles.activeTabText,
+              ]}
+            >
+              
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-              <View className="mt-12">
-                <View className="flex flex-row items-center">
-                  <AntDesign name="gift" size={14} color="white" />
-                  <Text className="text-xs text-white ml-2">{description}</Text>
-                </View>
-                <Image
-                  source={require("../../assets/Vector.png")}
-                  style={styles.overlayImage}
-                />
-              </View>
-            </View>
-
-            <View>
-              <Text className="my-2 font-bold text-lg">Top Features</Text>
-
-              <View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">Bill Splitting</Text>
-                  <Text className="text-xs">
-                    Platinum members can split bills seamlessly with an extended
-                    grace period, allowing for more flexibility in managing
-                    shared expenses.
+        {/* Render content based on active tab */}
+        <View style={styles.content}>
+          {activeTab === "Platinum" ? (
+            <ScrollView>
+              <View
+                style={{ backgroundColor: primeryColor }}
+                className="p-3 pb-0 my-4 rounded-xl h-40"
+              >
+                <Text className="text-xl font-bold text-white">{title}</Text>
+                {convertedAmount ? (
+                  <Text className="text-xs font-bold text-white">
+                    {currencySymbol}{convertedAmount?.toFixed(2)}/month
                   </Text>
-                </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">Event Creation</Text>
-                  <Text className="text-xs">
-                    Platinum members can create events with advanced
-                    customization options, including exclusive themes, custom
-                    invitations, and event branding.
-                  </Text>
-                </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">Recommendation</Text>
-                  <Text className="text-xs">
-                    Receive personalized event and venue recommendations based
-                    on preferences, location, and past activity within the app.
-                  </Text>
-                </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">Customer Support</Text>
-                  <Text className="text-xs">
-                    Access a priority support hotline with 24/7 assistance for
-                    immediate and personalized problem resolution.
-                  </Text>
-                </View>
-              </View>
-
-              {/* subscribe button */}
-              <View className="mt-8 mb-16">
-                {/* show loading spinner */}
-                {processing ? (
-                  <LoadingSpinner />
                 ) : (
-                  <CustomButton
-                    label="Subscribe Now"
-                    buttonFunc={handleSubscription}
-                  />
+                  <Text className="text-xs font-bold text-white">{price}</Text>
                 )}
 
-                <Text className="mt-8">
-                  This is a 12 month plan. By proceeding you have read and agree
-                  to the Terms and Conditions.
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
-        ) : (
-          <ScrollView>
-            <View
-              style={{ backgroundColor: primeryColor }}
-              className="p-3 pb-0 my-4 rounded-xl h-40"
-            >
-              <Text className="text-xl font-bold text-white">Ballers</Text>
-              <Text className="text-xs font-bold text-white">$14.99/month</Text>
-
-              <View className="mt-12">
-                <View className="flex flex-row items-center">
-                  <AntDesign name="gift" size={14} color="white" />
-                  <Text className="text-xs text-white ml-2">
-                    {description}
-                  </Text>
+                <View className="mt-12">
+                  <View className="flex flex-row items-center">
+                    <AntDesign name="gift" size={14} color="white" />
+                    <Text className="text-xs text-white ml-2">
+                      {description}
+                    </Text>
+                  </View>
+                  <Image
+                    source={require("../../assets/Vector.png")}
+                    style={styles.overlayImage}
+                  />
                 </View>
-                <Image
-                  source={require("../../assets/Vector.png")}
-                  style={styles.overlayImage}
-                />
               </View>
-            </View>
-
-            <View>
-              <Text className="my-2 font-bold text-lg">Top Features</Text>
 
               <View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">
-                    Elite Community Access
-                  </Text>
-                  <Text className="text-xs">
-                    Join and create elite, invitation-only communities, ensuring
-                    a highly curated and exclusive social circle within the app.
-                  </Text>
+                <Text className="my-2 font-bold text-lg">Top Features</Text>
+
+                <View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">Bill Splitting</Text>
+                    <Text className="text-xs">
+                      Platinum members can split bills seamlessly with an
+                      extended grace period, allowing for more flexibility in
+                      managing shared expenses.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">Event Creation</Text>
+                    <Text className="text-xs">
+                      Platinum members can create events with advanced
+                      customization options, including exclusive themes, custom
+                      invitations, and event branding.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">Recommendation</Text>
+                    <Text className="text-xs">
+                      Receive personalized event and venue recommendations based
+                      on preferences, location, and past activity within the
+                      app.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">Customer Support</Text>
+                    <Text className="text-xs">
+                      Access a priority support hotline with 24/7 assistance for
+                      immediate and personalized problem resolution.
+                    </Text>
+                  </View>
                 </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">Media</Text>
-                  <Text className="text-xs">
-                    Experience the ability to not only view but also download
-                    images and videos whenever you want as a Baller.
-                  </Text>
-                </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">
-                    Profile Enhancement Tools
-                  </Text>
-                  <Text className="text-xs">
-                    Access tools for enhanced profile customization, allowing
-                    Ballers to showcase their status with unique badges, premium
-                    backgrounds, and exclusive profile elements.
-                  </Text>
-                </View>
-                <View className="mb-3">
-                  <Text className="text-sm font-bold">
-                    Early Product Testing
-                  </Text>
-                  <Text className="text-xs">
-                    Get early access to beta features and product testing,
-                    allowing Ballers to influence the direction of the app.
+
+                {/* subscribe button */}
+                <View className="mt-8 mb-16">
+                  {/* show loading spinner */}
+                  {processing ? (
+                    <LoadingSpinner />
+                  ) : (
+                    <CustomButton
+                      label="Subscribe Now"
+                      buttonFunc={handleSubscription}
+                    />
+                  )}
+
+                  <Text className="mt-8">
+                    This is a 12 month plan. By proceeding you have read and
+                    agree to the Terms and Conditions.
                   </Text>
                 </View>
               </View>
-
-              {/* subscribe button */}
-              <View className="my-8">
-                {/* show loading spinner */}
-                {processing ? (
-                  <LoadingSpinner />
-                ) : (
-                  <CustomButton
-                    label="Subscribe Now"
-                    buttonFunc={handleSubscription}
-                  />
-                )}
-
-                <Text>
-                  This is a 12 month plan. By proceeding you have read and agree
-                  to the Terms and Conditions.
+            </ScrollView>
+          ) : (
+            <ScrollView>
+              <View
+                style={{ backgroundColor: primeryColor }}
+                className="p-3 pb-0 my-4 rounded-xl h-40"
+              >
+                <Text className="text-xl font-bold text-white">Ballers</Text>
+                <Text className="text-xs font-bold text-white">
+                  $14.99/month
                 </Text>
+
+                <View className="mt-12">
+                  <View className="flex flex-row items-center">
+                    <AntDesign name="gift" size={14} color="white" />
+                    <Text className="text-xs text-white ml-2">
+                      {description}
+                    </Text>
+                  </View>
+                  <Image
+                    source={require("../../assets/Vector.png")}
+                    style={styles.overlayImage}
+                  />
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        )}
-      </View>
-    </SafeAreaView>
+
+              <View>
+                <Text className="my-2 font-bold text-lg">Top Features</Text>
+
+                <View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">
+                      Elite Community Access
+                    </Text>
+                    <Text className="text-xs">
+                      Join and create elite, invitation-only communities,
+                      ensuring a highly curated and exclusive social circle
+                      within the app.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">Media</Text>
+                    <Text className="text-xs">
+                      Experience the ability to not only view but also download
+                      images and videos whenever you want as a Baller.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">
+                      Profile Enhancement Tools
+                    </Text>
+                    <Text className="text-xs">
+                      Access tools for enhanced profile customization, allowing
+                      Ballers to showcase their status with unique badges,
+                      premium backgrounds, and exclusive profile elements.
+                    </Text>
+                  </View>
+                  <View className="mb-3">
+                    <Text className="text-sm font-bold">
+                      Early Product Testing
+                    </Text>
+                    <Text className="text-xs">
+                      Get early access to beta features and product testing,
+                      allowing Ballers to influence the direction of the app.
+                    </Text>
+                  </View>
+                </View>
+
+                {/* subscribe button */}
+                <View className="my-8">
+                  {/* show loading spinner */}
+                  {processing ? (
+                    <LoadingSpinner />
+                  ) : (
+                    <CustomButton
+                      label="Subscribe Now"
+                      buttonFunc={handleSubscription}
+                    />
+                  )}
+
+                  <Text>
+                    This is a 12 month plan. By proceeding you have read and
+                    agree to the Terms and Conditions.
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+          )}
+        </View>
+
+        {/* modal screen */}
+        <Modal visible={webViewVisible} animationType="slide">
+          <WebView
+            originWhitelist={["*"]}
+            source={{ html: flutterwaveHTML }}
+            onMessage={handleMessage}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+          />
+        </Modal>
+      </SafeAreaView>
+
+      {/* success bottom sheet */}
+      {isModalVisible && (
+        <SuccessBottomSheet
+          isVisible={isModalVisible}
+          onClose={handleDone}
+          handleOk={handleDone}
+          heading="Subscription Successful"
+          message={`Enjoy Splinx premium features!`}
+        />
+      )}
+    </>
   );
 };
 
