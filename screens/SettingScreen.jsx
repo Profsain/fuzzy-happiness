@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Linking } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -27,6 +28,20 @@ import {
 const SettingScreen = () => {
   const Stack = createNativeStackNavigator();
   const navigation = useNavigation();
+  useEffect(() => {
+    const handleDeepLink = ({ url }) => {
+      if (url.includes("payment-success")) {
+        navigation.navigate("PaymentSuccessScreen");
+      }
+    };
+
+    Linking.addEventListener("url", handleDeepLink);
+
+    return () => {
+      Linking.removeEventListener("url", handleDeepLink);
+    };
+  }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen

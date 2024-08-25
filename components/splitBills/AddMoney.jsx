@@ -4,51 +4,71 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  Modal,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { BackTopBar } from "../home";
+import sendPushNotification from "../../utils/sendPushNotification";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import SuccessBottomSheet from "./component/SuccessBottomSheet";
 import useFetchWallet from "../../hooks/useFetchWallet";
 import { useLogin } from "../../context/LoginProvider";
 import { secondaryColor } from "../../utils/appstyle";
-// flutterwave import
-import { PayWithFlutterwave } from "flutterwave-react-native";
 import LoadingSpinner from "../LoadingSpinner";
-import { set } from "@gluestack-style/react";
+import { WebView } from "react-native-webview";
 
 const AddMoney = ({ navigation }) => {
-  // base URL
-  const baseUrl = process.env.BASE_URL;
-  const { userProfile, token } = useLogin();
-  const { _id, emailAddress, firstName, lastName, phoneNumber, currency, currencySymbol } = userProfile;
-
-  // call useFetchWallet
-  const wallet = useFetchWallet();
-
   const handleBack = () => {
     navigation.goBack();
   };
 
-  // component state
-  // open bottom sheet
+  const baseUrl = process.env.BASE_URL;
+  const fwPublicKey = process.env.FW_PUBLIC_KEY;
+  const { userProfile, token } = useLogin();
+  const {
+    emailAddress,
+    firstName,
+    lastName,
+    phoneNumber,
+    currencySymbol,
+    currency,
+  } = userProfile;
+
+  // call useFetchWallet
+  const { wallet, fetchWallet } = useFetchWallet();
+  // re-fetch wallet on screen focus
+  const fetchWalletData = useCallback(() => {
+    fetchWallet(); // Call fetchWallet from the hook
+  }, [fetchWallet]);
+
+  useFocusEffect(fetchWalletData);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [amount, setAmount] = useState("");
   const [amountError, setAmountError] = useState("");
   const [note, setNote] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [webViewVisible, setWebViewVisible] = useState(false);
+  const [paymentLink, setPaymentLink] = useState("");
+
+  // set user currency symbol if available or
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  // update amount
+  // Handle bottom sheet done
+  const handleDone = () => {
+    toggleModal();
+    navigation.navigate("TransactionScreen");
+  };
+
   const handleAmount = (text) => {
     setAmount(text);
-    // validate
     if (text < 1) {
       setAmountError("Amount must be greater than 0");
       setIsValid(false);
@@ -58,12 +78,10 @@ const AddMoney = ({ navigation }) => {
     }
   };
 
-  // update note
   const handleNote = (text) => {
     setNote(text);
   };
 
-  // initiate funding
   const initiatePayment = async (
     amount,
     email,
@@ -72,7 +90,6 @@ const AddMoney = ({ navigation }) => {
     description
   ) => {
     try {
-      // Alert.alert("pass data", JSON.stringify(description))
       const response = await fetch(`${baseUrl}/flw-api/fund-wallet`, {
         method: "POST",
         headers: {
@@ -91,15 +108,13 @@ const AddMoney = ({ navigation }) => {
       if (response.ok) {
         const data = await response.json();
         const { link } = data.data;
-        // Alert.alert("Payment Link", JSON.stringify(link.split("/").pop()));
-
-         navigation.navigate("AddMoneyPayScreen", { paymentLink: link, data });
+        setPaymentLink(link);
         setProcessing(false);
+        setWebViewVisible(true);
       } else {
         Alert.alert("Funding Error", "Transaction failed. Please try again");
         setProcessing(false);
       }
-     
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Transaction failed. Please try again");
@@ -107,84 +122,262 @@ const AddMoney = ({ navigation }) => {
     }
   };
 
-  // handle add money
   const handleAddMoney = async () => {
     setProcessing(true);
-
-    // call initiate payment
-    await initiatePayment(
-      Number(amount),
-      emailAddress,
-      `${firstName} ${lastName}`,
-      phoneNumber,
-      `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`
-    );
+    setWebViewVisible(true);
+    // await initiatePayment(
+    //   Number(amount),
+    //   emailAddress,
+    //   `${firstName} ${lastName}`,
+    //   phoneNumber,
+    //   `${firstName} ${lastName} fund wallet with ${amount}. Note: ${note || ""}`
+    // );
   };
+
+  // Handle balance update
+  const handleUpdateWalletBalance = async () => {
+    // Make API call 
+    try {
+      const fundingData = {
+        amount: Number(amount),
+        name: firstName,
+        email: emailAddress,
+        currency: currency || "USD",
+      };
+
+      const response = await fetch(
+        `${baseUrl}/wallet/fund-wallet/${userProfile._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(fundingData),
+        }
+      );
+      const data = await response.json();
+  
+      if (response.ok) {
+
+        // send success notification to user
+        sendPushNotification({
+          to: userProfile._id,
+          title: "Wallet Funding",
+          body: `You have funded your wallet with ${
+            currencySymbol || "$"
+          }${amount}`,
+        });
+
+        // Alert.alert("Funding Successful", "Your wallet has been funded successfully");
+      } else {
+        Alert.alert("Funding Error", data.error);
+      }
+    } catch (error) {
+      Alert.alert(
+        "Network Error",
+        JSON.stringify(error)
+      );
+    }
+  };
+
+  const handleMessage = async (event) => {
+    const data = event.nativeEvent.data;
+
+    if (data === "Payment cancelled!") {
+      alert("Payment was cancelled!");
+      setWebViewVisible(false);
+      setProcessing(false);
+    } else {
+      const paymentData = JSON.parse(data);
+      if (paymentData.status === "successful") {
+        
+        setWebViewVisible(false);
+        // update wallet balance
+        await handleUpdateWalletBalance();
+        // fetchWallet();
+        // show success modal
+        setIsModalVisible(true);
+
+        setProcessing(false);
+      } else {
+        alert("Payment failed. Please try again.");
+      }
+    }
+  };
+
+  const generateTxRef = () => {
+    const chars =
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
+    for (let i = 32; i > 0; --i)
+      result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+  };
+
+  const flutterwaveHTML = `
+  <html>
+    <head>
+      <script src="https://checkout.flutterwave.com/v3.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+          background-color: #f8f8f8;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          height: 100vh;
+          width: 100vw;
+          margin: 0;
+          box-sizing: border-box;
+        }
+        form {
+          background-color: #ffffff;
+          border-radius: 10px;
+          padding: 20px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          max-width: 400px;
+        }
+        #start-payment-button {
+          background-color: #f15a22;
+          color: white;
+          border: none;
+          padding: 15px;
+          border-radius: 25px;
+          cursor: pointer;
+          font-size: 1.2rem;
+          width: 100%;
+          max-width: 300px;
+          margin-top: 20px;
+        }
+        #start-payment-button:hover {
+          background-color: #d14c1b;
+        }
+        .order-details {
+          font-size: 1.5rem;
+          margin: 20px 0;
+          width: 100%;
+        }
+        @media (max-width: 600px) {
+          .order-details {
+            font-size: 1.2rem;
+          }
+          #start-payment-button {
+            font-size: 1rem;
+            padding: 10px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <form>
+        <div class="order-details">
+          You want to fund your Wallet with:
+        </div>
+        <div class="order-details">
+          Amount ${currencySymbol || "$"} ${amount}
+        </div>
+        <button type="button" id="start-payment-button" onclick="makePayment()">Pay Now with Flutterwave</button>
+      </form>
+      <script>
+        function makePayment() {
+          FlutterwaveCheckout({
+            public_key: "${fwPublicKey}",
+            tx_ref: "${generateTxRef()}",
+            amount: ${amount},
+            currency: "${currency || "USD"}",
+            payment_options: "card",
+            meta: {
+              source: "docs-inline-test",
+              consumer_mac: "92a3-912ba-1192a",
+            },
+            customer: {
+              email: "${emailAddress}",
+              phone_number: "${phoneNumber}",
+              name: "${firstName} ${lastName}",
+            },
+            customizations: {
+              title: "Splinx Wallet",
+              description: "Fund Wallet",
+              logo: "https://checkout.flutterwave.com/assets/img/rave-logo.png",
+            },
+            callback: function (data){
+              window.ReactNativeWebView.postMessage(JSON.stringify(data));
+            },
+            onclose: function() {
+              window.ReactNativeWebView.postMessage("Payment cancelled!");
+            }
+          });
+        }
+      </script>
+    </body>
+  </html>
+`;
 
   return (
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-        {/* top bar */}
         <BackTopBar headline="Top up" func={handleBack} />
 
-        {/* wallet balance */}
         <Text className="font-semibold text-lg text-center my-8">
-          Balance { currencySymbol || "$"}{wallet?.balance?.toFixed(2) || "0.00"}
+          Balance {currencySymbol || "$"}
+          {wallet?.balance?.toFixed(2) || "0.00"}
         </Text>
 
-        {/* add money section */}
-        <CustomInput
-          mb={24}
-          placeholder="Amount"
-          error={amountError}
-          keyboardType="numeric"
-          inputValue={amount}
-          handleTextChange={handleAmount}
-        />
-        <CustomInput
-          placeholder="Note"
-          inputValue={note}
-          handleTextChange={handleNote}
-        />
+        <View>
+          <CustomInput
+            mb={24}
+            placeholder="Amount"
+            error={amountError}
+            keyboardType="numeric"
+            inputValue={amount}
+            handleTextChange={handleAmount}
+          />
+          <CustomInput
+            placeholder="Note"
+            inputValue={note}
+            handleTextChange={handleNote}
+          />
 
-        {/* add money button */}
-        <View className="mt-28">
-          {processing && <LoadingSpinner />}
-          {isValid ? (
-            <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
-          ) : (
-            <CustomButton label="Add Money" backgroundColor={secondaryColor} />
-          )}
-
-          {/* <PayWithFlutterwave
-            onRedirect={handleOnRedirect}
-            options={{
-              tx_ref: generateTransactionRef(10),
-              authorization: `${merchantId}`,
-              customer: {
-                email: emailAddress,
-              },
-              amount: 2000,
-              currency: "USD",
-              payment_options: "card",
-            }}
-            customButton={(props) => (
-              <TouchableOpacity
-                style={styles.paymentButton}
-                onPress={props.onPress}
-                isBusy={props.isInitializing}
-                disabled={props.disabled}
-              >
-                <Text style={styles.paymentButtonText}>Pay $500</Text>
-              </TouchableOpacity>
+          <View className="mt-28">
+            {processing && <LoadingSpinner />}
+            {isValid ? (
+              <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
+            ) : (
+              <CustomButton
+                label="Add Money"
+                backgroundColor={secondaryColor}
+              />
             )}
-          /> */}
+          </View>
         </View>
+
+        <Modal visible={webViewVisible} animationType="slide">
+          <WebView
+            originWhitelist={["*"]}
+            source={{ html: flutterwaveHTML }}
+            onMessage={handleMessage}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+          />
+        </Modal>
       </SafeAreaView>
 
-      {/* bottom sheet */}
       {isModalVisible && (
-        <SuccessBottomSheet isVisible={isModalVisible} onClose={toggleModal} />
+        <SuccessBottomSheet
+          isVisible={isModalVisible}
+          onClose={handleDone}
+          handleOk={handleDone}
+          heading="Transaction Completed"
+          message={`You have successfully fund your Wallet with: ${
+            currencySymbol || "$"
+          }${amount}. Enjoy your Splinx Wallet.`}
+        />
       )}
     </>
   );

@@ -32,12 +32,12 @@ const TransferMoney = ({ navigation }) => {
   useFocusEffect(fetchWalletData);
 
   const userList = useFetchAllUsers();
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, currencySymbol, currency } = useLogin();
   // base url
   const baseUrl = process.env.BASE_URL;
 
   // Destructuring
-  const { balance, currencySymbol } = wallet;
+  const { balance } = wallet;
 
   // Component state
   const [amount, setAmount] = useState("");
@@ -96,7 +96,7 @@ const TransferMoney = ({ navigation }) => {
         amount: Number(amount),
         name: selectedUser.firstName,
         email: selectedUser.emailAddress,
-        currency: "USD",
+        currency: { currency } || "USD",
         note: note,
       };
 
@@ -135,7 +135,6 @@ const TransferMoney = ({ navigation }) => {
         toggleModal();
       } else {
         setProcessing(false);
-        // Alert.alert("Error", "An error occurred while processing your request");
         Alert.alert("Transfer Error", data.error);
       }
     } catch (error) {
