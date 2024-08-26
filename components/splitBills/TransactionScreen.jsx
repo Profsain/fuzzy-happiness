@@ -13,7 +13,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useLogin } from "../../context/LoginProvider";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
 import { BackTopBar } from "../home";
@@ -120,13 +119,13 @@ const TransactionScreen = ({ navigation }) => {
           }
           func={handleTransactionHistory}
         />
-        <BillsHorizontalBtn
+        {/* <BillsHorizontalBtn
           text="Add/Change Payment Method"
           iconLeft={
             <MaterialIcons name="payment" size={18} color={primeryColor} />
           }
           func={handleChangePaymentMethod}
-        />
+        /> */}
         <BillsHorizontalBtn
           text="Settings"
           iconLeft={<Fontisto name="wallet" size={18} color={primeryColor} />}
