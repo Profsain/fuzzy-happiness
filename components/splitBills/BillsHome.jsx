@@ -2,11 +2,13 @@ import {
   View,
   Text,
   SafeAreaView,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import useFetchWallet from "../../hooks/useFetchWallet";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
@@ -16,11 +18,35 @@ import EventBillCard from "./component/EventBillCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
 import LoadingSpinner from "../LoadingSpinner";
 import { useLogin } from "../../context/LoginProvider";
+import RequestMoneyCard from "./component/RequestMoneyCard";
+import formatDate from "../../utils/formatDate";
+import { ScrollView } from "react-native-virtualized-view";
 
 const BillsHome = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
-  const { isWalletCreated, phoneNumber, _id, currency, currencySymbol } = userProfile;
-  // base url
+  const { isWalletCreated, phoneNumber, _id, currency, currencySymbol } =
+    userProfile;
+
+  // wallet data
+  // call useFetchWallet
+  const { wallet, fetchWallet } = useFetchWallet();
+  const [requestBills, setRequestBills] = useState([]);
+  const [loading, setLoading] = useState(true); // Set initial loading state to true
+
+  // check wallet data and sort request bills
+  useEffect(() => {
+    if (wallet) {
+      const { moneyRequests } = wallet;
+      const sortedRequestBills = moneyRequests?.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setRequestBills(sortedRequestBills);
+      setLoading(false);
+    }
+  }, [wallet]);
+
+  // Alert.alert("Wallet", JSON.stringify(requestBills));
+
   const baseUrl = process.env.BASE_URL;
 
   // component state
@@ -42,8 +68,12 @@ const BillsHome = ({ navigation }) => {
       if (response.ok) {
         const data = await response.json();
         // update userProfile context
-        setUserProfile({ ...userProfile, isWalletCreated: true, walletAccountNumber: data.accountNumber });
-        
+        setUserProfile({
+          ...userProfile,
+          isWalletCreated: true,
+          walletAccountNumber: data.accountNumber,
+        });
+
         Alert.alert("Success", "Wallet account activated successfully", [
           {
             text: "OK",
@@ -63,6 +93,7 @@ const BillsHome = ({ navigation }) => {
       throw new Error(error.message);
     }
   };
+
   // handle create new bill
   const handleCreateNewBill = () => {
     // navigate to create new bill screen
@@ -84,6 +115,123 @@ const BillsHome = ({ navigation }) => {
     Alert.alert("View all recent bills");
   };
 
+  // handle accept request
+  const handleAcceptRequest = async (requestId) => {
+    const acceptRequest = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/wallet/accept-request/${_id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ requestId }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          Alert.alert("Success", "Request accepted successfully");
+          // Update the requestBills state to reflect the accepted request
+          setRequestBills((prevRequests) =>
+            prevRequests.map((request) =>
+              request._id === requestId
+                ? { ...request, status: "accepted" }
+                : request
+            )
+          );
+        } else {
+          const error = await response.json();
+          Alert.alert("Error", error.error || "Failed to accept request");
+        }
+      } catch (error) {
+        Alert.alert("Error", error.message || "Something went wrong");
+      }
+    };
+
+    // Confirm the accept request
+    Alert.alert(
+      "Accept Request",
+      "Are you sure you want to accept this request?",
+      [
+        {
+          text: "Yes",
+          onPress: acceptRequest,
+        },
+        {
+          text: "No",
+        },
+      ]
+    );
+  };
+
+  // handle decline request
+  const handleDeclineRequest = async (requestId) => {
+    const declineRequest = async () => { 
+       try {
+         const response = await fetch(
+           `${baseUrl}/wallet/decline-request/${_id}`,
+           {
+             method: "POST",
+             headers: {
+               "Content-Type": "application/json",
+               Authorization: `Bearer ${token}`,
+             },
+             body: JSON.stringify({ requestId }),
+           }
+         );
+
+         if (response.ok) {
+           const data = await response.json();
+           Alert.alert("Success", "Request declined successfully");
+           // Update the requestBills state to reflect the declined request
+           setRequestBills((prevRequests) =>
+             prevRequests.map((request) =>
+               request._id === requestId
+                 ? { ...request, status: "declined" }
+                 : request
+             )
+           );
+         } else {
+           const error = await response.json();
+           Alert.alert("Error", error.error || "Failed to decline request");
+         }
+       } catch (error) {
+         Alert.alert("Error", error.message || "Something went wrong");
+       }
+    };
+
+    // Confirm the decline request
+    Alert.alert(
+      "Decline Request",
+      "Are you sure you want to decline this request?",
+      [
+        {
+          text: "Yes",
+          onPress: declineRequest,
+        },
+        {
+          text: "No",
+        },
+      ] 
+    );
+    
+  };
+
+  // render item function for FlatList
+  const renderItem = ({ item }) => (
+    <RequestMoneyCard
+      transactionName={item.description.slice(0, 20)}
+      transactionAmount={`${currencySymbol}${item.amount}`}
+      transactionDate={formatDate(item.date)}
+      transactionStatus={item.status}
+      onAccept={() => handleAcceptRequest(item._id)}
+      onDecline={() => handleDeclineRequest(item._id)}
+    />
+  );
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       {/* top bar */}
@@ -97,7 +245,9 @@ const BillsHome = ({ navigation }) => {
         <Text className="text-xl font-semibold pb-2 text-slate-600">
           Total Spent
         </Text>
-        <Text className="text-2xl font-bold text-slate-600">{currencySymbol || "$"}0.00</Text>
+        <Text className="text-2xl font-bold text-slate-600">
+          {currencySymbol || "$"}0.00
+        </Text>
 
         <View className="flex flex-row justify-end mt-6">
           {isWalletCreated ? (
@@ -201,16 +351,31 @@ const BillsHome = ({ navigation }) => {
         </View>
 
         {/* recent bills section */}
-        <HorizontalTitle
-          title="Recent Bills"
-          action="View all"
-          func={handleRecentBills}
-        />
         <View>
-          <EventBillCard />
-          <EventBillCard />
-          <EventBillCard />
-          <EventBillCard />
+          <HorizontalTitle
+            title="Recent Bills"
+            action="View all"
+            func={handleRecentBills}
+          />
+          <View>
+            <EventBillCard />
+            <EventBillCard />
+          </View>
+        </View>
+
+        {/* recent money request section */}
+        <View>
+          <HorizontalTitle title="Recent Request" />
+          {/* Render the FlatList only if not loading */}
+          {!loading && (
+            <View className="my-8">
+              <FlatList
+                data={requestBills}
+                renderItem={renderItem}
+                keyExtractor={(item) => item._id.toString()}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

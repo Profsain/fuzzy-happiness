@@ -3,7 +3,6 @@ import { useLogin } from "../../context/LoginProvider";
 import {
   FlatList,
   SafeAreaView,
-  ScrollView,
   Text,
   View,
 } from "react-native";
@@ -20,6 +19,7 @@ import eventData from "../../mockdata/eventData";
 import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
 import sortEventsByDate from "../../utils/sortEventsByDate";
+import { ScrollView } from "react-native-virtualized-view";
 
 const HomeScreen = ({ navigation }) => {
   const { userProfile, token } = useLogin();

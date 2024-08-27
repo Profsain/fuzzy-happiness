@@ -14,13 +14,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserEvents } from "../../store/eventSlice";
-import {
-  fetchUsersByIds,
-  selectAllUsers,
-} from "../../store/fetchUsersByIdSlice";
+import {fetchUsersByIds, selectAllUsers } from "../../store/fetchUsersByIdSlice";
 import { useLogin } from "../../context/LoginProvider";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
-import { toggleOpenCreateNewBill } from "../../store/openScreenSlice";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
@@ -28,7 +23,7 @@ import { primeryColor } from "../../utils/appstyle";
 import MembersRowCard from "./component/MembersRowCard";
 import RNPickerSelect from "react-native-picker-select";
 
-const CreateNewBills = () => {
+const CreateNewBills = ({navigation}) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -130,10 +125,6 @@ const CreateNewBills = () => {
     }
   }, [selectedMembers]);
 
-  // alert(JSON.stringify(splitPercentage));
-  // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenCreateNewBill())]);
-
   // handle create new bill
   const handleCreateNewBill = async () => {
     if (!selectedEvent) {
@@ -213,7 +204,7 @@ const CreateNewBills = () => {
       {/* top bar */}
       <BackTopBar
         headline="Create New Bill"
-        func={() => dispatch(toggleOpenCreateNewBill())}
+        func={() => navigation.goBack()}
       />
 
       <ScrollView>
@@ -230,7 +221,7 @@ const CreateNewBills = () => {
           <CustomInput placeholder="Event Name" inputValue={eventName} />
 
           <View className="px-2 py-3 border border-slate-300 rounded-lg mb-4">
-            <Text className="text-lg">{ eventCost}</Text>
+            <Text className="text-lg">{eventCost}</Text>
           </View>
 
           <CustomInput placeholder="Created by" inputValue={createdBy} />
