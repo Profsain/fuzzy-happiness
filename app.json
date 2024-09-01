@@ -1,6 +1,8 @@
 {
   "expo": {
     "name": "Splinx-Planet",
+    "scheme": "splinxplanet",
+    "platforms": ["ios", "android", "web"],
     "slug": "Splinx-Planet",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,37 +13,44 @@
       "resizeMode": "contain",
       "backgroundColor": "#fdccbb"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
-      }
+      },
+      "bundleIdentifier": "com.splinxplanet.app"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/splinxicon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#fdccbb"
       },
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.profsain.SplinxPlanet"
+      "package": "com.splinxplanet.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
       [
         "expo-contacts",
         {
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7e231064-1cb2-4292-ae51-6f305cb10e8c"
+      }
+    }
   }
 }

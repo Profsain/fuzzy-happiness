@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const TransactionHistoryCard = ({transactionName, transactionDate, transactionAmount, transactionStatus}) => {
+const TransactionHistoryCard = ({transactionName, transactionDate, transactionAmount, transactionStatus, transactionType}) => {
   return (
     <View className="flex flex-row items-center justify-between my-2 border-b pb-2 border-gray-400">
       <View className="flex flex-row items-center">
@@ -10,11 +10,11 @@ const TransactionHistoryCard = ({transactionName, transactionDate, transactionAm
           <Text className="font-medium">
             {transactionName || "Transfer to Pascal"}
           </Text>
-          <Text className="text-xs">{transactionDate || "12th Date 2024"}</Text>
+          <Text className="text-xs">{transactionDate || "12th Date 2024"} | {transactionType || "Payment"}</Text>
         </View>
       </View>
       <View>
-        <Text className="font-medium">${transactionAmount || "-100.00"}</Text>
+        <Text className="font-medium">{transactionAmount || "-100.00"}</Text>
         <Text className="text-xs">{transactionStatus || "Successful"}</Text>
       </View>
     </View>

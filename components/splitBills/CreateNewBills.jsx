@@ -4,52 +4,204 @@ import {
   SafeAreaView,
   TextInput,
   StyleSheet,
-  ScrollView,
   Alert,
-  TouchableOpacity,
+  FlatList,
 } from "react-native";
+import { ScrollView } from "react-native-virtualized-view";
 
-import React from "react";
-import { useDispatch } from "react-redux";
-import useBackHandler from "../../hooks/useDeviceBackBtn";
-import { toggleOpenCreateNewBill } from "../../store/openScreenSlice";
+import React, { useEffect, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserEvents } from "../../store/eventSlice";
+import {
+  fetchUsersByIds,
+  selectAllUsers,
+} from "../../store/fetchUsersByIdSlice";
+import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import { primeryColor } from "../../utils/appstyle";
 import MembersRowCard from "./component/MembersRowCard";
+import RNPickerSelect from "react-native-picker-select";
+import LoadingSpinner from "../LoadingSpinner";
 
-const CreateNewBills = () => {
+const CreateNewBills = ({ navigation }) => {
+  const baseUrl = process.env.BASE_URL;
+  const { userProfile, token } = useLogin();
   const dispatch = useDispatch();
 
-  // handle back to prev screen when device back button press
-  useBackHandler([() => dispatch(toggleOpenCreateNewBill())]);
+  const userId = userProfile._id;
+  const events = useSelector((state) => state.events.events);
+  useEffect(() => {
+    dispatch(fetchUserEvents(userId));
+  }, [userId]);
 
-  // handle create new bill
-  const handleCreateNewBill = () => {
-    // create new bill
-    Alert.alert("create new bill");
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const event = events.find((event) => event._id === selectedEvent);
+  const [eventCost, setEventCost] = useState("");
+  const [eventName, setEventName] = useState("");
+  const [createdBy, setCreatedBy] = useState("");
+  const [splitPercentage, setSplitPercentage] = useState(0);
+  const [note, setNote] = useState("");
+  const [membersId, setMembersId] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (event) {
+      setEventCost("$" + event.eventCost || 0.0);
+      setEventName(event.eventName);
+      setCreatedBy(userProfile.firstName + " " + userProfile.lastName);
+      const userIds = event.eventMembers.map((member) => member.user);
+      setMembersId(userIds);
+    }
+  }, [event]);
+
+  const users = useSelector(selectAllUsers);
+  const [userList, setUserList] = useState([]);
+  const fetchAllUsers = async () => {
+    const userId = userProfile._id;
+
+    try {
+      const response = await fetch(`${baseUrl}/user/all-users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserList(data);
+      } else {
+        console.log("Failed to fetch users");
+      }
+    } catch (error) {
+      console.log("An error occurred while fetching users", error);
+    }
   };
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, [membersId]);
+
+  const members = userList.filter((user) => membersId.includes(user._id));
+  const [selectedMembers, setSelectedMembers] = useState([]);
+
+  const toggleMemberSelection = (memberId) => {
+    setSelectedMembers((prevSelectedMembers) =>
+      prevSelectedMembers.includes(memberId)
+        ? prevSelectedMembers.filter((id) => id !== memberId)
+        : [...prevSelectedMembers, memberId]
+    );
+  };
+
+  useEffect(() => {
+    if (selectedMembers.length > 0) {
+      const percent = 100 / selectedMembers.length;
+      setSplitPercentage(percent);
+    } else {
+      setSplitPercentage(0);
+    }
+  }, [selectedMembers]);
+
+  const handleCreateNewBill = async () => {
+    setLoading(true);
+
+    if (!selectedEvent) {
+      Alert.alert("Error", "Please select an event.");
+      return;
+    }
+
+    if (selectedMembers.length === 0) {
+      Alert.alert(
+        "Error",
+        "Please select at least one member to split the cost."
+      );
+      return;
+    }
+
+    const splitPercentages = {};
+    selectedMembers.forEach((memberId) => {
+      splitPercentages[memberId] = 100 / selectedMembers.length;
+    });
+
+    const requestBody = {
+      splitPercentages,
+    };
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/event/split-cost/${selectedEvent}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setLoading(false);
+
+        Alert.alert("Success", "Event cost splitted successfully.");
+        setSelectedEvent(null);
+        setEventCost("");
+        setEventName("");
+        setCreatedBy("");
+        setSplitPercentage(0);
+        setNote("");
+        setSelectedMembers([]);
+
+        // navigate back to the previous screen
+        navigation.goBack();
+      } else {
+        Alert.alert(
+          "Error",
+          data.message || "An error occurred while splitting the cost."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while splitting the cost.");
+      console.log(error);
+    }
+  };
+
+  const eventItems = events
+    .filter((event) => !event.isEventCostSplitted)
+    .map((event) => ({
+      label: event.eventName,
+      value: event._id,
+    }));
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      {/* top bar */}
-      <BackTopBar
-        headline="Create New Bill"
-        func={() => dispatch(toggleOpenCreateNewBill())}
-      />
-
+      <BackTopBar headline="Create New Bill" func={() => navigation.goBack()} />
       <ScrollView>
-        {/* create new bills section */}
         <View className="my-8 ">
-          <CustomInput placeholder="Event Name" />
-
-          <CustomInput placeholder="Total Amount" />
-
-          <CustomInput placeholder="Created by" />
-
-          <CustomInput placeholder="Split Percentage" keyboardType="numeric" />
-
+          <RNPickerSelect
+            onValueChange={(value) => setSelectedEvent(value)}
+            items={eventItems}
+            placeholder={{ label: "Select Event", value: null }}
+            style={pickerSelectStyles}
+          />
+          <CustomInput placeholder="Event Name" inputValue={eventName} />
+          <View className="px-2 py-3 border border-slate-300 rounded-lg mb-4">
+            <Text className="text-lg">{eventCost}</Text>
+          </View>
+          <CustomInput placeholder="Created by" inputValue={createdBy} />
+          <View>
+            {splitPercentage > 0 && (
+              <Text className="mb-6 text-orange-400">
+                {" "}
+                Each member pays {splitPercentage}% of the event cost{" "}
+              </Text>
+            )}
+          </View>
           <TextInput
             multiline
             numberOfLines={4}
@@ -57,38 +209,67 @@ const CreateNewBills = () => {
             style={styles.textInput}
           />
         </View>
-
-        {/* member list section to select from flatList scrollable*/}
         <View>
           <HorizontalTitle
             title="Select with whom to split"
             icon=""
             action=""
           />
-
-          <MembersRowCard />
-          <MembersRowCard
-            imgUrl="https://img.freepik.com/free-photo/portrait-young-handsome-african-man-blue-wall_176420-2339.jpg?t=st=1710626498~exp=1710630098~hmac=96457b13d44d42d906ab4cc9429f68b45ed3670f33b4a7390f4181e0cd9a3bb1&w=826"
-            memberName="Grace Pero"
+          {members.length === 0 && (
+            <View>
+              <Text className="text-lg font-bold text-orange-400">
+                No members to split with.
+              </Text>
+              <Text className="mb-6 font-bold text-slate-500">
+                Select event to split with members
+              </Text>
+            </View>
+          )}
+          <FlatList
+            data={members}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <MembersRowCard
+                imgUrl={item.profileImg}
+                memberName={`${item.firstName} ${item.lastName}`}
+                memberId={item._id}
+                isSelected={selectedMembers.includes(item._id)}
+                onSelect={() => toggleMemberSelection(item._id)}
+              />
+            )}
           />
-          <MembersRowCard
-            imgUrl="https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=826&t=st=1710626441~exp=1710627041~hmac=91402668e99223790db54de3553a9c5e61a11defabbb9e6e4ef0f16b28c1ce87"
-            memberName="Fred James"
-          />
-          <MembersRowCard imgUrl="https://img.freepik.com/free-photo/carefree-relaxed-pretty-young-mixed-race-female-wearing-big-round-eyeglasses-smiling-broadly-feeling-excited-about-spending-vacations-abroad_273609-1260.jpg?t=st=1710626535~exp=1710630135~hmac=4733b7502db243a164e78fd0ae3c8da5edd2539cdd6e0da4879cd4b1239a357d&w=826" memberName="Ekemini Rico" />
         </View>
-
-        {/* create button */}
         <View className="flex justify-center items-center mt-8">
-          <CustomButton
-            title="Create"
-            onPress={handleCreateNewBill}
-          />
+          {loading && <LoadingSpinner />}
+          <CustomButton label="Create" buttonFunc={handleCreateNewBill} />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    color: "black",
+    paddingRight: 30,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: "gray",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30,
+  },
+});
 
 const styles = StyleSheet.create({
   textInput: {

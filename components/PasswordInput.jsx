@@ -21,7 +21,7 @@ const PasswordInput = ({
 }) => {
   return (
     <Box mb={mb}>
-      <Input textAlign="center">
+      <Input textAlign="center" size="lg">
         <InputField
           type={showPassword ? "text" : "password"}
           placeholder={placeholder}

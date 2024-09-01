@@ -9,7 +9,6 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { BackHandler } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
 import * as ImagePicker from "expo-image-picker";
 import BackTopBar from "./BackTopBar";
@@ -22,7 +21,8 @@ import { AntDesign } from "@expo/vector-icons";
 import TimeModal from "./TimeModal";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import formatCurrency from "../../utils/formatCurrency";
-// import sendEmail from "../../utils/sendEmail";
+
+import sendPushNotification from "../../utils/sendPushNotification";
 
 // fetch event categories from an api
 const fetchData = async () => {
@@ -41,26 +41,21 @@ const fetchData = async () => {
   }
 };
 
-const CreateNewEvent = ({ setBack }) => {
+const CreateNewEvent = ({ navigation }) => {
+  // base url
+  const baseUrl = process.env.BASE_URL;
+
+  // handle back to prev screen
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   const { token, userProfile } = useLogin();
+
   const headlineText = `Create New Event`;
   const [showDateModal, setShowDateModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [listItems, setListItems] = useState([]);
-
-  // handle back to prev screen when device back button press
-  useEffect(() => {
-    const backAction = () => {
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
 
   // fetch event categories and update listItems
   useEffect(() => {
@@ -96,7 +91,6 @@ const CreateNewEvent = ({ setBack }) => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [newEvent, setNewEvent] = useState({});
-  const [openSingleEvent, setOpenSingleEvent] = useState(false);
 
   // handle eventData change
   const handleEventDataChange = (name, value) => {
@@ -182,6 +176,22 @@ const CreateNewEvent = ({ setBack }) => {
     setShowTimeModal(true);
   };
 
+  // handle rule info
+  const handleRuleInfo = () => {
+    Alert.alert(
+      "Event Rules",
+      "Event rules are the guidelines that participants must follow during the event. It could include dress code, no smoking, no alcohol, etc."
+    );
+  };
+
+  // handle event budget info
+  const handleEventBudgetInfo = () => { 
+    Alert.alert(
+      "Event Budget",
+      "The event budget is the total amount you plan to spend on the event, which will be split among the event participants. It includes costs such as the venue, food, drinks, entertainment, and more."
+    );
+  };
+
   // handle create new event
   const handleCreateNewEvent = () => {
     // set submitting to true
@@ -210,29 +220,66 @@ const CreateNewEvent = ({ setBack }) => {
     // handle create
     const createEvent = async () => {
       try {
-        const response = await fetch(
-          "https://splinx-server.onrender.com/event",
-          requestOptions
-        );
+        const response = await fetch(`${baseUrl}/event`, requestOptions);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        // clear input field
-        setBack(false);
+
         setNewEvent(result);
 
         // set submitting to false
         setSubmitting(false);
 
-        // send email to user
-        // sendEmail(
-        //   [userProfile.email],
-        //   "SplinX Event Created",
-        //   `Hi ${userProfile.firstName}. Your event ${result.eventName} has been created successfully`
-        // );
+        const message = `
+      <div style="font-family: Arial, sans-serif; color: #333;">
+        <h1 style="color: #f9784b;">Splinx Event</h1>
+        <p>Dear ${userProfile.firstName},</p>
+        <p>You have successfully created an event ${formData.eventName} event, happening on ${formData.eventDate}.</p>
+        <p>See you there!</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+        <p style="font-size: 12px; color: #666;">Best regards,<br>SplinX Planet</p>
+      </div>
+    `;
+
+        const emailResponse = await fetch(
+          `${process.env.BASE_URL}/email/send-email`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              email: userProfile.emailAddress,
+              subject: "SplinX Planet Event ",
+              html: message,
+            }),
+          }
+        );
+
+        if (emailResponse.ok) {
+          await sendPushNotification(
+            userProfile._id,
+            "Splinx Planet",
+            `${formData.eventName} created successful. Hurray!😍.`
+          );
+        } else {
+          const emailError = await emailResponse.json();
+          console.error("Email error:", emailError.message);
+        }
+
+        // navigate to previous screen
+        Alert.alert("Success", "Event created successfully", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("HomeScreen"),
+          },
+        ]);
       } catch (error) {
+        Alert.alert("Error", "An error occurred, please try again");
         console.error("Error:", error);
+        setSubmitting(false);
       }
     };
 
@@ -243,7 +290,7 @@ const CreateNewEvent = ({ setBack }) => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar headline={headlineText} func={setBack} />
+        <BackTopBar headline={headlineText} func={handleBack} />
 
         {/* form input section */}
         <ScrollView className="mt-4">
@@ -304,16 +351,25 @@ const CreateNewEvent = ({ setBack }) => {
             {/* event cost */}
             <View className="mt-4">
               <Text className="text-lg font-semibold">Event Cost</Text>
-              <TextInput
-                multiline={true}
-                placeholder="Enter total cost of the event"
-                className="border-b-2 border-slate-100 mt-2 text-lg"
-                value={eventData.eventCost}
-                onChangeText={(text) =>
-                  handleEventDataChange("eventCost", text)
-                }
-                keyboardType="numeric"
-              />
+              <View className="flex flex-row items-center justify-between pr-4">
+                <TextInput
+                  multiline={true}
+                  placeholder="Enter total budget for the event"
+                  className="border-b-2 border-slate-100 mt-2 text-lg"
+                  value={eventData.eventCost}
+                  onChangeText={(text) =>
+                    handleEventDataChange("eventCost", text)
+                  }
+                  keyboardType="numeric"
+                />
+                <TouchableOpacity onPress={handleEventBudgetInfo}>
+                  <AntDesign
+                    name="infocirlceo"
+                    size={24}
+                    color={primeryColor}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* event date */}
@@ -365,15 +421,24 @@ const CreateNewEvent = ({ setBack }) => {
               <Text className="text-lg font-semibold">
                 Set Your Event Rules
               </Text>
-              <TextInput
-                multiline={true}
-                placeholder="Enter event rules"
-                className="border-b-2 border-slate-100 mt-2 text-lg"
-                value={eventData.eventUserRules}
-                onChangeText={(text) =>
-                  handleEventDataChange("eventUserRules", text)
-                }
-              />
+              <View className="flex flex-row items-center justify-between pr-4">
+                <TextInput
+                  multiline={true}
+                  placeholder="Enter event rules"
+                  className="border-b-2 border-slate-100 mt-2 text-lg"
+                  value={eventData.eventUserRules}
+                  onChangeText={(text) =>
+                    handleEventDataChange("eventUserRules", text)
+                  }
+                />
+                <TouchableOpacity onPress={handleRuleInfo}>
+                  <AntDesign
+                    name="infocirlceo"
+                    size={24}
+                    color={primeryColor}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* event hashtags */}

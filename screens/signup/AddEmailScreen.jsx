@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -13,6 +13,7 @@ import useReceivedData from "../../hooks/useReceivedData";
 const AddEmailScreen = ({ navigation }) => {
   // received data from previous screen
   const receivedData = useReceivedData();
+  // Alert.alert("Received Data", JSON.stringify(receivedData));
   
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [email, setEmail] = useState("");
@@ -33,15 +34,12 @@ const AddEmailScreen = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    // persist email in local storage
+    // send data to next screen
     const data = {
       ...receivedData,
       emailAddress: email,
     };
-    // send token to email
-    // Alert.alert("Email", email);
-    // navigate to EmailVerificationCode screen
-    // console.log(data);
+    
     navigationToScreen(navigation, "AddAddressScreen", data);
   };
 

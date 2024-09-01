@@ -122,21 +122,6 @@ const ChatList = ({ navigation }) => {
         </View>
 
         {/* chat list */}
-        {/* <ScrollView>
-          <View>
-            {userList.map((user) => (
-              <UserCard
-                key={user._id}
-                userName={user.firstName}
-                lastMessage="Hello there!"
-                messageCount={user.friends.length}
-                lastMessageTime="8:47 am"
-                func={handleUserCardClick}
-                profileImage={user.profileImg}
-              />
-            ))}
-          </View>
-        </ScrollView> */}
         
         {/* show loading spinner */}
         {loading && <LoadingSpinner />}

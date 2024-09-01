@@ -1,94 +1,85 @@
 import React, { useState, useRef } from "react";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { firebaseConfig } from "../config";
-import firebase from "firebase/compat/app";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 import PhoneInput from "react-native-phone-number-input";
+import { registerIndieID } from "native-notify";
+import sendPushNotification from "../utils/sendPushNotification";
+import { setItem } from "../utils/asyncStorage";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
-import { View, TouchableOpacity } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 
 const SignUpScreen = ({ navigation }) => {
-  const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
+  const [isValid, setIsValid] = useState(false);
   const [phoneValue, setPhoneValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
   const [error, setError] = useState("");
-  // loading spinner
   const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
 
-  // handle phone number change
+  // native notify token
+  const notifyToken = process.env.NATIVE_NOTIFY_TOKEN;
+
   const handleChangeValue = (text) => {
     setPhoneValue(text);
 
     if (text.length === 0) {
       setError("Phone Number is required");
-      return;
+      setIsValid(false);
     } else if (text.length < 10) {
       setError("Phone Number must be 10 digits");
-      return;
+      setIsValid(false);
     } else {
       setError("");
       setIsValid(true);
     }
   };
 
-  // send token to phone number
-  const recaptchaVerifier = useRef(null);
-
   const sendVerificationCode = async (phoneNumber) => {
-    // set loading to true
     setLoading(true);
+
+    // generate 6 digit random number as otp
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    // store otp to local storage
+    await setItem("otp", otp);
+
+    // data
+    const data = {
+      phone: formattedValue,
+    };
+
     try {
-      const phoneProvider = new firebase.auth.PhoneAuthProvider();
-      const verificationToken = await phoneProvider.verifyPhoneNumber(
+      await registerIndieID(`${phoneNumber}`, 22245, notifyToken);
+
+      // send otp to phone
+      sendPushNotification(
         phoneNumber,
-        recaptchaVerifier.current
+        "Splinx Planet",
+        `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
       );
 
-      if (verificationToken) {
-        // navigate to token screen
-        const data = {
-          phone: formattedValue,
-          verificationId: verificationToken,
-        };
-
-        navigationToScreen(navigation, "TokenScreen", data);
-
-        // set loading to false
-        setLoading(false);
-      }
+      navigationToScreen(navigation, "TokenScreen", data);
+      setLoading(false);
     } catch (error) {
-      console.log("Error", error.message);
+      Alert.alert("Error", error.message);
+      setLoading(false);
     }
   };
 
-  // async function sendVerificationCode(phoneNumber) {
-  //   try {
-  //     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-  //     // Save confirmation to state or context for later use
-  //     setConfirmation(confirmation);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //     console.log("Confirmation", confirmation);
-  //   } catch (error) {
-  //     console.error("Error sending verification code: ", error);
-  //     // Handle error
-  //   }
-  // }
-
-  // handle send token
   const handleGetToken = () => {
-    // call sendVerificationCode function
-    sendVerificationCode(formattedValue);
+    // Ensure formattedValue starts with '+' and is in E.164 format
+    if (formattedValue.startsWith("+")) {
+      sendVerificationCode(formattedValue);
+    } else {
+      Alert.alert("Error", "Invalid phone number format.");
+    }
   };
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Phone Number" />
 
-      {/* form section */}
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter your mobile number to get a token.</Text>
 
@@ -104,22 +95,14 @@ const SignUpScreen = ({ navigation }) => {
             }}
             withDarkTheme
             withShadow
-            // autoFocus
           />
           {error && (
             <Text size="sm" style={{ color: "#ea9977" }}>
               {error}
             </Text>
           )}
-
-          {/* recaptcha component */}
-          <FirebaseRecaptchaVerifierModal
-            ref={recaptchaVerifier}
-            firebaseConfig={firebaseConfig}
-          />
         </Box>
 
-        {/* next button */}
         <Box mt={160}>
           {!isValid ? (
             <CustomButton
@@ -138,7 +121,6 @@ const SignUpScreen = ({ navigation }) => {
           )}
         </Box>
 
-        {/* remember password? Login */}
         <Box mt={160}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}

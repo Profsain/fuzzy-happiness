@@ -1,6 +1,8 @@
-import * as MailComposer from 'expo-mail-composer';
+import sendPushNotification from "./sendPushNotification";
 
-const sendEmail = async (recipients, subject, content) => {
+const sendEmail = async (recipients, subject, content, notificationMessage, userId) => {
+       // base url
+    const baseUrl = process.env.BASE_URL;
     // Define CSS styles
     const styles = `
         <style>
@@ -40,22 +42,36 @@ const sendEmail = async (recipients, subject, content) => {
         </html>
     `;
 
-    try {
-        // Send email with custom template
-        await MailComposer.sendAsync({
-            recipients: recipients,
-            subject: subject,
-            body: emailBody,
-            isHtml: true,
-            attachments: [],
-        });
-        console.log('Email sent successfully');
-    } catch (error) {
-        console.error('Failed to send email:', error);
-    }
+   const data = {
+          email: recipients,
+          subject: subject,
+          html: emailBody,
+        };
+
+        try {
+          const response = await fetch(`${baseUrl}/email/send-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+          if (response) {
+            // send otp to phone
+            sendPushNotification(
+              userId,
+              "Splinx Planet",
+              notificationMessage
+            );
+          } else {
+            Alert.alert("error", result.message);
+          }
+        } catch (error) {
+          Alert.alert("error", error);
+        }
 };
 
 export default sendEmail;
-
-// Example usage:
-// sendEmail(['recipient1@example.com', 'recipient2@example.com'], 'Dynamic Subject', 'Dynamic content of the email.');

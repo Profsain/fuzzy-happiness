@@ -34,3 +34,7 @@ Social media event and bill sharing app
 
 ## License
 All right reserved @splinx planet. No part of this code should be use without written permission. 
+
+
+ "@react-native-firebase/app": "^18.8.0",
+    "@react-native-firebase/auth": "^18.8.0",

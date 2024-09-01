@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
-import firebase from "firebase/compat/app";
-import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../../components";
+import { getItem, removeItem } from "../../utils/asyncStorage";
+import { Box, set, Text, VStack } from "@gluestack-ui/themed";
+import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
 
 const TokenScreen = () => {
-  // data from signU  p screen
+  
+  // data from signUp screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
-  const verificationId = receivedData.verificationId;
 
   // navigation
   const navigation = useNavigation();
@@ -24,10 +24,25 @@ const TokenScreen = () => {
   const [error, setError] = useState("");
   const [mt, setMt] = useState(68); // margin top for resend text
   const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
+  const [processing, setProcessing] = useState(false); // processing state
   const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
 
   // sent timeout for 3 minutes
   useEffect(() => {
+    const fetchOtp = async () => {
+      try {
+        const otp = await getItem("otp");
+        if (otp) {
+          Alert.alert("Splinx OTP", `Your OTP is ${otp}`);
+          setAutoFillOtp(otp);
+        }
+      } catch (error) { 
+        console.log(error);
+      }
+    };
+
+    // fetch otp
+    fetchOtp();
     const interval = setInterval(() => {
       setTimer((timer) => {
         // Check if the timer is greater than 0 before decrementing
@@ -46,10 +61,13 @@ const TokenScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Alert.alert("Otp value", JSON.stringify(tokenValue));
+
   const codeInputRef = useRef(null);
 
   // handle token code change
   const handleTokenValue = (code) => {
+    // set token value
     setTokenValue(code);
     // handle error
     if (code.length === 0) {
@@ -68,29 +86,29 @@ const TokenScreen = () => {
   };
 
   // handle confirm token
-  const handleConfirmToken = () => {
-    const credential = firebase.auth.PhoneAuthProvider.credential(
-      verificationId,
-      tokenValue
-    );
-    firebase
-      .auth()
-      .signInWithCredential(credential)
-      .then((result) => {
-        // do something with the result
-        if (result) {
-          const data = {
-            phoneNumber: phoneNumber,
-          };
-          //  navigationToScreen(navigation, "AddEmailScreen", data);
-          navigation.replace("AddEmailScreen", data);
-        }
-      })
-      .catch((error) => {
-        // do something with the error
-        setError(error.message);
-        console.log("Error", error);
-      });
+  const handleConfirmToken = async () => {
+    setProcessing(true);
+    try {
+      const otp = await getItem("otp");
+
+      if (otp == tokenValue) {
+        const data = {
+          phoneNumber: phoneNumber,
+        };
+
+        navigation.replace("AddEmailScreen", data);
+
+        // remove otp
+        await removeItem("otp");
+        setProcessing(false);
+      } else {
+        setError("Invalid Token Code");
+        setProcessing(false);
+      }
+    } catch (error) {
+      setError("Invalid Token Code");
+      setProcessing(false);
+    }
   };
 
   // handle token resend
@@ -162,6 +180,7 @@ const TokenScreen = () => {
 
         {/* next button */}
         <Box mt={110}>
+          {processing && (<LoadingSpinner />)}
           {!isValid ? (
             <CustomButton
               label="Next"

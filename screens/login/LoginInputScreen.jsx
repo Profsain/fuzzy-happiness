@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// native notification
+import { registerIndieID } from "native-notify";
+import axios from "axios";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { Alert, Image, TouchableOpacity } from "react-native";
 import {
@@ -13,8 +16,50 @@ import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
 
+// Login import
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
+
 const LoginInputScreen = () => {
+  const [accessToken, setAccessToken] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: process.env.GOOGLE_LOGIN_CLIENT_ID,
+    iosClientId: process.env.GOOGLE_LOGIN_IOS_CLIENT_ID,
+    androidClientId: process.env.GOOGLE_LOGIN_ANDROID_CLIENT_ID,
+  });
+
+  // check google login
+  useEffect(() => {
+    if(response?.type === "success") {
+      setAccessToken(response.authentication.accessToken);
+      accessToken && fetchGoogleUser();
+    }
+  }, [response, accessToken])
+
+  // handle google login
+  const fetchGoogleUser = async () => { 
+    try {
+      const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const userInfo = await response.json();
+      setAuthUser(userInfo);
+    } catch (error) {
+      Alert.alert("An error occurred while fetching user info");
+    }
+  };
+
+
+  // navigation
   const navigation = useNavigation();
+
+  // native notify token
+  const notifyToken = process.env.NATIVE_NOTIFY_TOKEN;
+
+  // End of Native Notify Code
 
   // base url
   const baseUrl = process.env.BASE_URL;
@@ -68,7 +113,15 @@ const LoginInputScreen = () => {
   };
 
   // handle social login
-  const handleSocialLogin = () => {
+  const handleFacebookLogin = () => {
+    Alert.alert("Social Login");
+  };
+  const handleGoogleLogin = () => {
+    // Alert.alert("Social Login");
+    // call promptAsync
+    promptAsync();
+  };
+  const handleAppleLogin = () => {
     Alert.alert("Social Login");
   };
 
@@ -85,20 +138,16 @@ const LoginInputScreen = () => {
 
     // login logic
     try {
-      const response = await fetch(
-        `${baseUrl}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userInfo),
-        }
-      );
+      const response = await fetch(`${baseUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userInfo),
+      });
 
       if (response.ok) {
         // Login successful
-        setLoading(false);
         setLoginMsg("");
         const data = await response.json();
         // store user data in context, navigate to the next home screen.
@@ -106,13 +155,21 @@ const LoginInputScreen = () => {
         setIsLogin(true);
         setToken(data.token);
 
+        // set user id and call handleRegisterIndieID
+        // set user id
+        const userId = data.userProfile._id;
+
+        await registerIndieID(`${userId}`, 22245, notifyToken);
+        // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
+        // End of Native Notify Code
+
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
+        setLoading(false);
       } else {
         // Login failed
         setLoading(false);
         const errorData = await response.json();
-        console.log("Login failed:", errorData.message);
         setLoginMsg(
           "Login failed: User not found or password is incorrect. Please try again."
         );
@@ -187,15 +244,15 @@ const LoginInputScreen = () => {
           justifyContent="space-around"
           alignItems="center"
         >
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleFacebookLogin}>
             <Image size="sm" source={require("../../assets/facebook.png")} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleGoogleLogin}>
             <Image size="sm" source={require("../../assets/google.png")} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSocialLogin}>
+          <TouchableOpacity onPress={handleAppleLogin}>
             <Image size="sm" source={require("../../assets/apple.png")} />
           </TouchableOpacity>
         </Box>

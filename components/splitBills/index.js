@@ -8,3 +8,5 @@ export { default as RequestPay } from "./RequestMoney";
 export { default as TransactionHistory } from "./TransactionHistory";
 export { default as TransactionScreen } from "./TransactionScreen";
 export { default as TransferMoney } from "./TransferMoney";
+export { default as AddMoneySuccess } from "./AddMoneySuccess";
+export { default as AddMoneyPayScreen } from "./AddMoneyPayScreen";
