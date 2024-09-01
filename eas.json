@@ -1,0 +1,41 @@
+{
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "BASE_URL": "https://splinx-server.onrender.com",
+        "FW_MERCHANT_ID": "200497545",
+        "GOOGLE_MAP_API_KEY": "AIzaSyC6uFJWZ5jXScdhqYL0McBKAOt8zRurpO8",
+        "GOOGLE_LOGIN_CLIENT_ID": "160598081089-7oikguh093k9pa4pvi7g52g90flv17a4.apps.googleusercontent.com",
+        "GOOGLE_LOGIN_IOS_CLIENT_ID": "160598081089-kj7fs0ef2gg19nf90v7q03u4ujabtsmt.apps.googleusercontent.com",
+        "GOOGLE_LOGIN_ANDROID_CLIENT_ID": "160598081089-6qk9uv9q3c190pl4c2jbniu0akhgulos.apps.googleusercontent.com",
+        "EXCHANGE_RATE_API_KEY": "87617310c21dddb699fcc96a",
+        "APP_DOWNLOAD_URL": "https://google.com",
+        "NATIVE_NOTIFY_TOKEN": "eDAGXfxY9yLdrWZHZD7Ar4"
+      }
+    },
+    "splinxapptest": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}

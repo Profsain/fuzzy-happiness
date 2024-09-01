@@ -4,7 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
+import {
+  OnboardingScreen,
+  LoginScreen,
+  SignUpScreen,
+} from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
 import {
@@ -18,6 +22,7 @@ import {
   TokenScreen,
   UserProfileScreen,
 } from "../screens/signup";
+import TabNavigation from "./TabNavigation";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +67,18 @@ const AuthStack = () => {
         component={LoginScreen}
         navigation={navigation}
       />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+          headerTitle: "",
+          headerBackVisible: false,
+          shadowColor: "white",
+          borderBottomWidth: 0,
+          elevation: 0,
+        }}
+        name="TabNavigation"
+        component={TabNavigation}
+      />
 
       <Stack.Screen
         options={{
@@ -94,7 +111,7 @@ const AuthStack = () => {
             />
           ),
         }}
-        name="SignUpUser"
+        name="SignUpScreen"
         component={SignUpScreen}
         navigation={navigation}
       />
@@ -225,14 +242,6 @@ const AuthStack = () => {
           headerShown: true,
           headerTitle: "Invite Friends",
           headerTitleAlign: "center",
-          headerLeft: () => (
-            <AntDesign
-              onPress={handleGoBack}
-              name="left"
-              size={24}
-              color="black"
-            />
-          ),
         }}
         name="InviteFriendsScreen"
         component={InviteFriendsScreen}

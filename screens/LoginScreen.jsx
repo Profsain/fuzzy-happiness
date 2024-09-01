@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }) => {
   };
   // handle signup
   const handleSignUp = () => {
-    navigationToScreen(navigation, "SignUpUser");
+    navigationToScreen(navigation, "SignUpScreen");
   };
 
   return (
@@ -25,7 +25,8 @@ const LoginScreen = ({ navigation }) => {
       </Box>
 
       <View style={styles.btnContainer}>
-        <CustomButton label="Log in" buttonFunc={handleLogin} />
+        <CustomButton label="Log in" buttonFunc={handleLogin} mt=
+        {38}/>
         <CustomButton
           label="Sign up"
           backgroundColor={secondaryColor}

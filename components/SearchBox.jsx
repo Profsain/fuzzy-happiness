@@ -5,9 +5,11 @@ const SearchBox = ({
   placeholder = "Search....",
   searchTerm,
   handleSearch,
+  mt,
+  mb=28
 }) => {
   return (
-    <Box mb={28}>
+    <Box mb={mb} mt={mt}>
       <Input size="xl">
         <InputSlot pl="$3">
           <InputIcon as={SearchIcon} />

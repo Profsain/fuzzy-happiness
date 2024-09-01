@@ -1,8 +1,8 @@
 import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import {
   Box,
   Avatar,
-  AvatarBadge,
   AvatarFallbackText,
   AvatarImage,
   HStack,
@@ -10,44 +10,70 @@ import {
   Heading,
   Text,
 } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import {
-  Alert,
+  CustomButton,
+  CustomHeadings,
+  CustomInput,
+  LoadingSpinner,
+} from "../../components";
+import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  View,
+  ScrollView,
+  Dimensions,
+  Alert,
 } from "react-native";
-import { ScrollView } from "react-native-virtualized-view";
 import { secondaryColor, textColor, secondBgColor } from "../../utils/appstyle";
 import initialToUpperCase from "../../utils/firstCharToUpperCase";
-import handleListUpdate from "../../utils/handlyListUpdate";
-import navigationToScreen from "../../utils/navigationUtil";
+import handleListUpdate from "../../utils/handleListUpdate";
+import { useNavigation } from "@react-navigation/native";
+import useReceivedData from "../../hooks/useReceivedData";
 
 // data import
 import interestData from "../../mockdata/interest";
 import hashtagsData from "../../mockdata/hashtags";
 
-const UserProfileScreen = ({ navigation }) => {
-  const [avatarUri, setAvatarUri] = useState(
-    "https://i.ibb.co/qg4nZz0/avataricon.png"
-  );
+// get device width
+const { width } = Dimensions.get("window");
+const COLUMN_COUNT = 3;
+const ITEM_SIZE = width / COLUMN_COUNT;
+
+const UserProfileScreen = () => {
+  const baseUrl = process.env.BASE_URL;
+  const navigation = useNavigation();
+  const receivedData = useReceivedData();
+
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const { firstName, lastName, country, city } = receivedData;
+  const [avatarUri, setAvatarUri] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
   const [age, setAge] = useState("");
   const [ageError, setAgeError] = useState("");
   const [bio, setBio] = useState("");
   const [bioError, setBioError] = useState("");
+  const [isValid, setIsValid] = useState(false);
 
-  // render interest items
   const [bgColor, setBgColor] = useState(secondaryColor);
   const [color, setColor] = useState(textColor);
-  const selectedColor = "#e9e9e9";
   const [interestList, setInterestList] = useState([]);
+  const [tagList, setTagList] = useState([]);
 
-  // handle add and remove interest from interest list
   const handleInterest = (id) => {
     handleListUpdate(id, interestData, setInterestList);
+    Alert.alert("Interest", JSON.stringify(interestList));
   };
-  const renderInterest = ({ item }) => (
+
+  const handleTag = (id) => {
+    handleListUpdate(id, hashtagsData, setTagList);
+  };
+
+  const renderInterest = interestData.map((item) => (
     <CustomButton
+      key={item.id}
       fSize={14}
       mr={8}
       width={94}
@@ -60,75 +86,173 @@ const UserProfileScreen = ({ navigation }) => {
       }
       buttonFunc={() => handleInterest(item.id)}
     />
-  );
+  ));
 
-  // render tags items
-  const [tagList, setTagList] = useState([]);
-  // handle add and remove interest from interest list
-  const handleTag = (id) => {
-    handleListUpdate(id, hashtagsData, setTagList);
-  };
-  const renderTags = ({ item }) => (
+  const renderTags = hashtagsData.map((item) => (
     <CustomButton
+      key={item.id}
       fSize={14}
       mr={8}
       width={94}
       label={`#${initialToUpperCase(item.tag)}`}
       color={color}
       backgroundColor={
-        tagList.some((interest) => interest.id === item.id)
+        tagList.some((tag) => tag.id === item.id)
           ? secondBgColor
           : secondaryColor
       }
       buttonFunc={() => handleTag(item.id)}
     />
-  );
+  ));
 
   const handleAgeChange = (text) => {
     setAge(text);
+    if (text.length < 1) {
+      setAgeError("Age is required");
+      setIsValid(false);
+    } else {
+      setAgeError("");
+    }
   };
 
   const handleBioChange = (text) => {
     setBio(text);
+    if (text.length < 1) {
+      setBioError("Bio is required");
+      setIsValid(false);
+    } else if (text.length < 10) {
+      setBioError("Bio must be at least 10 characters");
+      setIsValid(false);
+    } else {
+      setBioError("");
+      setIsValid(true);
+    }
   };
 
-  const handlePhoto = () => {
-    Alert.alert("Take a picture or upload");
+  const handlePhoto = async () => {
+    setLoading(true);
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true,
+    });
+
+    if (!result.canceled) {
+      setAvatarUri(result.assets[0].uri);
+      let base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
+      let data = {
+        file: base64Img,
+        upload_preset: "hwebe1a7",
+      };
+
+      uploadPhoto(data);
+    }
+
+    setLoading(false);
   };
 
-  const handleCreateAccount = () => {
-    // send data to backend database
-    // navigate to inviteFriends Screen
-    navigationToScreen(navigation, "InviteFriendsScreen");
+  const uploadPhoto = async (data) => {
+    let CLOUDINARY_URL =
+      "https://api.cloudinary.com/v1_1/dvwxyofm2/image/upload";
+
+    await fetch(CLOUDINARY_URL, {
+      body: JSON.stringify(data),
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "POST",
+    })
+      .then(async (r) => {
+        let data = await r.json();
+        setProfileImg(data.secure_url);
+      })
+      .catch((err) => console.log("err", err));
+  };
+
+  const handleCreateAccount = async () => {
+    setSubmitting(true);
+    try {
+      const data = {
+        ...receivedData,
+        profileImg,
+        age,
+        bio,
+        interestList,
+        tagList,
+      };
+      Alert.alert("Data", JSON.stringify(data));
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(data),
+        redirect: "follow",
+      };
+
+      const response = await fetch(
+        `${baseUrl}/auth/register`,
+        requestOptions
+      );
+      if (!response.ok) {
+        Alert.alert("Error", "Registration failed");
+      }
+      const result = await response.text();
+      setSubmitting(false);
+      navigation.replace("InviteFriendsScreen");
+    } catch (error) {
+      Alert.alert("Error", "An error occurred, please try again");
+      setSubmitting(false);
+    }
   };
 
   return (
-    <ScrollView nestedScrollEnabled={true}>
-      <Box width="100%" justifyContent="center" p={24} pt={28}>
-        <VStack space="2xl">
-          {/* profile avatar */}
+    <Box width="100%" justifyContent="center" p={24} pt={28}>
+      <ScrollView
+        nestedScrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <VStack space="2xl" flex={1}>
           <HStack space="2xl">
             <TouchableOpacity onPress={handlePhoto}>
-              <Avatar size="lg" bgColor="#E0E0E0">
-                <AvatarFallbackText>SS</AvatarFallbackText>
-                <AvatarImage
-                  source={{
-                    uri: avatarUri,
-                  }}
-                  alt="avatar"
-                />
-              </Avatar>
+              {avatarUri === null ? (
+                <View style={styles.avatarCon}>
+                  {!loading ? (
+                    <Text>Click to Upload</Text>
+                  ) : (
+                    <LoadingSpinner text="" />
+                  )}
+                </View>
+              ) : (
+                <Avatar size="xl" bgColor="#E0E0E0">
+                  <AvatarFallbackText>SP</AvatarFallbackText>
+                  <AvatarImage
+                    source={{
+                      uri: avatarUri || "https://bit.ly/3iJx6j6",
+                    }}
+                    alt="avatar"
+                  />
+                </Avatar>
+              )}
             </TouchableOpacity>
-            <VStack>
-              <Heading size="sm">Ronald Richards</Heading>
-              <Text size="sm">Lagos Nigeria</Text>
+            <VStack mt={16}>
+              <Heading size="sm">
+                {firstName} {lastName}
+              </Heading>
+              <Text size="sm">
+                {city} {country}
+              </Text>
             </VStack>
           </HStack>
-          {/* add age and bio */}
           <Box>
             <CustomInput
               placeholder="Add age"
-              type="text"
+              type="number"
+              keyboardType="numeric"
               inputValue={age}
               handleTextChange={handleAgeChange}
               error={ageError}
@@ -143,35 +267,40 @@ const UserProfileScreen = ({ navigation }) => {
             />
           </Box>
 
-          {/* interest section */}
-          <Box>
-            <CustomHeadings title="My Interests" />
-            <FlatList
-              data={interestData}
-              renderItem={renderInterest}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-              columnWrapperStyle={StyleSheet.columnWrapper}
-            />
-          </Box>
+          <VStack space="2xl" mt={24} flex={1}>
+            <Box>
+              <CustomHeadings title="My Interests" />
+              <View style={styles.container}>{renderInterest}</View>
+            </Box>
 
-          {/* hash tags section */}
-          <Box>
-            <CustomHeadings title="Hashtags" />
-            <FlatList
-              data={hashtagsData}
-              renderItem={renderTags}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-              columnWrapperStyle={StyleSheet.columnWrapper}
-            />
-          </Box>
+            <Box>
+              <CustomHeadings title="Hashtags" />
+              <View style={styles.container}>{renderTags}</View>
+            </Box>
 
-          {/* action button */}
-          <CustomButton label="Create Account" buttonFunc={handleCreateAccount} />
+            <Box>
+              {!isValid ? (
+                <CustomButton
+                  label="Create Account"
+                  backgroundColor={secondaryColor}
+                />
+              ) : (
+                <Box>
+                  {submitting ? (
+                    <LoadingSpinner text="Creating Profile" />
+                  ) : (
+                    <CustomButton
+                      label="Create Account"
+                      buttonFunc={handleCreateAccount}
+                    />
+                  )}
+                </Box>
+              )}
+            </Box>
+          </VStack>
         </VStack>
-      </Box>
-    </ScrollView>
+      </ScrollView>
+    </Box>
   );
 };
 
@@ -181,5 +310,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  avatarCon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#E0E0E0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  item: {
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    backgroundColor: "lightblue",
+    borderWidth: 1,
+    borderColor: "gray",
+  },
 });
+
 export default UserProfileScreen;

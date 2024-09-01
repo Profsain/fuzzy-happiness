@@ -1,53 +1,74 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useRoute } from "@react-navigation/native";
-import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings, CustomInput } from "../../components";
+import { useNavigation } from "@react-navigation/native";
+import { getItem, removeItem } from "../../utils/asyncStorage";
+import { Box, set, Text, VStack } from "@gluestack-ui/themed";
+import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
 
-const TokenScreen = ({ navigation }) => {
+const TokenScreen = () => {
+  
+  // data from signUp screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
 
+  // navigation
+  const navigation = useNavigation();
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [tokenValue, setTokenValue] = useState("");
-  const [confirmToken, setConfirmToken] = useState("123456");
   const [error, setError] = useState("");
   const [mt, setMt] = useState(68); // margin top for resend text
   const [showResend, setShowResend] = useState(false); // show resend text after 1 minutes
+  const [processing, setProcessing] = useState(false); // processing state
   const [timer, setTimer] = useState(60); // 1 minutes [60 seconds]
 
   // sent timeout for 3 minutes
- useEffect(() => {
-   const interval = setInterval(() => {
-     setTimer((timer) => {
-       // Check if the timer is greater than 0 before decrementing
-       if (timer > 0) {
-         return timer - 1;
-       } else {
-         // If the timer is 0 or negative, show the resend text and clear the interval
-         setShowResend(true);
-         clearInterval(interval);
-         return 0; // Make sure to return 0 to stop further decrements
-       }
-     });
-   }, 1000);
+  useEffect(() => {
+    const fetchOtp = async () => {
+      try {
+        const otp = await getItem("otp");
+        if (otp) {
+          Alert.alert("Splinx OTP", `Your OTP is ${otp}`);
+          setAutoFillOtp(otp);
+        }
+      } catch (error) { 
+        console.log(error);
+      }
+    };
 
-   // Cleanup the interval when the component unmounts
-   return () => clearInterval(interval);
- }, []);
+    // fetch otp
+    fetchOtp();
+    const interval = setInterval(() => {
+      setTimer((timer) => {
+        // Check if the timer is greater than 0 before decrementing
+        if (timer > 0) {
+          return timer - 1;
+        } else {
+          // If the timer is 0 or negative, show the resend text and clear the interval
+          setShowResend(true);
+          clearInterval(interval);
+          return 0; // Make sure to return 0 to stop further decrements
+        }
+      });
+    }, 1000);
 
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
+
+  // Alert.alert("Otp value", JSON.stringify(tokenValue));
 
   const codeInputRef = useRef(null);
 
   // handle token code change
   const handleTokenValue = (code) => {
+    // set token value
     setTokenValue(code);
-
     // handle error
     if (code.length === 0) {
       setError("Token Code is required");
@@ -57,10 +78,6 @@ const TokenScreen = ({ navigation }) => {
       setError("Token Code must be 6 digits");
       setMt(18);
       return;
-    } else if (code !== confirmToken) {
-      setError("Token Code is incorrect");
-      setMt(18);
-      return;
     } else {
       setError("");
       setIsValid(true);
@@ -68,11 +85,36 @@ const TokenScreen = ({ navigation }) => {
     }
   };
 
-  // handle send token
-  const handleConfirmToken = () => {
-    // persist phone number in local storage
-    // navigate to Add Email Screen
-    navigationToScreen(navigation, "AddEmailScreen");
+  // handle confirm token
+  const handleConfirmToken = async () => {
+    setProcessing(true);
+    try {
+      const otp = await getItem("otp");
+
+      if (otp == tokenValue) {
+        const data = {
+          phoneNumber: phoneNumber,
+        };
+
+        navigation.replace("AddEmailScreen", data);
+
+        // remove otp
+        await removeItem("otp");
+        setProcessing(false);
+      } else {
+        setError("Invalid Token Code");
+        setProcessing(false);
+      }
+    } catch (error) {
+      setError("Invalid Token Code");
+      setProcessing(false);
+    }
+  };
+
+  // handle token resend
+  const handleResendToken = () => {
+    // navigate back to SignUpScreen
+     navigationToScreen(navigation, "SignUpScreen");
   };
 
   return (
@@ -127,7 +169,7 @@ const TokenScreen = ({ navigation }) => {
                 <Text
                   size="sm"
                   style={{ color: "#000", textAlign: "center" }}
-                  onPress={() => Alert.alert("Resend Token")}
+                  onPress={handleResendToken}
                 >
                   Resend
                 </Text>
@@ -138,6 +180,7 @@ const TokenScreen = ({ navigation }) => {
 
         {/* next button */}
         <Box mt={110}>
+          {processing && (<LoadingSpinner />)}
           {!isValid ? (
             <CustomButton
               label="Next"

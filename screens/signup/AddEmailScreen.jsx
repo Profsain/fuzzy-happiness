@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -8,14 +8,19 @@ import {
 } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
+import useReceivedData from "../../hooks/useReceivedData";
 
 const AddEmailScreen = ({ navigation }) => {
+  // received data from previous screen
+  const receivedData = useReceivedData();
+  // Alert.alert("Received Data", JSON.stringify(receivedData));
+  
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const handleEmailChange = (text) => {
-    setEmail(text);
+    setEmail(text.trim().toLowerCase());
     const emailRegex = /\S+@\S+\.\S+/;
     // validate email
     if (text.length === 0) {
@@ -29,11 +34,13 @@ const AddEmailScreen = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    // persist email in local storage
-    // send token to email
-    // Alert.alert("Email", email);
-    // navigate to EmailVerificationCode screen
-    navigationToScreen(navigation, "EmailVerificationCode");
+    // send data to next screen
+    const data = {
+      ...receivedData,
+      emailAddress: email,
+    };
+    
+    navigationToScreen(navigation, "AddAddressScreen", data);
   };
 
   return (

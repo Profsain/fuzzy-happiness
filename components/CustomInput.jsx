@@ -6,22 +6,23 @@ const CustomInput = ({
   mb = 12,
   required = true,
   type = "text",
+  keyboardType,
   inputValue,
   handleTextChange,
   error,
 }) => {
   return (
     <Box mb={mb}>
-      <Input size="xl">
+      <Input size="lg">
         <InputField
           placeholder={placeholder}
           aria-label={placeholder}
           aria-require={required}
-          // aria-invalid={false}
-          // aria-errormessage={error}
+          keyboardType={keyboardType}
           type={type}
           value={inputValue}
           onChangeText={handleTextChange}
+          multiline={type === "textarea" ? true : false}
         />
       </Input>
       {error && (

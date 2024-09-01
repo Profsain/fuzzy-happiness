@@ -1,111 +1,85 @@
 import React, { useState, useRef } from "react";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import firebase from "../firebase";
-// import { getAuth, PhoneAuthProvider } from "@firebase/auth";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { CustomButton, CustomHeadings } from "../components";
+import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 import PhoneInput from "react-native-phone-number-input";
+import { registerIndieID } from "native-notify";
+import sendPushNotification from "../utils/sendPushNotification";
+import { setItem } from "../utils/asyncStorage";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 
 const SignUpScreen = ({ navigation }) => {
-  const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
+  const [isValid, setIsValid] = useState(false);
   const [phoneValue, setPhoneValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
 
-  // handle phone number change
+  // native notify token
+  const notifyToken = process.env.NATIVE_NOTIFY_TOKEN;
+
   const handleChangeValue = (text) => {
     setPhoneValue(text);
 
     if (text.length === 0) {
       setError("Phone Number is required");
-      return;
+      setIsValid(false);
     } else if (text.length < 10) {
       setError("Phone Number must be 10 digits");
-      return;
+      setIsValid(false);
     } else {
       setError("");
       setIsValid(true);
     }
   };
 
-  // send token to phone number
-  const recaptchaVerifier = useRef(null);
-  const [verificationId, setVerificationId] = useState(null);
+  const sendVerificationCode = async (phoneNumber) => {
+    setLoading(true);
 
-  // function to be called when requesting for token
-  // const sendVerification = async () => {
-  //   try {
-  //     const phoneProvider = new firebase.auth.PhoneAuthProvider();
-  //     const verificationId = await phoneProvider.verifyPhoneNumber(
-  //       formattedValue,
-  //       recaptchaVerifier.current
-  //     );
-  //     setVerificationId(verificationId);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //   } catch (err) {
-  //     Alert.alert("Error", err.message);
-  //   }
-  // };
-  // const sendVerification = async () => {
-  //   try {
-  //     const auth = getAuth(firebase); // Get Firebase Auth instance
-  //     const phoneProvider = new PhoneAuthProvider(auth); // Initialize PhoneAuthProvider with auth
-  //     const verificationId = await phoneProvider.verifyPhoneNumber(
-  //       formattedValue,
-  //       recaptchaVerifier.current
-  //     );
-  //     setVerificationId(verificationId);
-  //     Alert.alert("Verification code has been sent to your phone.");
-  //   } catch (err) {
-  //     Alert.alert("Error", err.message);
-  //   }
-  // };
+    // generate 6 digit random number as otp
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    // store otp to local storage
+    await setItem("otp", otp);
 
-  const sendVerification = () => {
-    const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    phoneProvider
-      .verifyPhoneNumber(phoneNumber, recaptchaVerifier.current)
-      .then(setVerificationId);
-  };
-
-
-  // handle send token
-  const handleGetToken = () => {
-    // call sendVerification function
-    sendVerification();
-
-    // send data to next screen
+    // data
     const data = {
       phone: formattedValue,
-      verificationId: verificationId,
     };
 
-    // send token to phone number
-    const checkValid = phoneInput.current?.isValidNumber(phoneValue);
+    try {
+      await registerIndieID(`${phoneNumber}`, 22245, notifyToken);
 
-    if (verificationId) {
-      // navigationToScreen(navigation, "TokenScreen", data);
+      // send otp to phone
+      sendPushNotification(
+        phoneNumber,
+        "Splinx Planet",
+        `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
+      );
 
-      Alert.alert("Token has been sent to your phone.");
-      console.log(verificationId);
+      navigationToScreen(navigation, "TokenScreen", data);
+      setLoading(false);
+    } catch (error) {
+      Alert.alert("Error", error.message);
+      setLoading(false);
     }
+  };
 
-    console.log("Error", verificationId);
-    // // sent token to formattedValue
-    // navigate to TokenScreen
-    // navigationToScreen(navigation, "TokenScreen", data);
+  const handleGetToken = () => {
+    // Ensure formattedValue starts with '+' and is in E.164 format
+    if (formattedValue.startsWith("+")) {
+      sendVerificationCode(formattedValue);
+    } else {
+      Alert.alert("Error", "Invalid phone number format.");
+    }
   };
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
       <CustomHeadings title="Phone Number" />
 
-      {/* form section */}
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter your mobile number to get a token.</Text>
 
@@ -121,22 +95,14 @@ const SignUpScreen = ({ navigation }) => {
             }}
             withDarkTheme
             withShadow
-            // autoFocus
           />
           {error && (
             <Text size="sm" style={{ color: "#ea9977" }}>
               {error}
             </Text>
           )}
-
-          {/* recaptcha component */}
-          <FirebaseRecaptchaVerifierModal
-            ref={recaptchaVerifier}
-            firebaseConfig={firebase.app().options}
-          />
         </Box>
 
-        {/* next button */}
         <Box mt={160}>
           {!isValid ? (
             <CustomButton
@@ -145,11 +111,16 @@ const SignUpScreen = ({ navigation }) => {
               color="#000"
             />
           ) : (
-            <CustomButton label="Get Token" buttonFunc={handleGetToken} />
+            <Box>
+              {!loading ? (
+                <CustomButton label="Get Token" buttonFunc={handleGetToken} />
+              ) : (
+                <LoadingSpinner />
+              )}
+            </Box>
           )}
         </Box>
 
-        {/* remember password? Login */}
         <Box mt={160}>
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
