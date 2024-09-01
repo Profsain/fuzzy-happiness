@@ -25,6 +25,7 @@ const CustomButton = ({
       marginTop: 5,
       marginBottom: mt,
       marginRight: mr,
+      fontSize: fSize,
     },
     label: {
       fontSize: fSize,

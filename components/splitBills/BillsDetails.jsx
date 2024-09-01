@@ -76,7 +76,7 @@ const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
       {/* action button section */}
       <View className="mt-6rs-7y">
         <BillsHorizontalBtn
-          text="Make new transaction"
+          text="Make Withdraw"
           iconLeft={
             <FontAwesome
               name="pencil-square-o"

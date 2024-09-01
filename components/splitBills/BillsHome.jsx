@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useState, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -21,6 +22,8 @@ import { useLogin } from "../../context/LoginProvider";
 import RequestMoneyCard from "./component/RequestMoneyCard";
 import formatDate from "../../utils/formatDate";
 import { ScrollView } from "react-native-virtualized-view";
+import calculateRequestMoney from "./methods/calculateRequestMoney";
+import fetchUserEvents from "../../utils/fetchUserEvents";
 
 const BillsHome = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
@@ -45,13 +48,43 @@ const BillsHome = ({ navigation }) => {
     }
   }, [wallet]);
 
-  // Alert.alert("Wallet", JSON.stringify(requestBills));
+  // re-fetch wallet on screen focus
+  const fetchWalletData = useCallback(() => {
+    fetchWallet(); // Call fetchWallet from the hook
+  }, [fetchWallet]);
+
+  useFocusEffect(fetchWalletData);
+
+  // calculate money received and outstanding
+  const { receivedAmount, pendingAmount } = calculateRequestMoney(
+    wallet?.moneyRequests
+  );
 
   const baseUrl = process.env.BASE_URL;
 
   // component state
   const [processing, setProcessing] = useState(false);
 
+  // fetch user events
+  const [userEvents, setUserEvents] = useState([]);
+  const [singleEvent, setSingleEvent] = useState({});
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (_id) {
+        setLoadingEvents(true);
+        const events = await fetchUserEvents(_id, token);
+        // filter events that is isEventCostSplitted is true
+        const filteredEvents = events.filter((event) => event.isEventCostSplitted === true);
+
+        setUserEvents(filteredEvents);
+        setLoadingEvents(false);
+      }
+    };
+    fetchEvents();
+  }, [_id]);
+
+  // Alert.alert("User Events", JSON.stringify(userEvents));
   // handle activate wallet
   const handleActivateWallet = async () => {
     setProcessing(true);
@@ -142,6 +175,9 @@ const BillsHome = ({ navigation }) => {
                 : request
             )
           );
+
+          // fetch wallet data
+          await fetchWallet();
         } else {
           const error = await response.json();
           Alert.alert("Error", error.error || "Failed to accept request");
@@ -169,38 +205,38 @@ const BillsHome = ({ navigation }) => {
 
   // handle decline request
   const handleDeclineRequest = async (requestId) => {
-    const declineRequest = async () => { 
-       try {
-         const response = await fetch(
-           `${baseUrl}/wallet/decline-request/${_id}`,
-           {
-             method: "POST",
-             headers: {
-               "Content-Type": "application/json",
-               Authorization: `Bearer ${token}`,
-             },
-             body: JSON.stringify({ requestId }),
-           }
-         );
+    const declineRequest = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/wallet/decline-request/${_id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ requestId }),
+          }
+        );
 
-         if (response.ok) {
-           const data = await response.json();
-           Alert.alert("Success", "Request declined successfully");
-           // Update the requestBills state to reflect the declined request
-           setRequestBills((prevRequests) =>
-             prevRequests.map((request) =>
-               request._id === requestId
-                 ? { ...request, status: "declined" }
-                 : request
-             )
-           );
-         } else {
-           const error = await response.json();
-           Alert.alert("Error", error.error || "Failed to decline request");
-         }
-       } catch (error) {
-         Alert.alert("Error", error.message || "Something went wrong");
-       }
+        if (response.ok) {
+          const data = await response.json();
+          Alert.alert("Success", "Request declined successfully");
+          // Update the requestBills state to reflect the declined request
+          setRequestBills((prevRequests) =>
+            prevRequests.map((request) =>
+              request._id === requestId
+                ? { ...request, status: "declined" }
+                : request
+            )
+          );
+        } else {
+          const error = await response.json();
+          Alert.alert("Error", error.error || "Failed to decline request");
+        }
+      } catch (error) {
+        Alert.alert("Error", error.message || "Something went wrong");
+      }
     };
 
     // Confirm the decline request
@@ -215,9 +251,8 @@ const BillsHome = ({ navigation }) => {
         {
           text: "No",
         },
-      ] 
+      ]
     );
-    
   };
 
   // render item function for FlatList
@@ -229,6 +264,33 @@ const BillsHome = ({ navigation }) => {
       transactionStatus={item.status}
       onAccept={() => handleAcceptRequest(item._id)}
       onDecline={() => handleDeclineRequest(item._id)}
+    />
+  );
+
+  // handle open event group
+  const handleOpenGroup = () => {
+    // navigate to BillsGroup screen with useEvent list
+    navigation.navigate("BillsGroup", { userEvents });
+  }
+
+  // handle open single bill details
+  const handleOpenBillDetails = (billId) => {
+    // find the bill with the billId
+    const event = userEvents.find((event) => event._id === billId);
+
+    Alert.alert("Event", JSON.stringify(event));
+    // navigate to BillsDetails screen with the event data
+    // navigation.navigate("BillsDetails", { event });
+  }
+
+  // render event item function for FlatList
+  const renderEventGroup = ({ item }) => (
+    <GroupBillsCard
+      eventName={item?.eventName}
+      eventDate={formatDate(item?.eventDate)}
+      eventCost={item.eventCost}
+      currency={currencySymbol}
+      func={() => handleOpenBillDetails(item._id)}
     />
   );
 
@@ -246,7 +308,8 @@ const BillsHome = ({ navigation }) => {
           Total Spent
         </Text>
         <Text className="text-2xl font-bold text-slate-600">
-          {currencySymbol || "$"}0.00
+          {currencySymbol || "$"}
+          {wallet?.totalSpent?.toFixed(2) || "0.00"}
         </Text>
 
         <View className="flex flex-row justify-end mt-6">
@@ -293,7 +356,7 @@ const BillsHome = ({ navigation }) => {
         <HorizontalTitle
           title="Groups"
           action="View all"
-          func={() => navigation.navigate("BillsGroup")}
+          func={handleOpenGroup}
         />
         <View className="flex flex-row">
           <View className="h-24 w-24 bg-gray-200 rounded-2xl p-3 flex justify-center items-center">
@@ -312,9 +375,23 @@ const BillsHome = ({ navigation }) => {
               Create new bill
             </Text>
           </View>
+
           {/* group bills card flatlist */}
-          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
-          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
+          <View >
+            {loadingEvents ? (
+              <ActivityIndicator size="small" color={primeryColor} />
+            ) : (
+              <FlatList
+                data={userEvents}
+                renderItem={renderEventGroup}
+                keyExtractor={(item) => item?._id.toString()}
+                horizontal={true} 
+                showsHorizontalScrollIndicator={false} 
+              />
+            )}
+          </View>
+          {/* <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
+          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} /> */}
         </View>
 
         {/* friends own section */}
@@ -325,7 +402,8 @@ const BillsHome = ({ navigation }) => {
                 Friends owe you
               </Text>
               <Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
-                $0.00
+                {currencySymbol || "$"}
+                {receivedAmount.toFixed(2) || "0.00"}
               </Text>
             </View>
             <View>
@@ -333,7 +411,8 @@ const BillsHome = ({ navigation }) => {
                 You own friends
               </Text>
               <Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
-                $0.00
+                {currencySymbol || "$"}
+                {pendingAmount.toFixed(2) || "0.00"}
               </Text>
             </View>
           </View>

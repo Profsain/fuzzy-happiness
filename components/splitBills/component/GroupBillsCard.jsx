@@ -2,22 +2,27 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { primeryColor } from "../../../utils/appstyle";
 import AvatarStack from "./AvatarStack";
+import shortenValue from "../../../utils/shortenValue";
 
-const GroupBillsCard = ({func}) => {
+const GroupBillsCard = ({ func, eventName, eventCost, currency }) => {
   return (
     <TouchableOpacity onPress={func}>
-      <View className="h-24 w-24 bg-gray-100 rounded-2xl flex  ml-3">
+      <View className="h-24 w-24 bg-gray-100 rounded-2xl flex  ml-2">
         <Text
           style={styles.title}
           className="font-semibold text-center p-1 rounded-t-lg w-24"
         >
-          Restaurant
+          {eventName?.slice(0, 10) || "Event Name"}
         </Text>
         <View className="p-1">
-          <Text style={styles.text}>Total bill</Text>
-          <Text style={styles.text}>$ 0.00</Text>
-
-          <AvatarStack />
+          <View  >
+            <Text style={styles.text}>Total bills:</Text>
+            <Text style={styles.text}>
+              {currency || "$"}
+              {shortenValue(eventCost?.toFixed(2)) || "0.00"}
+            </Text>
+          </View>
+          {/* <AvatarStack hw={12} /> */}
         </View>
       </View>
     </TouchableOpacity>
