@@ -276,11 +276,11 @@ const BillsHome = ({ navigation }) => {
   // handle open single bill details
   const handleOpenBillDetails = (billId) => {
     // find the bill with the billId
-    const event = userEvents.find((event) => event._id === billId);
+    const eventDetails = userEvents.find((event) => event._id === billId);
 
-    Alert.alert("Event", JSON.stringify(event));
+    // Alert.alert("Event", JSON.stringify(event));
     // navigate to BillsDetails screen with the event data
-    // navigation.navigate("BillsDetails", { event });
+    navigation.navigate("BillsDetails", { eventDetails });
   }
 
   // render event item function for FlatList

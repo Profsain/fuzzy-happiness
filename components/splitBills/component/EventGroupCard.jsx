@@ -153,7 +153,6 @@ const EventGroupCard = ({
                   height={28}
                   label="Withdraw"
                   fSize={12}
-                  buttonFunc={handleWithdraw}
                 />
               ) : (
                 <CustomButton
