@@ -1,20 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
-import {
-  FlatList,
-  SafeAreaView,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, SafeAreaView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
-import {
-  EventCard,
-  HomeCarousel,
-  HorizontalTitle,
-  SearchResult,
-} from ".";
+import { EventCard, HomeCarousel, HorizontalTitle, SearchResult } from ".";
 import eventData from "../../mockdata/eventData";
 import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
@@ -22,8 +12,29 @@ import sortEventsByDate from "../../utils/sortEventsByDate";
 import { ScrollView } from "react-native-virtualized-view";
 
 const HomeScreen = ({ navigation }) => {
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, setAllUsers } = useLogin();
   const baseUrl = process.env.BASE_URL;
+
+  // Fetch all users and update context only if necessary
+  const fetchAllUsers = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/get-all-users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setAllUsers(data); // Update context once
+    } catch (error) {
+      console.log(error);
+    }
+  }, [baseUrl, token, setAllUsers]);
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, [fetchAllUsers]);
 
   const [allEventsList, setAllEventsList] = useState([]);
   const [headText, setHeadText] = useState("Upcoming Events");
