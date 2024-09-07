@@ -11,6 +11,7 @@ import {
   SearchResult,
   EventRegistration,
 } from "../components/home";
+import MembershipScreen from "../components/profileSettings/MembershipScreen";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -56,6 +57,12 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="SearchResult"
         component={SearchResult}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="MembershipScreen"
+        component={MembershipScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />

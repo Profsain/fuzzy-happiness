@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
-import { FlatList, SafeAreaView, Text, View } from "react-native";
+import { FlatList, SafeAreaView, Text, View, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
@@ -10,9 +10,14 @@ import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
 import sortEventsByDate from "../../utils/sortEventsByDate";
 import { ScrollView } from "react-native-virtualized-view";
+// subscription 
+import SubscriptionModal from "../SubscriptionModal";
+import useSubscription from "../../hooks/useSubscription";   
 
 const HomeScreen = ({ navigation }) => {
   const { userProfile, token, setAllUsers } = useLogin();
+  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } = useSubscription(userProfile); // Use the subscription hook
+
   const baseUrl = process.env.BASE_URL;
 
   // Fetch all users and update context only if necessary
@@ -190,8 +195,21 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [searchTerm, allEventsList]);
 
+  // subscription modal
+    const handleSubscribe = () => {
+    // Navigate to subscription screen
+    navigation.navigate("MembershipScreen");
+    // setShowTrialModal(false);
+  };
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      {/* { isLocked ? (
+        <View className="flex-1 justify-center items-center">
+          <Text>Your free trial has ended. Please subscribe to continue.</Text>
+          <Button title="Subscribe" onPress={handleSubscribe} />
+        </View>
+      ) : ()} */}
       {/* Top bar */}
       <Box>
         <View className="flex flex-row justify-between">
@@ -338,6 +356,15 @@ const HomeScreen = ({ navigation }) => {
           </Box>
         </ScrollView>
       )}
+
+      {/* Subscription modal */}
+      <SubscriptionModal
+        visible={showTrialModal}
+        daysLeft={daysLeft}
+        onSubscribe={handleSubscribe}
+        onClose={() => setShowTrialModal(false)}
+      />
+
     </SafeAreaView>
   );
 };
