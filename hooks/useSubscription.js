@@ -6,15 +6,14 @@ const useSubscription = (userProfile) => {
   const [daysLeft, setDaysLeft] = useState(null);
   const [showTrialModal, setShowTrialModal] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
-    
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
       const isSubscribed = userProfile?.isSubscriber;
       const accountCreatedAt = new Date(userProfile?.createdAt);
       if (!isSubscribed) {
         const now = new Date();
-        const daysDiff = Math.ceil((now - accountCreatedAt) / (1000 * 60 * 60 * 24));
-        const trialDaysLeft = 7 - daysDiff;
+          const daysDiff = Math.ceil((now - accountCreatedAt) / (1000 * 60 * 60 * 24));
+          const trialDaysLeft = 7 - daysDiff;
         
         if (trialDaysLeft > 0) {
           setDaysLeft(trialDaysLeft);

@@ -1,9 +1,13 @@
 {
   "expo": {
-    "name": "Splinx-Planet",
+    "name": "Splinx-App",
     "scheme": "splinxplanet",
-    "platforms": ["ios", "android", "web"],
-    "slug": "Splinx-Planet",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "slug": "Splinx-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/adaptive-icon.png",
@@ -13,7 +17,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#fdccbb"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -49,7 +55,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "7e231064-1cb2-4292-ae51-6f305cb10e8c"
+        "projectId": "c351689a-5893-49b8-892b-6027e882e258"
       }
     }
   }
