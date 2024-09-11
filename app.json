@@ -1,7 +1,6 @@
 {
   "expo": {
     "name": "Splinx-Planet-App",
-    "scheme": "splinxplanet",
     "platforms": [
       "ios",
       "android",
