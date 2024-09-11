@@ -10,16 +10,6 @@ import store from "./store";
 import { Provider } from "react-redux";
 
 export default function App() {
-  const linking = {
-    prefixes: ['splinxplanet://'],
-    config: {
-      screens: {
-        PaymentSuccessScreen: 'payment-success',
-        // Add other screens if needed
-      },
-    },
-  };
-
   // https://app.nativenotify.com/in-app token
   // for notifications service
   const token = process.env.NATIVE_NOTIFY_TOKEN;

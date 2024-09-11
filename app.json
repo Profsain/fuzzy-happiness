@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Splinx-App",
+    "name": "Splinx-Planet-App",
     "scheme": "splinxplanet",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "slug": "Splinx-App",
+    "slug": "Splinx-Planet-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/adaptive-icon.png",
@@ -55,7 +55,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "c351689a-5893-49b8-892b-6027e882e258"
+        "projectId": "090d7c23-e20a-473f-901f-9d7cff34e60b"
       }
     }
   }
