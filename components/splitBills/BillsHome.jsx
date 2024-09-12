@@ -84,7 +84,6 @@ const BillsHome = ({ navigation }) => {
     fetchEvents();
   }, [_id]);
 
-  // Alert.alert("User Events", JSON.stringify(userEvents));
   // handle activate wallet
   const handleActivateWallet = async () => {
     setProcessing(true);
@@ -132,8 +131,6 @@ const BillsHome = ({ navigation }) => {
     // navigate to create new bill screen
     navigation.navigate("CreateNewBills");
   };
-
-  // Alert.alert("User Events", JSON.stringify(userEvents));
 
   // handle pay someone
   const handlePaySomeone = () => {

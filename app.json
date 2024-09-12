@@ -9,12 +9,15 @@
     "slug": "Splinx-Planet-App",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/adaptive-icon.png",
+    "icon": "./assets/playstore.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#fdccbb"
+      "backgroundColor": "#FFFFFF"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"
@@ -24,12 +27,13 @@
       "infoPlist": {
         "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
       },
-      "bundleIdentifier": "com.splinxplanet.app"
+      "bundleIdentifier": "com.splinxplanet"
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#fdccbb"
+        "foregroundImage": "./assets/playstore.png",
+        "backgroundColor": "#FFFFFF"
       },
       "permissions": [
         "android.permission.READ_CONTACTS",
@@ -37,9 +41,6 @@
       ],
       "package": "com.splinxplanet.app",
       "googleServicesFile": "./google-services.json"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization",
