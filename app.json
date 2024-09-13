@@ -1,12 +1,11 @@
 {
   "expo": {
-    "name": "Splinx-Planet-App",
+    "name": "Splinx-App",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
-    "slug": "Splinx-Planet-App",
+    "slug": "Splinx-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/playstore.png",
@@ -52,11 +51,6 @@
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "090d7c23-e20a-473f-901f-9d7cff34e60b"
-      }
-    }
+    ]
   }
 }
