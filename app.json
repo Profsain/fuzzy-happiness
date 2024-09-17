@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Splinx-App",
-    "slug": "Splinx-App",
+    "name": "Splinx-Planet-App",
+    "slug": "Splinx-Planet-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
       [
         "expo-contacts",
         {
-          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+          "contactsPermission": "Allow Splinx-App to access your contacts."
         }
       ],
       [
@@ -31,8 +31,7 @@
         }
       ]
     ],
-    "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others",
-    "sdkVersion": "51.0.0",
+    "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
     "platforms": [
       "ios",
       "android"
@@ -50,14 +49,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.splinxplanet",
       "infoPlist": {
-        "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
+        "NSContactsUsageDescription": "Allow Splinx-App to access your contacts."
       }
     },
     "android": {
       "versionCode": 1,
       "permissions": [
-        "READ_CONTACTS",
-        "WRITE_CONTACTS",
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
@@ -70,11 +67,8 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2e530c6c-3de4-4408-829e-f4e6cbb1b030"
+        "projectId": "090d7c23-e20a-473f-901f-9d7cff34e60b"
       }
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
     }
   }
 }
