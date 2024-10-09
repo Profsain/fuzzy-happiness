@@ -11,17 +11,6 @@
       description: "7 days trial then $5.99/month.",
       isRecurring: true,
     },
-    // {
-    //   id: 2,
-    //   planName: "Splinx-Planet six monthly subscription plan: Platinum 53.94 usd/6-month",
-    //   type: "six-months",
-    //   interval: "every 6 months",
-    //   period: "6 months",
-    //   price: "$53.94/6 months",
-    //   amount: 53.94,
-    //   description: "3 days trial then $53.94/6 months.",
-    //   isRecurring: true,
-    // },
     {
       id: 3,
       planName: "Splinx-Planet monthly subscription plan: Platinum 10.99 usd/year",

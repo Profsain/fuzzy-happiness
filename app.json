@@ -1,14 +1,12 @@
 {
   "expo": {
-    "name": "Splinx-Planet-App",
-    "slug": "Splinx-Planet-App",
+    "name": "SplinxApp",
+    "slug": "Splinx-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
       "expo-localization",
       [
@@ -32,14 +30,11 @@
       ]
     ],
     "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "splash": {
       "image": "./assets/splinxsplash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#f9784b"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
@@ -47,7 +42,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.splinxplanet",
+      "bundleIdentifier": "com.splinx.app",
       "infoPlist": {
         "NSContactsUsageDescription": "Allow Splinx-App to access your contacts."
       }
@@ -58,16 +53,11 @@
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.splinxplanet.app",
+      "package": "com.splinx.app",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
-      }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "090d7c23-e20a-473f-901f-9d7cff34e60b"
       }
     }
   }
