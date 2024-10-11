@@ -243,9 +243,9 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <ScrollView>
           {/* Carousel section */}
-          {/* <Box mt={8}>
+          <Box mt={8}>
             <HomeCarousel func={handleViewAllEvents} />
-          </Box> */}
+          </Box>
 
           {/* Create event button */}
           <Box mt={18}>

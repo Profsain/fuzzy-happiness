@@ -1,6 +1,6 @@
 import { View, Alert } from "react-native";
 import React from "react";
-// import Carousel from "react-native-snap-carousel";
+import Carousel from "react-native-snap-carousel";
 import CarouselCard from "./CarouselCard";
 
 const HomeCarousel = ({func}) => {
@@ -27,7 +27,7 @@ const HomeCarousel = ({func}) => {
 
   return (
     <View>
-      {/* <Carousel
+      <Carousel
         data={data}
         renderItem={({ item }) => (
           <CarouselCard
@@ -42,8 +42,8 @@ const HomeCarousel = ({func}) => {
         autoplay={true} // Enable autoplay
         autoplayInterval={5000} // Set autoplay interval (in milliseconds)
         loop={true} // Enable looping
-      /> */}
-      <Text>Hello Carousel</Text>
+      />
+      {/* <Text>Hello Carousel</Text> */}
     </View>
   );
 };

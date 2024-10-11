@@ -7,6 +7,7 @@ import { LoginProvider } from "./context/LoginProvider";
 // redux store
 import store from "./store";
 import { Provider } from "react-redux";
+import { Text } from "react-native";
 
 export default function App() {
   const token = process.env.NATIVE_NOTIFY_TOKEN;
@@ -15,12 +16,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <LoginProvider>
-        <GluestackUIProvider config={config}>
-          <NavigationContainer>
-            {/* main navigation switcher */}
-            <MainNavigator />
-          </NavigationContainer>
-        </GluestackUIProvider>
+        <Text>Hello World</Text>
         </LoginProvider>
     </Provider>
   );
