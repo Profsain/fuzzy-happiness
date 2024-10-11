@@ -1,3 +1,4 @@
+import { registerRootComponent } from 'expo';
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";
 import registerNNPushToken from 'native-notify';
@@ -7,7 +8,7 @@ import { LoginProvider } from "./context/LoginProvider";
 // redux store
 import store from "./store";
 import { Provider } from "react-redux";
-import { Text } from "react-native";
+
 
 export default function App() {
   const token = process.env.NATIVE_NOTIFY_TOKEN;
@@ -16,8 +17,16 @@ export default function App() {
   return (
     <Provider store={store}>
       <LoginProvider>
-        <Text>Hello World</Text>
+        <GluestackUIProvider config={config}>
+          <NavigationContainer>
+            {/* main navigation switcher */}
+            <MainNavigator />
+          </NavigationContainer>
+        </GluestackUIProvider>
         </LoginProvider>
     </Provider>
   );
 }
+
+
+registerRootComponent(App);
