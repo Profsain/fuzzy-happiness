@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { FlatList, SafeAreaView, Text, View, Alert } from "react-native";
+import { useFocusEffect } from "@react-navigation/native"; 
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
@@ -12,11 +13,21 @@ import sortEventsByDate from "../../utils/sortEventsByDate";
 import { ScrollView } from "react-native-virtualized-view";
 // subscription 
 import SubscriptionModal from "../SubscriptionModal";
-import useSubscription from "../../hooks/useSubscription";   
+import useSubscription from "../../hooks/useSubscription"; 
+import { primeryColor } from "../../utils/appstyle";  
+import { TouchableOpacity } from "react-native";
 
 const HomeScreen = ({ navigation }) => {
-  const { userProfile, token, setAllUsers } = useLogin();
-  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } = useSubscription(userProfile); // Use the subscription hook
+  const {
+    userProfile,
+    token,
+    setAllUsers,
+    setPushNotification,
+    pushNotification = [],
+  } = useLogin();
+  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
+    useSubscription(userProfile); // Use the subscription hook
+  const [notRead, setNotRead] = useState(null);
 
   const baseUrl = process.env.BASE_URL;
 
@@ -37,9 +48,47 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [baseUrl, token, setAllUsers]);
 
+  // fetch login user notification
+  const fetchNotification = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/notification/${userProfile._id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setPushNotification(data.data); // Update context once
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }, [baseUrl, userProfile._id, token, setPushNotification]);
+
   useEffect(() => {
     fetchAllUsers();
   }, [fetchAllUsers]);
+
+  // Call fetchNotification each time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotification();
+    }, [fetchNotification])
+  );
+
+  // Update notRead count when pushNotification is updated
+  useEffect(() => {
+    if (pushNotification) {
+      const unreadCount = pushNotification?.filter(
+        (item) => item.read === false
+      );
+      setNotRead(unreadCount.length);
+    }
+  }, [pushNotification]);
 
   const [allEventsList, setAllEventsList] = useState([]);
   const [headText, setHeadText] = useState("Upcoming Events");
@@ -196,11 +245,17 @@ const HomeScreen = ({ navigation }) => {
   }, [searchTerm, allEventsList]);
 
   // subscription modal
-    const handleSubscribe = () => {
+  const handleSubscribe = () => {
     // Navigate to subscription screen
     navigation.navigate("MembershipScreen");
     // setShowTrialModal(false);
   };
+
+  // handle notification 
+  const handleNotification = () => {
+    // Navigate to notification screen
+    navigation.navigate("PushNotification");
+  }
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -217,7 +272,39 @@ const HomeScreen = ({ navigation }) => {
             Hello {userProfile.firstName || "User"}
           </Text>
           <View>
-            <Ionicons name="notifications" size={24} color="black" />
+            <TouchableOpacity onPress={handleNotification}>
+              <View>
+                {/* Notification Icon */}
+                <Ionicons name="notifications" size={24} color="black" />
+
+                {/* Badge to show unread notifications */}
+                {notRead > 0 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: -6, // Adjust the position to fit the icon
+                      top: -3, // Adjust the position to fit the icon
+                      backgroundColor: primeryColor, // Use your primary color
+                      borderRadius: 10, // Circular shape
+                      width: 16, // Badge size
+                      height: 16, // Badge size
+                      justifyContent: "center", // Center the text inside the badge
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 6,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {notRead}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
         {/* Search bar */}
@@ -364,7 +451,6 @@ const HomeScreen = ({ navigation }) => {
         onSubscribe={handleSubscribe}
         onClose={() => setShowTrialModal(false)}
       />
-
     </SafeAreaView>
   );
 };

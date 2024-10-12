@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { Linking } from "react-native";
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -23,24 +22,12 @@ import {
   PaymentSuccessScreen,
   LiveChatSupport,
   FaqScreen,
+  PushNotification,
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
   const Stack = createNativeStackNavigator();
   const navigation = useNavigation();
-  useEffect(() => {
-    const handleDeepLink = ({ url }) => {
-      if (url.includes("payment-success")) {
-        navigation.navigate("PaymentSuccessScreen");
-      }
-    };
-
-    Linking.addEventListener("url", handleDeepLink);
-
-    return () => {
-      Linking.removeEventListener("url", handleDeepLink);
-    };
-  }, []);
 
   return (
     <Stack.Navigator>
@@ -162,6 +149,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="FaqScreen"
         component={FaqScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="PushNotification"
+        component={PushNotification}
         options={{ headerShown: false }}
         navigation={navigation}
       />

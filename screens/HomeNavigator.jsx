@@ -12,6 +12,7 @@ import {
   EventRegistration,
 } from "../components/home";
 import MembershipScreen from "../components/profileSettings/MembershipScreen";
+import PushNotification from "../components/profileSettings/PushNotification";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -63,6 +64,12 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="MembershipScreen"
         component={MembershipScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="PushNotification"
+        component={PushNotification}
         options={{ headerShown: false }}
         navigation={navigation}
       />

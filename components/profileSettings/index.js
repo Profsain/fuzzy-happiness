@@ -18,4 +18,5 @@ export { default as PaymentScreen } from './PaymentScreen';
 export { default as PaymentSuccessScreen } from './PaymentSuccessScreen';
 export { default as LiveChatSupport } from './LiveChatSupport';
 export { default as FaqScreen } from './FaqScreen';
+export { default as PushNotification } from './PushNotification';
 
