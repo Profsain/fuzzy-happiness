@@ -28,24 +28,21 @@ const PushNotification = ({ navigation }) => {
 
     // Update the notification status in the database
     try {
-      const response = await fetch(`${baseUrl}/api/notification/${id}/read`, {
+      const response = await fetch(`${baseUrl}/notification/${id}/read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      // Check if the response is okay 
+      // Check if the response is okay
       if (!response.ok) {
         const errorData = await response.json();
-        alert(`Error: ${errorData.message || "Failed to mark as read"}`);
         console.error("Error response:", errorData);
         return; // Exit the function if the request was not successful
       }
-
       const data = await response.json();
-      alert(data.message); // Alert success message
-      console.log(data); // Log the data for debugging
+      
     } catch (error) {
       console.error("update error", error);
     }
