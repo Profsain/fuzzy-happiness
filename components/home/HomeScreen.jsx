@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { FlatList, SafeAreaView, Text, View, Alert } from "react-native";
-import { useFocusEffect } from "@react-navigation/native"; 
+import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
@@ -11,11 +11,12 @@ import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
 import sortEventsByDate from "../../utils/sortEventsByDate";
 import { ScrollView } from "react-native-virtualized-view";
-// subscription 
+// subscription
 import SubscriptionModal from "../SubscriptionModal";
-import useSubscription from "../../hooks/useSubscription"; 
-import { primeryColor } from "../../utils/appstyle";  
+import useSubscription from "../../hooks/useSubscription";
+import { primeryColor } from "../../utils/appstyle";
 import { TouchableOpacity } from "react-native";
+import TopAdvertCarousel from "./TopAdvertCarousel";
 
 const HomeScreen = ({ navigation }) => {
   const {
@@ -24,7 +25,9 @@ const HomeScreen = ({ navigation }) => {
     setAllUsers,
     setPushNotification,
     pushNotification = [],
+    setAdverts,
   } = useLogin();
+
   const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
     useSubscription(userProfile); // Use the subscription hook
   const [notRead, setNotRead] = useState(null);
@@ -48,6 +51,28 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [baseUrl, token, setAllUsers]);
 
+  // fetch all adverts
+  const fetchAdverts = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/advert`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        return;
+      }
+      const data = await response.json();
+      setAdverts(data.data);
+    } catch (error) {
+      console.error("Fetch adverts error", error);
+    }
+  }, [baseUrl, token]);
+
   // fetch login user notification
   const fetchNotification = useCallback(async () => {
     try {
@@ -63,7 +88,6 @@ const HomeScreen = ({ navigation }) => {
       );
       const data = await response.json();
       setPushNotification(data.data); // Update context once
-      
     } catch (error) {
       console.log(error);
     }
@@ -71,7 +95,8 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     fetchAllUsers();
-  }, [fetchAllUsers]);
+    fetchAdverts();
+  }, [fetchAllUsers, fetchAdverts]);
 
   // Call fetchNotification each time the screen comes into focus
   useFocusEffect(
@@ -251,11 +276,24 @@ const HomeScreen = ({ navigation }) => {
     // setShowTrialModal(false);
   };
 
-  // handle notification 
+  // handle notification
   const handleNotification = () => {
     // Navigate to notification screen
     navigation.navigate("PushNotification");
-  }
+  };
+
+  // carousel switch
+  const [currentCarousel, setCurrentCarousel] = useState(0); // 0: HomeCarousel, 1: TopAdvertCarousel
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Toggle between 0 and 1 every minute
+      setCurrentCarousel((prevCarousel) => (prevCarousel === 0 ? 1 : 0));
+    }, 30000); // 1 minute (30,000 milliseconds)
+
+    // Cleanup on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -331,7 +369,11 @@ const HomeScreen = ({ navigation }) => {
         <ScrollView>
           {/* Carousel section */}
           <Box mt={8}>
-            <HomeCarousel func={handleViewAllEvents} />
+            {currentCarousel === 0 ? (
+              <HomeCarousel func={handleViewAllEvents} />
+            ) : (
+              <TopAdvertCarousel />
+            )}
           </Box>
 
           {/* Create event button */}

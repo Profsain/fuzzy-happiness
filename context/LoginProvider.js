@@ -14,6 +14,8 @@ export const LoginProvider = ({ children }) => {
     const [currentPost, setCurrentPost] = useState({});
     const [commentCount, setCommentCount] = useState(0);
     const [pushNotification, setPushNotification] = useState([]);
+    const [adverts, setAdverts] = useState([]);
+
     return (
         <LoginContext.Provider
             value={{
@@ -26,6 +28,7 @@ export const LoginProvider = ({ children }) => {
                 currentPost, setCurrentPost,
                 commentCount, setCommentCount,
                 pushNotification, setPushNotification,
+                adverts, setAdverts
 
             }}>
             {children}
