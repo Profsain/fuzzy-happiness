@@ -15,6 +15,8 @@ export const LoginProvider = ({ children }) => {
     const [commentCount, setCommentCount] = useState(0);
     const [pushNotification, setPushNotification] = useState([]);
     const [adverts, setAdverts] = useState([]);
+    const [promoCodes, setPromoCodes] = useState([]);
+    const [subscriptionPlans, setSubscriptionPlans] = useState([]);
 
     return (
         <LoginContext.Provider
@@ -28,8 +30,9 @@ export const LoginProvider = ({ children }) => {
                 currentPost, setCurrentPost,
                 commentCount, setCommentCount,
                 pushNotification, setPushNotification,
-                adverts, setAdverts
-
+                adverts, setAdverts,
+                promoCodes, setPromoCodes,
+                subscriptionPlans, setSubscriptionPlans
             }}>
             {children}
         </LoginContext.Provider>

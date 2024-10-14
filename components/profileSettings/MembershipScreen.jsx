@@ -12,18 +12,17 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
-// mock data
-import subscriptionData from "./subscriptionData";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
 
 const MembershipScreen = ({ navigation }) => {
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, promoCodes, subscriptionPlans } = useLogin();
+
   const { currencySymbol, currency, subscriptionPlan, isSubscriber } = userProfile;
+  const [subscriptionData, setSubscriptionData] = useState(subscriptionPlans);
   const [values, setValues] = useState(subscriptionData[0].type); // Set initial value to the first subscription type
   const [convertedAmounts, setConvertedAmounts] = useState({});
 
-  // Alert.alert("Subscription", JSON.stringify(subscriptionPlan));
   useEffect(() => {
     const fetchExchangeRates = async () => {
       const rates = {};
@@ -34,7 +33,7 @@ const MembershipScreen = ({ navigation }) => {
             "USD",
             currency
           );
-          rates[item.id] = Math.ceil(convertedAmount) ;
+          rates[item._id] = Math.ceil(convertedAmount) ;
         }
       }
       setConvertedAmounts(rates);
@@ -67,7 +66,7 @@ const MembershipScreen = ({ navigation }) => {
         <RadioGroup value={values} onChange={setValues}>
           <VStack space="sm">
             {subscriptionData.map((item) => (
-              <Radio key={item.id} value={item.planName}>
+              <Radio key={item._id} value={item.planName}>
                 <View
                   style={styles.radioItem}
                   className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
@@ -90,9 +89,9 @@ const MembershipScreen = ({ navigation }) => {
                     <Text className="font-medium text-lg">{item.title}</Text>
                     <Text>{item.description}</Text>
                     <Text>
-                      {currency !== "USD" && convertedAmounts[item.id]
+                      {currency !== "USD" && convertedAmounts[item._id]
                         ? `${currencySymbol || ""} ${convertedAmounts[
-                            item.id
+                            item._id
                           ].toFixed(2)}`
                         : null}
                     </Text>

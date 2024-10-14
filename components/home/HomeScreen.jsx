@@ -26,6 +26,8 @@ const HomeScreen = ({ navigation }) => {
     setPushNotification,
     pushNotification = [],
     setAdverts,
+    setPromoCodes,
+    setSubscriptionPlans,
   } = useLogin();
 
   const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
@@ -73,6 +75,50 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [baseUrl, token]);
 
+  // fetch all promo code
+  const fetchPromoCode = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/promo`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        return;
+      }
+      const data = await response.json();
+      setPromoCodes(data.data);
+    } catch (error) {
+      console.error("Fetch promo code error", error);
+    }
+  }, [baseUrl, token]);
+
+  // fetch all subscription plan
+  const fetchSubscriptionPlan = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/subscription-plan/plans`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        return;
+      }
+      const data = await response.json();
+      setSubscriptionPlans(data);
+    } catch (error) {
+      console.error("Fetch subscription plan error", error);
+    }
+  }, [baseUrl, token]);
+  
   // fetch login user notification
   const fetchNotification = useCallback(async () => {
     try {
@@ -96,7 +142,9 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     fetchAllUsers();
     fetchAdverts();
-  }, [fetchAllUsers, fetchAdverts]);
+    fetchPromoCode();
+    fetchSubscriptionPlan();
+  }, [fetchAllUsers, fetchAdverts, fetchPromoCode, fetchSubscriptionPlan]);
 
   // Call fetchNotification each time the screen comes into focus
   useFocusEffect(
@@ -289,7 +337,7 @@ const HomeScreen = ({ navigation }) => {
     const interval = setInterval(() => {
       // Toggle between 0 and 1 every minute
       setCurrentCarousel((prevCarousel) => (prevCarousel === 0 ? 1 : 0));
-    }, 30000); // 1 minute (30,000 milliseconds)
+    }, 30000); // 0.5 minute (30,000 milliseconds)
 
     // Cleanup on component unmount
     return () => clearInterval(interval);
