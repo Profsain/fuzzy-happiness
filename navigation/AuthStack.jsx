@@ -4,11 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import {
-  OnboardingScreen,
-  LoginScreen,
-  SignUpScreen,
-} from "../screens";
+import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
 import {
@@ -22,24 +18,38 @@ import {
   TokenScreen,
   UserProfileScreen,
 } from "../screens/signup";
+import LoadingSpinner from "../components/LoadingSpinner";
 import TabNavigation from "./TabNavigation";
 
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
   const navigation = useNavigation();
-  const [hasOnboarded, setHasOnboarded] = useState(false);
+  const [hasOnboarded, setHasOnboarded] = useState(null);
 
   useEffect(() => {
     AsyncStorage.getItem("onboarded").then((value) => {
       if (value === null) {
-        AsyncStorage.setItem("onboarded", "true");
-        setHasOnboarded(true);
+        // If not onboarded, set state to false to show the onboarding screen
+        setHasOnboarded(false);
       } else {
+        // If onboarded, set state to true to skip the onboarding screen
         setHasOnboarded(true);
       }
     });
   }, []);
+
+  const handleOnboardingComplete = () => {
+    // Set onboarded to true and update AsyncStorage when onboarding is done
+    AsyncStorage.setItem("onboarded", "true").then(() => {
+      setHasOnboarded(true); // Move to the next screen after onboarding is done
+    });
+  };
+
+  if (hasOnboarded === null) {
+    // Display a loading screen while AsyncStorage is being checked
+    return <LoadingSpinner />;
+  }
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -47,19 +57,14 @@ const AuthStack = () => {
 
   return (
     <Stack.Navigator>
-      {hasOnboarded && (
+      {!hasOnboarded && (
         <Stack.Screen
           options={{ headerShown: false }}
           name="OnboardingScreen"
           component={OnboardingScreen}
+          initialParams={{ onComplete: handleOnboardingComplete }}
         />
       )}
-
-      {/* <Stack.Screen
-        options={{ headerShown: false }}
-        name="OnboardingScreen"
-        component={OnboardingScreen}
-      /> */}
 
       <Stack.Screen
         options={{ headerShown: false }}

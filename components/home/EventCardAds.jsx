@@ -4,22 +4,21 @@ import { useLogin } from "../../context/LoginProvider";
 import Carousel from "react-native-snap-carousel";
 import CarouselCard from "./CarouselCard";
 
-const TopAdvertCarousel = () => {
+const EventCardAds = () => {
   const { adverts } = useLogin();
   const baseUrl = process.env.BASE_URL;
 
-//   const [adverts, setAdverts] = useState([]);
-  const [topAdverts, setTopAdverts] = useState([]);
-
+  //   const [adverts, setAdverts] = useState([]);
+  const [eventCardAdvert, setEventCardAdvert] = useState([]);
 
   // filter adverts that is active and top position
   useEffect(() => {
     // if (!adverts) return;
-    const topAdverts = adverts.filter(
+    const eventCardAdvert = adverts.filter(
       (advert) =>
-        advert.adsStatus === "active" && advert.adsPosition === "homeTop"
+        advert.adsStatus === "active" && advert.adsPosition === "eventsCard"
     );
-    setTopAdverts(topAdverts);
+    setEventCardAdvert(eventCardAdvert);
   }, [adverts]);
 
   // function to call business
@@ -38,7 +37,7 @@ const TopAdvertCarousel = () => {
   return (
     <View>
       <Carousel
-        data={topAdverts}
+        data={eventCardAdvert}
         renderItem={({ item }) => (
           <CarouselCard
             title={item.businessName.slice(0, 10)}
@@ -52,11 +51,11 @@ const TopAdvertCarousel = () => {
         sliderWidth={300}
         itemWidth={300}
         autoplay={true} // Enable autoplay
-        autoplayInterval={5000} // Set autoplay interval (in milliseconds)
+        autoplayInterval={4000} // Set autoplay interval (in milliseconds)
         loop={true} // Enable looping
       />
     </View>
   );
 };
 
-export default TopAdvertCarousel;
+export default EventCardAds

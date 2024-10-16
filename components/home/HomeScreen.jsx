@@ -17,6 +17,7 @@ import useSubscription from "../../hooks/useSubscription";
 import { primeryColor } from "../../utils/appstyle";
 import { TouchableOpacity } from "react-native";
 import TopAdvertCarousel from "./TopAdvertCarousel";
+import EventCardAds from "./EventCardAds";
 
 const HomeScreen = ({ navigation }) => {
   const {
@@ -529,7 +530,12 @@ const HomeScreen = ({ navigation }) => {
                   showsHorizontalScrollIndicator={false}
                 />
               </View>
-            </Box>
+              </Box>
+              
+              {/* Advert section */}
+              <Box mt={8}>
+                <EventCardAds />
+              </Box>
           </Box>
         </ScrollView>
       )}
