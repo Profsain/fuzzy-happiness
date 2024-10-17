@@ -17,6 +17,10 @@ export const LoginProvider = ({ children }) => {
     const [adverts, setAdverts] = useState([]);
     const [promoCodes, setPromoCodes] = useState([]);
     const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+    // subscription lock
+    const [daysLeft, setDaysLeft] = useState(null);
+    const [showTrialModal, setShowTrialModal] = useState(false);
+    const [isLocked, setIsLocked] = useState(false);
 
     return (
         <LoginContext.Provider
@@ -32,7 +36,10 @@ export const LoginProvider = ({ children }) => {
                 pushNotification, setPushNotification,
                 adverts, setAdverts,
                 promoCodes, setPromoCodes,
-                subscriptionPlans, setSubscriptionPlans
+                subscriptionPlans, setSubscriptionPlans,
+                daysLeft, setDaysLeft,
+                showTrialModal, setShowTrialModal,
+                isLocked, setIsLocked,
             }}>
             {children}
         </LoginContext.Provider>

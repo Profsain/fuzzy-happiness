@@ -114,15 +114,17 @@ const LoginInputScreen = () => {
 
   // handle social login
   const handleFacebookLogin = () => {
-    Alert.alert("Social Login");
+    Alert.alert("Warning", "Facebook login is not available at the moment.");
   };
+
   const handleGoogleLogin = () => {
     // Alert.alert("Social Login");
     // call promptAsync
     promptAsync();
   };
+  
   const handleAppleLogin = () => {
-    Alert.alert("Social Login");
+    Alert.alert("Warning", "Apple login is not available at the moment.");
   };
 
   // handle user Login

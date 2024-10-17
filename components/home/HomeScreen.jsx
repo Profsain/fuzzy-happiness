@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
-import { FlatList, SafeAreaView, Text, View, Alert } from "react-native";
+import { FlatList, SafeAreaView, Text, View, Alert, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
@@ -31,8 +31,8 @@ const HomeScreen = ({ navigation }) => {
     setSubscriptionPlans,
   } = useLogin();
 
-  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
-    useSubscription(userProfile); // Use the subscription hook
+  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } = useSubscription(userProfile); // Use the subscription hook
+
   const [notRead, setNotRead] = useState(null);
 
   const baseUrl = process.env.BASE_URL;
@@ -168,11 +168,6 @@ const HomeScreen = ({ navigation }) => {
   const [headText, setHeadText] = useState("Upcoming Events");
 
   const [state, setState] = useState({
-    openAllEvents: false,
-    openCreateEvent: false,
-    openMySingleEvent: false,
-    openSingleEvent: false,
-    openEventRegister: false,
     eventList: [{}],
     myEventDetails: {},
     eventDetails: {},
@@ -346,12 +341,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      {/* { isLocked ? (
-        <View className="flex-1 justify-center items-center">
-          <Text>Your free trial has ended. Please subscribe to continue.</Text>
-          <Button title="Subscribe" onPress={handleSubscribe} />
-        </View>
-      ) : ()} */}
       {/* Top bar */}
       <Box>
         <View className="flex flex-row justify-between">
@@ -530,23 +519,25 @@ const HomeScreen = ({ navigation }) => {
                   showsHorizontalScrollIndicator={false}
                 />
               </View>
-              </Box>
-              
-              {/* Advert section */}
-              <Box mt={8}>
-                <EventCardAds />
-              </Box>
+            </Box>
+
+            {/* Advert section */}
+            <Box mt={8}>
+              <EventCardAds />
+            </Box>
           </Box>
         </ScrollView>
       )}
 
       {/* Subscription modal */}
-      <SubscriptionModal
-        visible={showTrialModal}
-        daysLeft={daysLeft}
-        onSubscribe={handleSubscribe}
-        onClose={() => setShowTrialModal(false)}
-      />
+      {isLocked && (
+        <SubscriptionModal
+          visible={showTrialModal}
+          daysLeft={daysLeft}
+          onSubscribe={handleSubscribe}
+          onClose={() => setShowTrialModal(false)}
+        />
+      )}
     </SafeAreaView>
   );
 };

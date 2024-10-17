@@ -20,6 +20,7 @@ import {
 } from "../screens/signup";
 import LoadingSpinner from "../components/LoadingSpinner";
 import TabNavigation from "./TabNavigation";
+import { View } from "lucide-react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,15 +47,18 @@ const AuthStack = () => {
     });
   };
 
-  if (hasOnboarded === null) {
-    // Display a loading screen while AsyncStorage is being checked
-    return <LoadingSpinner />;
-  }
-
   const handleGoBack = () => {
     navigation.goBack();
   };
 
+  // Show loading spinner at the center while checking for onboarding status
+  if (hasOnboarded === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <LoadingSpinner text="" />
+      </View>
+    );
+  }
   return (
     <Stack.Navigator>
       {!hasOnboarded && (

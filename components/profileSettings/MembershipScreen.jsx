@@ -7,7 +7,7 @@ import {
   RadioIcon,
   CircleIcon,
 } from "@gluestack-ui/themed";
-import { View, Text, SafeAreaView, StyleSheet, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -16,7 +16,8 @@ import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
 
 const MembershipScreen = ({ navigation }) => {
-  const { userProfile, token, promoCodes, subscriptionPlans } = useLogin();
+  const { userProfile, subscriptionPlans, isLocked } = useLogin();
+  // Alert.alert("Locked", isLocked ? "Locked" : "Not Locked");
 
   const { currencySymbol, currency, subscriptionPlan, isSubscriber } = userProfile;
   const [subscriptionData, setSubscriptionData] = useState(subscriptionPlans);
@@ -43,6 +44,11 @@ const MembershipScreen = ({ navigation }) => {
 
   // handle back button
   const handleBackBtn = () => {
+    // isLocked return
+    if (isLocked) {
+      Alert.alert("Subscription", "You are not allowed to access this screen");
+      return;
+    }
     // navigate back
     navigation.goBack();
   };
@@ -54,6 +60,12 @@ const MembershipScreen = ({ navigation }) => {
       (item) => item.planName === values
     );
 
+    // check subscription data
+    if (!subscription) {
+      Alert.alert("Subscription", "Please select a subscription plan");
+      return;
+    }
+    
     // navigate to subscription screen and pass data
     navigation.navigate("SubscriptionScreen", { subscription });
   };
@@ -62,7 +74,7 @@ const MembershipScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
 
-      <View className="mt-16">
+      <ScrollView className="mt-16">
         <RadioGroup value={values} onChange={setValues}>
           <VStack space="sm">
             {subscriptionData.map((item) => (
@@ -105,10 +117,10 @@ const MembershipScreen = ({ navigation }) => {
           </VStack>
         </RadioGroup>
 
-        <View className="mt-28">
+        <View className="my-6">
           <CustomButton label="Subscribe Now" buttonFunc={handleSubscription} />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

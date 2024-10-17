@@ -11,7 +11,8 @@ import {
   SearchResult,
   EventRegistration,
 } from "../components/home";
-import MembershipScreen from "../components/profileSettings/MembershipScreen";
+// import MembershipScreen from "../components/profileSettings/MembershipScreen";
+import { MembershipScreen, SubscriptionScreen } from "../components/profileSettings";
 import PushNotification from "../components/profileSettings/PushNotification";
 
 const HomeNavigator = () => {
@@ -64,6 +65,12 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="MembershipScreen"
         component={MembershipScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="SubscriptionScreen"
+        component={SubscriptionScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />
