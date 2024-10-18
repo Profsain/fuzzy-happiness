@@ -9,7 +9,7 @@ import {
 
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import useReceivedData from "../../hooks/useReceivedData";
 
 const BioScreen = ({ navigation }) => {

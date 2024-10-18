@@ -61,8 +61,6 @@ const TokenScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Alert.alert("Otp value", JSON.stringify(tokenValue));
-
   const codeInputRef = useRef(null);
 
   // handle token code change
@@ -92,11 +90,12 @@ const TokenScreen = () => {
       const otp = await getItem("otp");
 
       if (otp == tokenValue) {
-        const data = {
-          phoneNumber: phoneNumber,
-        };
+        // const data = {
+        //   phoneNumber: phoneNumber,
+        // };
 
-        navigation.replace("AddEmailScreen", data);
+        // Alert.alert("Token", JSON.stringify(data));
+        navigation.replace("AddEmailScreen", { phoneNumber: phoneNumber });
 
         // remove otp
         await removeItem("otp");
