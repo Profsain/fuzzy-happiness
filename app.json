@@ -53,6 +53,7 @@
       }
     },
     "android": {
+      "jsEngine": "jsc",
       "versionCode": 1,
       "permissions": [
         "android.permission.READ_CONTACTS",
