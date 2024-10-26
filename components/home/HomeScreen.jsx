@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
-import { EventCard, HorizontalTitle, SearchResult } from ".";
+import { EventCard, HorizontalTitle, HomeCarousel, SearchResult } from ".";
 import eventData from "../../mockdata/eventData";
 import filterEventsByCreator from "../../utils/filterEventByUser";
 import searchEvents from "../../utils/searchEvent";
@@ -16,8 +16,8 @@ import SubscriptionModal from "../SubscriptionModal";
 import useSubscription from "../../hooks/useSubscription";
 import { primeryColor } from "../../utils/appstyle";
 import { TouchableOpacity } from "react-native";
-// import TopAdvertCarousel from "./TopAdvertCarousel";
-// import EventCardAds from "./EventCardAds";
+import TopAdvertCarousel from "./TopAdvertCarousel";
+import EventCardAds from "./EventCardAds";
 
 const HomeScreen = ({ navigation }) => {
   const {
@@ -406,13 +406,13 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <ScrollView>
           {/* Carousel section */}
-          {/* <Box mt={8}>
+          <Box mt={8}>
             {currentCarousel === 0 ? (
               <HomeCarousel func={handleViewAllEvents} />
             ) : (
               <TopAdvertCarousel />
             )}
-          </Box> */}
+          </Box>
 
           {/* Create event button */}
           <Box mt={18}>
@@ -522,9 +522,9 @@ const HomeScreen = ({ navigation }) => {
             </Box>
 
             {/* Advert section */}
-            {/* <Box mt={8}>
+            <Box mt={8}>
               <EventCardAds />
-            </Box> */}
+            </Box>
           </Box>
         </ScrollView>
       )}
