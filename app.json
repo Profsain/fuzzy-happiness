@@ -26,7 +26,8 @@
             "buildToolsVersion": "34.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.4"
+            "deploymentTarget": "13.4",
+            "useFrameworks": "static"
           }
         }
       ]
@@ -48,6 +49,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.splinx.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSContactsUsageDescription": "Allow Splinx-App to access your contacts."
       }

@@ -20,7 +20,7 @@ import {
 } from "../screens/signup";
 import LoadingSpinner from "../components/LoadingSpinner";
 import TabNavigation from "./TabNavigation";
-import { View } from "lucide-react-native";
+import { View } from "react-native";;
 
 const Stack = createNativeStackNavigator();
 
@@ -29,22 +29,16 @@ const AuthStack = () => {
   const [hasOnboarded, setHasOnboarded] = useState(null);
 
   useEffect(() => {
-    AsyncStorage.getItem("onboarded").then((value) => {
-      if (value === null) {
-        // If not onboarded, set state to false to show the onboarding screen
-        setHasOnboarded(false);
-      } else {
-        // If onboarded, set state to true to skip the onboarding screen
-        setHasOnboarded(true);
-      }
-    });
+    const checkOnboardingStatus = async () => {
+      const value = await AsyncStorage.getItem("onboarded");
+      setHasOnboarded(value !== null); // If null, show onboarding; else, skip it
+    };
+    checkOnboardingStatus();
   }, []);
 
-  const handleOnboardingComplete = () => {
-    // Set onboarded to true and update AsyncStorage when onboarding is done
-    AsyncStorage.setItem("onboarded", "true").then(() => {
-      setHasOnboarded(true); // Move to the next screen after onboarding is done
-    });
+  const handleOnboardingComplete = async () => {
+    await AsyncStorage.setItem("onboarded", "true");
+    setHasOnboarded(true);
   };
 
   const handleGoBack = () => {
@@ -59,6 +53,7 @@ const AuthStack = () => {
       </View>
     );
   }
+  
   return (
     <Stack.Navigator>
       {!hasOnboarded && (
