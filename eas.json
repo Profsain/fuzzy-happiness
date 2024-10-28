@@ -52,14 +52,14 @@
         "simulator": true
       },
       "channel": "splinxapptest"
-    },
-    "submit": {
-      "production": {
-        "ios": {
-          "appleId": "6737458548",
-          "ascAppId": "6737458548",
-          "appleTeamId": "UPVF2UWSJ2"
-        }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "splinxplanet@icloud.com",
+        "ascAppId": "6737458548",
+        "appleTeamId": "UPVF2UWSJ2"
       }
     }
   }
