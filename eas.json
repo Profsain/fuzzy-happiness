@@ -49,7 +49,10 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "appleId": "6737458548",
+        "ascAppId": "6737458548",
+        "appleTeamId": "UPVF2UWSJ2"
       },
       "channel": "splinxapptest"
     }
