@@ -1,4 +1,4 @@
-import { View, SafeAreaView, Alert } from "react-native";
+import { View, SafeAreaView, ScrollView, Alert } from "react-native";
 import React from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -6,8 +6,10 @@ import OptionButton from "./component/OptionButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 const ProfileHome = ({ navigation }) => {
+  // base url
+  const baseUrl = process.env.BASE_URL;
   // extract context
-  const { setIsLogin, setUserProfile } = useLogin();
+  const { setIsLogin, setUserProfile, userProfile, token } = useLogin();
 
   // handle personal info
   const handlePersonalInfo = () => {
@@ -53,6 +55,44 @@ const ProfileHome = ({ navigation }) => {
     navigation.navigate("PushNotification");
   };
 
+  // handle delete account
+  const deleteAcc = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/delete-user/${userProfile._id}`);
+
+      if (response.ok) {
+        // After deletion, navigate to the login screen
+        handleLogout();
+      }
+    } catch (error) {
+      Alert.alert("Delete Error", error)
+    }
+  }
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Call the delete user account endpoint
+              await deleteAcc();
+
+              // navigation.navigate("Login"); // Assuming you have navigation setup
+            } catch (error) {
+              Alert.alert("Delete Error", error.message);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       <View>
@@ -60,7 +100,7 @@ const ProfileHome = ({ navigation }) => {
       </View>
 
       {/* option list */}
-      <View className="mt-6">
+      <ScrollView className="mt-6">
         <OptionButton
           btnText="Personal Information"
           iconLeft=""
@@ -105,13 +145,21 @@ const ProfileHome = ({ navigation }) => {
           btnFunc={handleLiveChat}
         />
 
+        {/* delete account */}
+        <OptionButton
+          btnText="Delete Account"
+          iconLeft=""
+          iconRight={<AntDesign name="delete" size={18} color="red" />}
+          btnFunc={handleDeleteAccount}
+        />
+
         <OptionButton
           btnText="Log out"
           iconLeft=""
           iconRight={<AntDesign name="logout" size={18} color="black" />}
           btnFunc={handleLogout}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

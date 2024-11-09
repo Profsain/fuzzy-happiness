@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Splinx-App",
-    "slug": "Splinx-App",
-    "version": "1.0.0",
+    "name": "splinxApp",
+    "slug": "splinxApp",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -48,7 +48,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.splinx.app",
+      "bundleIdentifier": "com.splinxapp",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSContactsUsageDescription": "Allow Splinx-App to access your contacts."
@@ -61,7 +61,7 @@
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.splinx.app",
+      "package": "com.splinxapp",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
@@ -70,7 +70,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2e530c6c-3de4-4408-829e-f4e6cbb1b030"
+        "projectId": "9b0d58cf-86fa-4e41-a65d-0e54e481576f"
       }
     }
   }

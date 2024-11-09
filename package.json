@@ -1,6 +1,6 @@
 {
-  "name": "Splinx-App",
-  "version": "1.0.0",
+  "name": "splinxApp",
+  "version": "1.0.1",
   "main": "App.js",
   "scripts": {
     "start": "expo start --tunnel",
@@ -37,7 +37,7 @@
     "expo-constants": "~16.0.2",
     "expo-contacts": "~13.0.5",
     "expo-crypto": "~13.0.2",
-    "expo-dev-client": "~4.0.28",
+    "expo-dev-client": "~4.0.29",
     "expo-device": "~6.0.2",
     "expo-image-picker": "~15.0.7",
     "expo-linear-gradient": "~13.0.2",
