@@ -56,7 +56,7 @@ const AuthStack = () => {
   
   return (
     <Stack.Navigator>
-      {!hasOnboarded && (
+      {hasOnboarded && (
         <Stack.Screen
           options={{ headerShown: false }}
           name="OnboardingScreen"

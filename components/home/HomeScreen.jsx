@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
+import useExplorerStatus from "../../hooks/useExplorerStatus";
 import { FlatList, SafeAreaView, Text, View, Alert, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +31,8 @@ const HomeScreen = ({ navigation }) => {
     setPromoCodes,
     setSubscriptionPlans,
   } = useLogin();
+
+  const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
 
   const { daysLeft, showTrialModal, isLocked, setShowTrialModal } = useSubscription(userProfile); // Use the subscription hook
 
@@ -190,7 +193,7 @@ const HomeScreen = ({ navigation }) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
         });
 
@@ -216,7 +219,6 @@ const HomeScreen = ({ navigation }) => {
     fetchData();
   }, [token, userProfile._id]);
 
-  // Handlers and other functions...
 
   // handle view my events
   const handleViewMyEvents = useCallback(() => {

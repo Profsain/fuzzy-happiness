@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import useExplorerStatus from "../hooks/useExplorerStatus";
 import {
   HomeNavigator,
   BillsPayScreen,
@@ -14,13 +15,18 @@ import { Alert, TouchableOpacity } from "react-native"; // Import TouchableOpaci
 
 const Tab = createBottomTabNavigator();
 
+
 const TabNavigation = () => {
+  const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
+
   const { isLocked } = useLogin(); // Check subscription status
 
   // Function to handle tab press and check if subscription is locked
   const handleTabPress = (navigation) => {
     if (isLocked) {
       Alert.alert("Subscription", "You are not allowed to access this screen");
+    } else if (isExplorer === "true") {
+      Alert.alert("Explorer", "You are not allowed to access this screen");
     } else {
       navigation(); // Proceed to the selected screen
     }
