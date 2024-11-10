@@ -41,6 +41,8 @@ All right reserved @splinx planet. No part of this code should be use without wr
 
 
 ## App Description
+https://www.splinxplanet.com/splinx/legal-terms
+https://www.splinxplanet.com/splinx/privacy-policy
 Splinx Planet
 Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.
 

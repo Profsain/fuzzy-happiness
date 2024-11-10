@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "792263487097",
-    "project_id": "splinx-app-2a5a9",
-    "storage_bucket": "splinx-app-2a5a9.appspot.com"
+    "project_number": "801524367799",
+    "project_id": "splinx-auth-c3a26",
+    "storage_bucket": "splinx-auth-c3a26.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:792263487097:android:80f768af4a3f635272eea8",
+        "mobilesdk_app_id": "1:801524367799:android:fe49c6779334cd454da832",
         "android_client_info": {
-          "package_name": "com.splinxappo"
+          "package_name": "com.splinxapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCzkozxPd33hWjogElaFHbHOL51uKuOSXU"
+          "current_key": "AIzaSyAVUH2p4P6kckKbnoWRFmpESONI2ep012k"
         }
       ],
       "services": {
