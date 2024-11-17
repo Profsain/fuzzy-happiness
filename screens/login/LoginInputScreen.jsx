@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 // native notification
 import { registerIndieID } from "native-notify";
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { Alert, Image, TouchableOpacity, ScrollView } from "react-native";
 import {
@@ -165,6 +165,8 @@ const LoginInputScreen = () => {
         // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
         // End of Native Notify Code
 
+        // set isExplorer to false in async storage
+        await AsyncStorage.setItem("isExplorer", "false");
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
         setLoading(false);
@@ -240,7 +242,7 @@ const LoginInputScreen = () => {
           </Box>
 
           {/* social login */}
-          <Box
+          {/* <Box
             mt={38}
             width="100%"
             flexDirection="row"
@@ -258,7 +260,7 @@ const LoginInputScreen = () => {
             <TouchableOpacity onPress={handleAppleLogin}>
               <Image size="sm" source={require("../../assets/apple.png")} />
             </TouchableOpacity>
-          </Box>
+          </Box> */}
 
           {/* login button */}
           <Box mt={60}>

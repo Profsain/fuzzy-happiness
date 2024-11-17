@@ -82,6 +82,7 @@ const AuthStack = () => {
         }}
         name="TabNavigation"
         component={TabNavigation}
+        navigation={navigation}
       />
 
       <Stack.Screen

@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLogin } from "../../context/LoginProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import useExplorerStatus from "../../hooks/useExplorerStatus";
-import { FlatList, SafeAreaView, Text, View, Alert, Button } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  Text,
+  View,
+  Alert,
+  Button,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Box } from "@gluestack-ui/themed";
@@ -34,7 +42,8 @@ const HomeScreen = ({ navigation }) => {
 
   const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
 
-  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } = useSubscription(userProfile); // Use the subscription hook
+  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
+    useSubscription(userProfile); // Use the subscription hook
 
   const [notRead, setNotRead] = useState(null);
 
@@ -122,7 +131,7 @@ const HomeScreen = ({ navigation }) => {
       console.error("Fetch subscription plan error", error);
     }
   }, [baseUrl, token]);
-  
+
   // fetch login user notification
   const fetchNotification = useCallback(async () => {
     try {
@@ -219,7 +228,6 @@ const HomeScreen = ({ navigation }) => {
     fetchData();
   }, [token, userProfile._id]);
 
-
   // handle view my events
   const handleViewMyEvents = useCallback(() => {
     // filter login user events
@@ -280,10 +288,33 @@ const HomeScreen = ({ navigation }) => {
   );
 
   // handle create new event
-  const handleCreateNewEvent = useCallback(() => {
-    // navigate to CreateNewEvent screen
-    navigation.navigate("CreateNewEvent");
-  }, []);
+  const handleCreateNewEvent = () => {
+    // check if user is explorer
+    if (isExplorer === "true") {
+      Alert.alert(
+        "Explorer",
+        "You are not allowed to create an event. Login to create an event",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Login",
+            onPress: async () => {
+              navigation.navigate("LoginScreen");
+              // set isExplorer to false in async storage
+              await AsyncStorage.setItem("isExplorer", "false");
+            },
+          },
+        ]
+      );
+      return;
+    } else {
+      // navigate to CreateNewEvent screen
+      navigation.navigate("CreateNewEvent");
+    }
+  };
 
   // handle search term change
   const [searchTerm, setSearchTerm] = useState("");
@@ -532,7 +563,7 @@ const HomeScreen = ({ navigation }) => {
       )}
 
       {/* Subscription modal */}
-      {isLocked && (
+      {isLocked && isExplorer !== "true" && (
         <SubscriptionModal
           visible={showTrialModal}
           daysLeft={daysLeft}

@@ -14,12 +14,16 @@ import { Box } from "@gluestack-ui/themed";
 
 const LoginScreen = ({ navigation }) => {
   // handle login
-  const handleLogin = () => {
+  const handleLogin = async () => {
     navigationToScreen(navigation, "LoginUser");
+    // set isExplorer to false in async storage
+    await AsyncStorage.setItem("isExplorer", "false");
   };
-  // handle signup
-  const handleSignUp = () => {
+  // handle sign up
+  const handleSignUp = async () => {
     navigationToScreen(navigation, "SignUpScreen");
+    // set isExplorer to false in async storage
+    await AsyncStorage.setItem("isExplorer", "false");
   };
 
   // handle explore
@@ -47,14 +51,14 @@ const LoginScreen = ({ navigation }) => {
           buttonFunc={handleSignUp}
         />
         {/* just explore */}
-        {/* <Box mt={6}>
+        <Box mt={6}>
           <CustomButton
             backgroundColor="lightgray"
             color={secondaryColor}
             label="Just explore"
             buttonFunc={handleExplore}
           />
-        </Box> */}
+        </Box>
       </View>
     </SafeAreaView>
   );
