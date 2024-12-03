@@ -1,4 +1,5 @@
-import { View, Text, SafeAreaView, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, SafeAreaView, FlatList, Alert, Share } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Octicons } from "@expo/vector-icons";
@@ -6,23 +7,150 @@ import { primeryColor } from "../../utils/appstyle";
 import { BackTopBar, HorizontalTitle } from "../home";
 import MemberProfileCard from "./component/MemberProfileCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
+import WithdrawRequestModal from "./component/WithdrawalRequestModal";
+import { useLogin } from "../../context/LoginProvider";
+import formatDate from "../../utils/formatDate";
 
-const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
-  // handle make transaction
-  const handleMakeTransaction = () => {
-    // navigate to transaction screen
-    navigation.navigate("TransactionScreen");
+const BillsDetails = ({ navigation, route }) => {
+  const { userProfile, setUserProfile, token, allUsers } = useLogin();
+  const { currencySymbol, currency } = userProfile;
+
+  const baseUrl = process.env.BASE_URL;
+  const [membersInfo, setMembersInfo] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const { eventDetails } = route.params;
+  const {
+    eventName,
+    eventLocation,
+    eventId,
+    eventCreator,
+    eventDate,
+    eventCost,
+    totalPaidByMembers,
+    eventMembers,
+  } = eventDetails;
+
+  // Fetch event members info
+  useEffect(() => {
+    // Create new array with member information
+    const updatedMembersInfo = eventMembers?.map((member) => {
+      // Find user information based on userId
+      const user = allUsers.find((user) => user._id === member.user);
+
+      return {
+        userId: member.user,
+        splitCost: member.splitCost,
+        paymentStatus: member.paymentStatus,
+        firstName: user?.firstName || "Unknown",
+        lastName: user?.lastName || "",
+        profileImg: user?.profileImg || "default_profile_img_url",
+      };
+    });
+
+    setMembersInfo(updatedMembersInfo);
+  }, [eventMembers, allUsers]);
+
+  // Handle make transaction
+  const handleOpenModal = () => {
+    // navigation.navigate("TransactionScreen");
+    setModalVisible(true);
   };
 
-  // handle set payment reminder
-  const handleSetPaymentReminder = () => {
-    Alert.alert("Set Payment reminder");
+  const handleSubmitRequest = async (requestData) => {
+    try {
+      const response = await fetch(`${baseUrl}/withdrawal/withdraw-request`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Withdrawal request submitted successfully.");
+      } else {
+        const error = await response.json();
+        Alert.alert("Request", "Withdrawal request already submitted.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
   };
 
-  // handle invite members
-  const handleInviteMembers = () => {
-    Alert.alert("Invite Members");
+  // Handle send payment reminder
+  const handleSendPaymentReminder = async () => {
+    try {
+      const requestData = {
+        eventId,
+        eventMembers, // Array of event members with payment statuses
+      };
+
+      const response = await fetch(`${baseUrl}/event/send-payment-reminder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include the user's token if needed
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Payment reminders sent successfully.");
+      } else {
+        const error = await response.json();
+        Alert.alert(
+          "Error",
+          error.message || "Failed to send payment reminders."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
   };
+
+  // Handle invite members
+  const handleInviteMembers = async () => {
+    try {
+      const message = `
+      You're invited to join the event: ${eventName}!
+      Location: ${eventLocation}
+      Date: ${formatDate(eventDate)}
+      Cost: ${currencySymbol}${eventCost}
+      Join us and help split the costs!
+    `;
+
+      const result = await Share.share({
+        message: message,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // Shared with specific activity type
+          console.log("Shared with activity type: ", result.activityType);
+        } else {
+          // Shared successfully
+          Alert.alert("Success", "Event details shared successfully.");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // Dismissed
+        Alert.alert("Cancelled", "Event sharing cancelled.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
+
+  // Render each member in FlatList
+  const renderMember = ({ item }) => (
+    <MemberProfileCard
+      name={`${item.firstName}`}
+      imgUrl={item.profileImg}
+      status={item.paymentStatus}
+      amount={item.splitCost}
+      currency={currencySymbol}
+    />
+  );
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -31,25 +159,31 @@ const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
 
       {/* top card */}
       <View
-        className=" rounded-lg my-6 p-6"
+        className="rounded-lg my-6 p-6"
         style={{ backgroundColor: primeryColor }}
       >
         <View className="flex flex-row content-center justify-between items-center">
-          <Text className="text-white font-medium text-base">{eventName}</Text>
-          <Text className="text-white font-normal text-xs">14/11/2024</Text>
+          <Text className="text-white font-medium text-base">
+            {eventName || ""}
+          </Text>
+          <Text className="text-white font-normal text-xs">
+            {formatDate(eventDate) || "14/11/2024"}
+          </Text>
         </View>
 
         <View className="px-0">
           <View className="flex flex-row content-center items-center ">
             <Text className="font-normal pr-12">Bill Total</Text>
-            <Text className="font-semibold text-base">$2100</Text>
+            <Text className="font-semibold text-base">${eventCost}</Text>
           </View>
           <View className="flex flex-row content-center items-center ">
-            <Text className="font-normal pr-8">Amount Due</Text>
-            <Text className="font-semibold text-base">$300</Text>
+            <Text className="font-normal pr-8">Amount Paid</Text>
+            <Text className="font-semibold text-base">
+              ${totalPaidByMembers.toFixed(2)}
+            </Text>
           </View>
           <View className="flex flex-row content-center items-center mt-3">
-            <Text className="font-xm">Plot 37, Kingsway Yaba</Text>
+            <Text className="font-xm">{eventLocation || ""}</Text>
           </View>
         </View>
       </View>
@@ -59,18 +193,15 @@ const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
         <HorizontalTitle title="Members Expenses" action="" />
 
         {/* group members */}
-        <View className="flex flex-row justify-between items-center mt-2">
-          <MemberProfileCard />
-          <MemberProfileCard
-            name="Glory"
-            imgUrl="https://img.freepik.com/free-photo/confident-african-businesswoman-mockup-psd-smiling-closeup-portr_53876-143279.jpg?t=st=1710456406~exp=1710460006~hmac=d227f46822c0ca646efe8e8ac42e41da7b8c1bdaeb6ebf5366bc60ddf48ab2ca&w=740"
-          />
-          <MemberProfileCard
-            name="Winford"
-            status="Paid"
-            imgUrl="https://img.freepik.com/free-photo/portrait-young-handsome-african-man-blue-wall_176420-2339.jpg?t=st=1710456494~exp=1710460094~hmac=48443a0598a0a4726258ab39cbd4f73941fb7e969f4757b4120f1f0ab1cd7a68&w=740"
-          />
-        </View>
+        {/* Horizontal FlatList for members */}
+        <FlatList
+          data={membersInfo}
+          horizontal={true}
+          keyExtractor={(item) => item.userId.toString()}
+          renderItem={renderMember}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 10 }}
+        />
       </View>
 
       {/* action button section */}
@@ -84,14 +215,14 @@ const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
               color={primeryColor}
             />
           }
-          func={handleMakeTransaction}
+          func={handleOpenModal}
         />
         <BillsHorizontalBtn
-          text="Set Payment reminder"
+          text="Send Payment reminder"
           iconLeft={
             <AntDesign name="clockcircleo" size={18} color={primeryColor} />
           }
-          func={handleSetPaymentReminder}
+          func={handleSendPaymentReminder}
         />
         <BillsHorizontalBtn
           text="Invite Members"
@@ -99,6 +230,18 @@ const BillsDetails = ({ navigation, eventName = "Karaoke" }) => {
           func={handleInviteMembers}
         />
       </View>
+
+      {/* Reuseable Withdraw Request Modal */}
+      <WithdrawRequestModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        eventName={eventName}
+        eventCost={eventCost}
+        currency={currency}
+        eventId={eventId}
+        eventCreator={eventCreator}
+        onSubmitRequest={handleSubmitRequest}
+      />
     </SafeAreaView>
   );
 };

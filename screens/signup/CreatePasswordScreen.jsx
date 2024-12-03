@@ -7,6 +7,7 @@ import useReceivedData from "../../hooks/useReceivedData";
 // functions
 import handlePasswordChange from "../../utils/handlePasswordChange";
 import handleConfirmPasswordChange from "../../utils/handleConfirmPassword";
+import { Alert } from "react-native";
 
 const CreatePasswordScreen = ({ navigation }) => {
   // received data from previous screen

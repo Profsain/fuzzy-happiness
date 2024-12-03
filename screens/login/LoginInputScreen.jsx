@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 // native notification
 import { registerIndieID } from "native-notify";
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, Image, TouchableOpacity } from "react-native";
+import { Alert, Image, TouchableOpacity, ScrollView } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -114,15 +114,17 @@ const LoginInputScreen = () => {
 
   // handle social login
   const handleFacebookLogin = () => {
-    Alert.alert("Social Login");
+    Alert.alert("Warning", "Facebook login is not available at the moment.");
   };
+
   const handleGoogleLogin = () => {
     // Alert.alert("Social Login");
     // call promptAsync
     promptAsync();
   };
+
   const handleAppleLogin = () => {
-    Alert.alert("Social Login");
+    Alert.alert("Warning", "Apple login is not available at the moment.");
   };
 
   // handle user Login
@@ -163,6 +165,8 @@ const LoginInputScreen = () => {
         // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
         // End of Native Notify Code
 
+        // set isExplorer to false in async storage
+        await AsyncStorage.setItem("isExplorer", "false");
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
         setLoading(false);
@@ -181,114 +185,116 @@ const LoginInputScreen = () => {
   };
 
   return (
-    <Box width="100%" justifyContent="center" p={24}>
-      <CustomHeadings title="Welcome Back!" />
+    <ScrollView>
+      <Box width="100%" justifyContent="center" p={24}>
+        <CustomHeadings title="Welcome Back!" />
 
-      <Box>
-        <Text size="sm" style={{ color: "red", textAlign: "left" }}>
-          {loginMsg}
-        </Text>
-      </Box>
-
-      {/* form section */}
-      <VStack space="xl" mt={25}>
-        <CustomInput
-          placeholder="Enter your email"
-          type="email"
-          inputValue={email}
-          handleTextChange={handleEmailChange}
-          error={emailError}
-          keyboardType={"email-address"}
-        />
-        <PasswordInput
-          showPassword={showPassword}
-          handleState={handleState}
-          placeholder="Enter your password"
-          inputValue={password}
-          handleTextChange={handlePasswordChange}
-          error={passwordError}
-        />
-
-        {/* forgot password */}
-        <TouchableOpacity
-          onPress={() => navigationToScreen(navigation, "ForgotPasswordScreen")}
-        >
-          <Text
-            size="sm"
-            style={{ color: "#000", textAlign: "right", marginTop: 6 }}
-          >
-            Forgot Password?
+        <Box>
+          <Text size="sm" style={{ color: "red", textAlign: "left" }}>
+            {loginMsg}
           </Text>
-        </TouchableOpacity>
-
-        {/* horizontal line */}
-        <Box
-          mt={20}
-          width="100%"
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
-          <Text mb={5} size="sm" style={{ color: "#000", textAlign: "center" }}>
-            Or Login with
-          </Text>
-          <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
         </Box>
 
-        {/* social login */}
-        <Box
-          mt={38}
-          width="100%"
-          flexDirection="row"
-          justifyContent="space-around"
-          alignItems="center"
-        >
-          <TouchableOpacity onPress={handleFacebookLogin}>
-            <Image size="sm" source={require("../../assets/facebook.png")} />
-          </TouchableOpacity>
+        {/* form section */}
+        <VStack space="xl" mt={25}>
+          <CustomInput
+            placeholder="Enter your email"
+            type="email"
+            inputValue={email}
+            handleTextChange={handleEmailChange}
+            error={emailError}
+            keyboardType={"email-address"}
+          />
+          <PasswordInput
+            showPassword={showPassword}
+            handleState={handleState}
+            placeholder="Enter your password"
+            inputValue={password}
+            handleTextChange={handlePasswordChange}
+            error={passwordError}
+          />
 
-          <TouchableOpacity onPress={handleGoogleLogin}>
-            <Image size="sm" source={require("../../assets/google.png")} />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleAppleLogin}>
-            <Image size="sm" source={require("../../assets/apple.png")} />
-          </TouchableOpacity>
-        </Box>
-
-        {/* login button */}
-        <Box mt={60}>
-          {!isAllValid ? (
-            <CustomButton
-              label="Log in"
-              backgroundColor={secondaryColor}
-              color="#000"
-            />
-          ) : (
-            <Box>
-              {!loading ? (
-                <CustomButton label="Log in" buttonFunc={handleLogin} />
-              ) : (
-                <LoadingSpinner />
-              )}
-            </Box>
-          )}
-        </Box>
-
-        {/* signup text at the bottom*/}
-        <Box mt={20} mb={20}>
+          {/* forgot password */}
           <TouchableOpacity
-            onPress={() => navigationToScreen(navigation, "SignUpScreen")}
+            onPress={() => navigationToScreen(navigation, "ForgotPasswordScreen")}
           >
-            <Text size="sm" style={{ color: "#000", textAlign: "center" }}>
-              Don't have an account?{"   "}
-              <Text size="sm">Sign up</Text>
+            <Text
+              size="sm"
+              style={{ color: "#000", textAlign: "right", marginTop: 6 }}
+            >
+              Forgot Password?
             </Text>
           </TouchableOpacity>
-        </Box>
-      </VStack>
-    </Box>
+
+          {/* horizontal line */}
+          <Box
+            mt={20}
+            width="100%"
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
+            <Text mb={5} size="sm" style={{ color: "#000", textAlign: "center" }}>
+              Or Login with
+            </Text>
+            <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
+          </Box>
+
+          {/* social login */}
+          {/* <Box
+            mt={38}
+            width="100%"
+            flexDirection="row"
+            justifyContent="space-around"
+            alignItems="center"
+          >
+            <TouchableOpacity onPress={handleFacebookLogin}>
+              <Image size="sm" source={require("../../assets/facebook.png")} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleGoogleLogin}>
+              <Image size="sm" source={require("../../assets/google.png")} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleAppleLogin}>
+              <Image size="sm" source={require("../../assets/apple.png")} />
+            </TouchableOpacity>
+          </Box> */}
+
+          {/* login button */}
+          <Box mt={60}>
+            {!isAllValid ? (
+              <CustomButton
+                label="Log in"
+                backgroundColor={secondaryColor}
+                color="#000"
+              />
+            ) : (
+              <Box>
+                {!loading ? (
+                  <CustomButton label="Log in" buttonFunc={handleLogin} />
+                ) : (
+                  <LoadingSpinner />
+                )}
+              </Box>
+            )}
+          </Box>
+
+          {/* signup text at the bottom*/}
+          <Box mt={20} mb={20}>
+            <TouchableOpacity
+              onPress={() => navigationToScreen(navigation, "SignUpScreen")}
+            >
+              <Text size="sm" style={{ color: "#000", textAlign: "center" }}>
+                Don't have an account?{"   "}
+                <Text size="sm">Sign up</Text>
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        </VStack>
+      </Box>
+    </ScrollView>
   );
 };
 

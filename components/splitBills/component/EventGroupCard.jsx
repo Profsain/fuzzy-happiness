@@ -5,8 +5,11 @@ import {
   Modal,
   StyleSheet,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLogin } from "../../../context/LoginProvider";
 import AvatarStack from "./AvatarStack";
 import { primeryColor, secondaryColor } from "../../../utils/appstyle";
 import shortenValue from "../../../utils/shortenValue";
@@ -14,6 +17,8 @@ import CustomButton from "../../CustomButton";
 
 const EventGroupCard = ({
   eventName,
+  eventCreator,
+  totalPaidByMembers,
   eventDate,
   eventCost,
   currency,
@@ -21,13 +26,21 @@ const EventGroupCard = ({
   eventId,
   func,
 }) => {
+  const { token } = useLogin();
+  const baseUrl = process.env.BASE_URL;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // convert date to dd/mm/yyyy
   const date = new Date(eventDate);
   const formattedEventDate = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+
+  // Check if the event date has passed
+  const currentDate = new Date();
+  const isEventDatePassed = date < currentDate;
 
   // handle withdraw button
   const handleWithdraw = () => {
@@ -35,18 +48,61 @@ const EventGroupCard = ({
   };
 
   // handle modal actions
-   const handleSubmitRequest = () => {
-     if (bankName === "" || accountNumber === "") {
-       alert("Please fill in all the fields");
-       return;
-     }
-     setModalVisible(false);
-     alert(
-       `Withdraw request submitted for event: ${eventName}\nBank: ${bankName}\nAccount Number: ${accountNumber}`
-     );
-     // Further logic to handle withdraw request
-   };
+  const handleSubmitRequest = async () => {
+    setLoading(true);
+    // Ensure required fields are filled
+    if (!bankName || !accountNumber) {
+      Alert.alert("Validation Error", "Please fill in all the fields.");
+      setLoading(false);
+      return;
+    }
 
+    try {
+      const requestData = {
+        eventName,
+        creatorId: eventCreator,
+        eventCost,
+        totalPaidByMembers,
+        bankName,
+        accountNumber,
+        eventId,
+      };
+
+      // Show request data for debugging (if needed)
+      // Alert.alert("Request Data", JSON.stringify(requestData));
+
+      // Make the API request
+      const response = await fetch(`${baseUrl}/withdrawal/withdraw-request`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      // Alert.alert("Success", JSON.stringify(response));
+      if (response.ok) {
+        // Close the modal and show success alert
+        setLoading(false);
+        setBankName("");
+        setAccountNumber("");
+        setModalVisible(false);
+        Alert.alert("Success", "Withdrawal request submitted successfully.");
+      } else {
+        // Handle non-200 responses
+        const error = await response.json();
+        Alert.alert("Request", "Withdrawal request already submitted.");
+        setLoading(false);
+        setBankName("");
+        setAccountNumber("");
+        setModalVisible(false);
+      }
+    } catch (error) {
+      // Catch and handle any other errors
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
 
   const handleCancelRequest = () => {
     setModalVisible(false);
@@ -91,13 +147,24 @@ const EventGroupCard = ({
             </View>
 
             <View className="flex flex-row justify-between mt-4 items-center">
-              <CustomButton
-                width={90}
-                height={28}
-                label="Withdraw"
-                fSize={12}
-                buttonFunc={handleWithdraw}
-              />
+              {isEventDatePassed ? (
+                <CustomButton
+                  width={90}
+                  height={28}
+                  label="Withdraw"
+                  fSize={12}
+                />
+              ) : (
+                <CustomButton
+                  width={90}
+                  height={28}
+                  label="Can't Withdraw"
+                  fSize={12}
+                  backgroundColor={secondaryColor}
+                  buttonFunc={handleWithdraw} // to be removed
+                />
+              )}
+
               <AvatarStack hw={28} />
             </View>
           </View>
@@ -137,6 +204,7 @@ const EventGroupCard = ({
               keyboardType="numeric"
             />
 
+            {loading && <ActivityIndicator size="small" color={primeryColor} />}
             <View style={styles.modalButtons}>
               <CustomButton
                 width={120}

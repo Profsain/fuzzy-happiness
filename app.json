@@ -1,55 +1,72 @@
 {
   "expo": {
-    "name": "Splinx-Planet",
-    "scheme": "splinxplanet",
-    "platforms": ["ios", "android", "web"],
-    "slug": "Splinx-Planet",
-    "version": "1.0.0",
+    "name": "splinxApp",
+    "slug": "splinxApp",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/adaptive-icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#fdccbb"
-    },
     "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      "expo-localization",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Splinx-App to access your contacts."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.4",
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
+    "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
+    "platforms": ["ios", "android"],
+    "splash": {
+      "image": "./assets/splinxsplash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9784b"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/2e530c6c-3de4-4408-829e-f4e6cbb1b030"
+    },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.splinxapp",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSContactsUsageDescription": "Allow $(PRODUCT_NAME) to access your contacts."
-      },
-      "bundleIdentifier": "com.splinxplanet.app"
+        "NSContactsUsageDescription": "Allow Splinx-App to access your contacts."
+      }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#fdccbb"
-      },
+      "jsEngine": "jsc",
+      "versionCode": 2,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.splinxplanet.app",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.splinxapp",
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-localization",
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
-      [
-        "expo-contacts",
-        {
-          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
-        }
-      ]
-    ],
     "extra": {
       "eas": {
-        "projectId": "7e231064-1cb2-4292-ae51-6f305cb10e8c"
+        "projectId": "9b0d58cf-86fa-4e41-a65d-0e54e481576f"
       }
     }
   }

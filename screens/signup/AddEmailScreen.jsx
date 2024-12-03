@@ -10,11 +10,10 @@ import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import useReceivedData from "../../hooks/useReceivedData";
 
-const AddEmailScreen = ({ navigation }) => {
-  // received data from previous screen
-  const receivedData = useReceivedData();
-  // Alert.alert("Received Data", JSON.stringify(receivedData));
-  
+const AddEmailScreen = ({ route, navigation }) => {
+  // Extract data from the route params
+  const { phoneNumber } = route.params;
+
   const [isValid, setIsValid] = useState(false); // to check if all inputs are valid
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -36,10 +35,10 @@ const AddEmailScreen = ({ navigation }) => {
   const handleNext = () => {
     // send data to next screen
     const data = {
-      ...receivedData,
+      phoneNumber: phoneNumber,
       emailAddress: email,
     };
-    
+   
     navigationToScreen(navigation, "AddAddressScreen", data);
   };
 

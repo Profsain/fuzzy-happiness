@@ -84,7 +84,6 @@ const BillsHome = ({ navigation }) => {
     fetchEvents();
   }, [_id]);
 
-  // Alert.alert("User Events", JSON.stringify(userEvents));
   // handle activate wallet
   const handleActivateWallet = async () => {
     setProcessing(true);
@@ -143,6 +142,24 @@ const BillsHome = ({ navigation }) => {
     navigation.navigate("RequestPay");
   };
 
+  // filter event where userProfile._id is eventMember.user
+  const userEventBills = userEvents.filter((event) =>
+    event.eventMembers.some((member) => member.user === _id)
+  
+  );
+
+  // render recent bill item
+   const renderRecentBill = ({ item }) => (
+    <EventBillCard
+      eventName={item?.eventName}
+      eventDate={formatDate(item?.eventDate)}
+       splitCost={item?.eventMembers[0].splitCost}
+       status={item?.eventMembers[0].paymentStatus}
+      currency={currencySymbol}
+      // onPress={() => handleOpenBillDetails(item._id)}
+    />
+  );
+  
   // handle view all recent bills
   const handleRecentBills = () => {
     Alert.alert("View all recent bills");
@@ -276,11 +293,10 @@ const BillsHome = ({ navigation }) => {
   // handle open single bill details
   const handleOpenBillDetails = (billId) => {
     // find the bill with the billId
-    const event = userEvents.find((event) => event._id === billId);
+    const eventDetails = userEvents.find((event) => event._id === billId);
 
-    Alert.alert("Event", JSON.stringify(event));
     // navigate to BillsDetails screen with the event data
-    // navigation.navigate("BillsDetails", { event });
+    navigation.navigate("BillsDetails", { eventDetails });
   }
 
   // render event item function for FlatList
@@ -377,7 +393,7 @@ const BillsHome = ({ navigation }) => {
           </View>
 
           {/* group bills card flatlist */}
-          <View >
+          <View>
             {loadingEvents ? (
               <ActivityIndicator size="small" color={primeryColor} />
             ) : (
@@ -385,13 +401,11 @@ const BillsHome = ({ navigation }) => {
                 data={userEvents}
                 renderItem={renderEventGroup}
                 keyExtractor={(item) => item?._id.toString()}
-                horizontal={true} 
-                showsHorizontalScrollIndicator={false} 
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
               />
             )}
           </View>
-          {/* <GroupBillsCard func={() => navigation.navigate("BillsDetails")} />
-          <GroupBillsCard func={() => navigation.navigate("BillsDetails")} /> */}
         </View>
 
         {/* friends own section */}
@@ -433,21 +447,34 @@ const BillsHome = ({ navigation }) => {
         <View>
           <HorizontalTitle
             title="Recent Bills"
-            action="View all"
-            func={handleRecentBills}
+            action=""
+            // func={handleRecentBills}
           />
-          <View>
-            <EventBillCard />
-            <EventBillCard />
+          <View className="mb-4 pb-2">
+            {userEventBills?.length === 0 && (
+              <Text className="text-center text-sm text-slate-500">
+                You have no recent bills
+              </Text>
+            )}
+            <FlatList
+              data={userEventBills}
+              renderItem={renderRecentBill}
+              keyExtractor={(item) => item?._id.toString()}
+            />
           </View>
         </View>
 
         {/* recent money request section */}
         <View>
-          <HorizontalTitle title="Recent Request" />
+          <HorizontalTitle title="Recent Request" action="" />
           {/* Render the FlatList only if not loading */}
           {!loading && (
-            <View className="my-8">
+            <View className="my-4">
+              {requestBills?.length === 0 && (
+                <Text className="text-center text-sm text-slate-500">
+                  You have no recent request
+                </Text>
+              )}
               <FlatList
                 data={requestBills}
                 renderItem={renderItem}

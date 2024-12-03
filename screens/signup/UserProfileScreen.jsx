@@ -64,7 +64,6 @@ const UserProfileScreen = () => {
 
   const handleInterest = (id) => {
     handleListUpdate(id, interestData, setInterestList);
-    Alert.alert("Interest", JSON.stringify(interestList));
   };
 
   const handleTag = (id) => {
@@ -181,7 +180,6 @@ const UserProfileScreen = () => {
         interestList,
         tagList,
       };
-      Alert.alert("Data", JSON.stringify(data));
 
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -197,9 +195,13 @@ const UserProfileScreen = () => {
         `${baseUrl}/auth/register`,
         requestOptions
       );
+
       if (!response.ok) {
-        Alert.alert("Error", "Registration failed");
+        Alert.alert("Error", JSON.stringify(response.message));
+        setSubmitting(false);
+        return;
       }
+
       const result = await response.text();
       setSubmitting(false);
       navigation.replace("InviteFriendsScreen");

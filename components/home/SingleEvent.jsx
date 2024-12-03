@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
+import useExplorerStatus from "../../hooks/useExplorerStatus";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 // icons
@@ -20,10 +21,12 @@ import handleSocialShare from "../../utils/socialSharefunc";
 import { Feather } from "@expo/vector-icons";
 import { secondBgColor } from "../../utils/appstyle";
 
-const SingleEvent = ({navigation, route}) => {
+const SingleEvent = ({ navigation, route }) => {
   // get login user from context
   const { userProfile } = useLogin();
   const { _id, emailAddress } = userProfile;
+
+  const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
 
   // extract event details
   const { eventDetails } = route.params;
@@ -57,7 +60,26 @@ const SingleEvent = ({navigation, route}) => {
 
   // handle event registration
   const handleRegistration = () => {
-    navigation.navigate("EventRegistration", { eventDetails });
+    // check if user is explorer
+    if (isExplorer === "true") {
+      Alert.alert(
+        "Explorer",
+        "You are not allowed to create an event. Login to create an event",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Back",
+            onPress: handleSingleBack,
+          },
+        ]
+      );
+      return;
+    } else {
+      navigation.navigate("EventRegistration", { eventDetails });
+    }
   };
 
   // check if event is over

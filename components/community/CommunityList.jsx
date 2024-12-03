@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { useFocusEffect } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar } from "../home";
 import { primeryColor } from "../../utils/appstyle";
@@ -15,42 +15,16 @@ import { useLogin } from "../../context/LoginProvider";
 import LoadingSpinner from "../LoadingSpinner";
 
 const CommunityList = ({ navigation }) => {
-
-  // base url
   const baseUrl = process.env.BASE_URL;
 
-  // extract from useLogin context
   const { userProfile, token, communities, setCommunities, setAllUsers } =
     useLogin();
   const userId = userProfile._id;
 
-  // fetch all users and update allUsers context
-  const fetchAllUsers = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/user/get-all-users`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      // update allUsers context
-      setAllUsers(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
-
-  // fetch all communities
-  const [communitiesList, setCommunitiesList] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchAllCommunities = async () => {
+  // Fetch all communities and store them
+  const fetchAllCommunities = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/community/`, {
@@ -62,42 +36,37 @@ const CommunityList = ({ navigation }) => {
       });
 
       const data = await response.json();
-      // Sort communities by createdAt field
       const sortedData = data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      setLoading(false);
-      // update communities context
-      setCommunities(sortedData);
+      setCommunities(sortedData); // Update communities in context
     } catch (error) {
       console.log(error);
+    } finally {
       setLoading(false);
     }
-  };
+  }, [baseUrl, token, setCommunities]);
 
-  // check if communities is empty and fetch all communities
+  // Fetch communities only if the list is empty
   useEffect(() => {
     if (communities.length === 0) {
       fetchAllCommunities();
-    } else {
-      setCommunitiesList(communities);
     }
-  }, []);
+  }, [communities.length, fetchAllCommunities]);
 
-  // Fetch all posts when the screen comes into focus
+  // Refetch communities when the screen comes into focus
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchAllCommunities();
-    }, [])
+    }, [fetchAllCommunities])
   );
 
-  // Filter communities based on whether the user created them or belongs to them
-  const filteredCommunities = communities.filter((community) => {
-    return (
+  // Filter communities for the current user
+  const filteredCommunities = communities.filter(
+    (community) =>
       community.communityCreator === userId ||
       community.communityMembers.includes(userId)
-    );
-  });
+  );
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -108,48 +77,42 @@ const CommunityList = ({ navigation }) => {
           icon=""
           icon2={<AntDesign name="search1" size={24} color="black" />}
         />
-        {/* create community full button */}
+        {/* create community button */}
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateCommunity")}
           style={{ backgroundColor: primeryColor }}
           className="flex justify-center items-center flex-row p-3 rounded-lg shadow-lg my-4 "
         >
           <AntDesign name="pluscircleo" size={26} color="white" />
-          <View className="">
-            <Text className="ml-6 font-medium text-white">
-              Create New Community
-            </Text>
-          </View>
+          <Text className="ml-6 font-medium text-white">
+            Create New Community
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* community list */}
-      {loading && <LoadingSpinner />}
-      {/* use FlatList to render Communities */}
-      {!loading && filteredCommunities.length === 0 && (
+      {loading ? (
+        <LoadingSpinner />
+      ) : filteredCommunities.length === 0 ? (
         <View>
           <Text className="text-center text-gray-500 text-lg">
             No community found
           </Text>
-          {/* reload community */}
           <TouchableOpacity
             onPress={fetchAllCommunities}
             className="flex justify-center items-center flex-row p-3 rounded-lg shadow-lg my-4 bg-slate-300 w-32 mx-auto"
           >
             <AntDesign name="reload1" size={26} color="white" />
-            <View className="">
-              <Text className="ml-2 font-medium text-white">Reload</Text>
-            </View>
+            <Text className="ml-2 font-medium text-white">Reload</Text>
           </TouchableOpacity>
         </View>
+      ) : (
+        <FlatList
+          data={filteredCommunities}
+          renderItem={({ item }) => <CommunityCard community={item} />}
+          keyExtractor={(item) => item._id} // No need to use toString(), _id is unique
+        />
       )}
-
-      <FlatList
-        data={filteredCommunities}
-        renderItem={({ item }) => <CommunityCard community={item} />}
-        keyExtractor={(item) => item._id.toString()} // Use _id instead of id for MongoDB ObjectIDs
-        vertical={true}
-      />
     </SafeAreaView>
   );
 };

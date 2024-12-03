@@ -1,4 +1,4 @@
-// Function to calculate receivedAmount and pendingAmount
+ // Function to calculate receivedAmount and pendingAmount
 const calculateRequestMoney = (moneyRequests) => {
   let receivedAmount = 0;
   let pendingAmount = 0;

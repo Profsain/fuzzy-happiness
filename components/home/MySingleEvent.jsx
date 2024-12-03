@@ -44,13 +44,6 @@ const MySingleEvent = ({
     return () => backHandler.remove();
   }, []);
 
-  // const handleSingleBack = (setOpenSingleEvent, setOpenEventRegister) => {
-  //   setOpenSingleEvent(false);
-  //   setOpenEventRegister(false);
-  // };
-  // // use custom device back btn hook
-  // useBackHandler;
-
   const headlineText = `${event.eventCategory.substring(0, 20)} Event`;
   const inDays = `In ${daysBetweenDates(event.eventDate)} days`;
 
