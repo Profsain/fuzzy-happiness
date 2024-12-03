@@ -2,13 +2,11 @@
   "expo": {
     "name": "splinxApp",
     "slug": "splinxApp",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-localization",
@@ -34,10 +32,7 @@
       ]
     ],
     "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "splash": {
       "image": "./assets/splinxsplash.png",
       "resizeMode": "contain",
@@ -57,7 +52,7 @@
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 1,
+      "versionCode": 2,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
