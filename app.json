@@ -52,7 +52,7 @@
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
