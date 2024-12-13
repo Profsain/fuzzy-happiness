@@ -15,18 +15,36 @@ const BillsGroup = ({ route, navigation }) => {
 
   // Sort userEvents based on createdAt date
   const [sortedEvents, setSortedEvents] = useState([]);
+  const [eventDetails, setEventDetails] = useState({});
 
   useEffect(() => {
     const sorted = userEvents.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      (a, b) => new Date(b.eventDate) - new Date(a.eventDate)
     );
     setSortedEvents(sorted);
   }, [userEvents]);
 
   // handle open group details
-  const handleOpenGroupDetails = () => {
-    // navigate to group details screen
-    navigation.navigate("BillsDetails");
+  const handleOpenGroupDetails = (id) => {
+    // find the event details
+    const event = userEvents.find((event) => event._id == id);
+    setEventDetails(event);
+   
+    if (event) {
+      // Check if the event date has passed
+      const currentDate = new Date();
+      const eventDate = new Date(event.eventDate);
+      const isEventDatePassed = eventDate < currentDate;
+      // Navigate to group details screen with event details
+      navigation.navigate("BillsDetails", {
+        eventDetails,
+        isEventDatePassed,
+      });
+    } else {
+      Alert.alert("Error", "Event not found");
+    }
+    // navigate to group details screen with event details
+    // navigation.navigate("BillsDetails", {  });
   };
 
   // render event item
@@ -38,6 +56,8 @@ const BillsGroup = ({ route, navigation }) => {
       eventDate={item.eventDate}
       eventCost={item.eventCost}
       eventLocation={item.eventLocation}
+      totalPaidByMembers={item.totalPaidByMembers}
+      eventCreator={item.eventCreator}
       func={() => handleOpenGroupDetails(item._id)}
     />
   );
@@ -60,7 +80,7 @@ const BillsGroup = ({ route, navigation }) => {
                 eventDate={event.eventDate}
                 eventCost={event.eventCost}
                 eventLocation={event.eventLocation}
-                func={handleOpenGroupDetails}
+                func={() => handleOpenGroupDetails(event._id)}
               />
             ))}
           </View>

@@ -1,25 +1,10 @@
 {
   "build": {
-    "preview": {
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "preview2": {
-      "android": {
-        "gradleCommand": ":app:assembleRelease"
-      }
-    },
-    "preview3": {
-      "developmentClient": true
-    },
-    "preview4": {
-      "distribution": "internal"
-    },
     "production": {
       "env": {
         "BASE_URL": "https://splinx-server.onrender.com",
         "FW_MERCHANT_ID": "200497545",
+        "FW_PUBLIC_KEY": "FLWPUBK_TEST-c4ca2c323db9052bb0ab49fdd278aec9-X",
         "GOOGLE_MAP_API_KEY": "AIzaSyC6uFJWZ5jXScdhqYL0McBKAOt8zRurpO8",
         "GOOGLE_LOGIN_CLIENT_ID": "160598081089-7oikguh093k9pa4pvi7g52g90flv17a4.apps.googleusercontent.com",
         "GOOGLE_LOGIN_IOS_CLIENT_ID": "160598081089-kj7fs0ef2gg19nf90v7q03u4ujabtsmt.apps.googleusercontent.com",
@@ -27,14 +12,29 @@
         "EXCHANGE_RATE_API_KEY": "87617310c21dddb699fcc96a",
         "APP_DOWNLOAD_URL": "https://google.com",
         "NATIVE_NOTIFY_TOKEN": "eDAGXfxY9yLdrWZHZD7Ar4"
-      }
+      },
+      "channel": "production"
     },
+    "preview": {
+      "distribution": "internal"
+    },
+
     "splinxapptest": {
       "android": {
         "buildType": "apk"
       },
       "ios": {
         "simulator": true
+      },
+      "channel": "splinxapptest"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "splinxplanet@icloud.com",
+        "ascAppId": "6737458548",
+        "appleTeamId": "UPVF2UWSJ2"
       }
     }
   }

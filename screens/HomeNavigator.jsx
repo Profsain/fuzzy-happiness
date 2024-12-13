@@ -1,7 +1,6 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-
 import {
   HomeScreen,
   AllEvents,
@@ -11,6 +10,9 @@ import {
   SearchResult,
   EventRegistration,
 } from "../components/home";
+// import MembershipScreen from "../components/profileSettings/MembershipScreen";
+import { MembershipScreen, SubscriptionScreen } from "../components/profileSettings";
+import PushNotification from "../components/profileSettings/PushNotification";
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -56,6 +58,24 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="SearchResult"
         component={SearchResult}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="MembershipScreen"
+        component={MembershipScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="SubscriptionScreen"
+        component={SubscriptionScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="PushNotification"
+        component={PushNotification}
         options={{ headerShown: false }}
         navigation={navigation}
       />

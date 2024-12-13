@@ -4,11 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import {
-  OnboardingScreen,
-  LoginScreen,
-  SignUpScreen,
-} from "../screens";
+import { OnboardingScreen, LoginScreen, SignUpScreen } from "../screens";
 import { ForgotPasswordScreen, LoginUser } from "../screens/login";
 import EnterNewPasswordScreen from "../screens/login/EnterNewPasswordScreen";
 import {
@@ -22,29 +18,42 @@ import {
   TokenScreen,
   UserProfileScreen,
 } from "../screens/signup";
+import LoadingSpinner from "../components/LoadingSpinner";
 import TabNavigation from "./TabNavigation";
+import { View } from "react-native";;
 
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
   const navigation = useNavigation();
-  const [hasOnboarded, setHasOnboarded] = useState(false);
+  const [hasOnboarded, setHasOnboarded] = useState(null);
 
   useEffect(() => {
-    AsyncStorage.getItem("onboarded").then((value) => {
-      if (value === null) {
-        AsyncStorage.setItem("onboarded", "true");
-        setHasOnboarded(true);
-      } else {
-        setHasOnboarded(true);
-      }
-    });
+    const checkOnboardingStatus = async () => {
+      const value = await AsyncStorage.getItem("onboarded");
+      setHasOnboarded(value !== null); // If null, show onboarding; else, skip it
+    };
+    checkOnboardingStatus();
   }, []);
+
+  const handleOnboardingComplete = async () => {
+    await AsyncStorage.setItem("onboarded", "true");
+    setHasOnboarded(true);
+  };
 
   const handleGoBack = () => {
     navigation.goBack();
   };
 
+  // Show loading spinner at the center while checking for onboarding status
+  if (hasOnboarded === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <LoadingSpinner text="" />
+      </View>
+    );
+  }
+  
   return (
     <Stack.Navigator>
       {hasOnboarded && (
@@ -52,14 +61,9 @@ const AuthStack = () => {
           options={{ headerShown: false }}
           name="OnboardingScreen"
           component={OnboardingScreen}
+          initialParams={{ onComplete: handleOnboardingComplete }}
         />
       )}
-
-      {/* <Stack.Screen
-        options={{ headerShown: false }}
-        name="OnboardingScreen"
-        component={OnboardingScreen}
-      /> */}
 
       <Stack.Screen
         options={{ headerShown: false }}
@@ -78,6 +82,7 @@ const AuthStack = () => {
         }}
         name="TabNavigation"
         component={TabNavigation}
+        navigation={navigation}
       />
 
       <Stack.Screen

@@ -7,23 +7,23 @@ import {
   RadioIcon,
   CircleIcon,
 } from "@gluestack-ui/themed";
-import { View, Text, SafeAreaView, StyleSheet, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
-// mock data
-import subscriptionData from "./subscriptionData";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
 
 const MembershipScreen = ({ navigation }) => {
-  const { userProfile, token } = useLogin();
+  const { userProfile, subscriptionPlans, isLocked } = useLogin();
+  // Alert.alert("Locked", isLocked ? "Locked" : "Not Locked");
+
   const { currencySymbol, currency, subscriptionPlan, isSubscriber } = userProfile;
+  const [subscriptionData, setSubscriptionData] = useState(subscriptionPlans);
   const [values, setValues] = useState(subscriptionData[0].type); // Set initial value to the first subscription type
   const [convertedAmounts, setConvertedAmounts] = useState({});
 
-  // Alert.alert("Subscription", JSON.stringify(subscriptionPlan));
   useEffect(() => {
     const fetchExchangeRates = async () => {
       const rates = {};
@@ -34,7 +34,7 @@ const MembershipScreen = ({ navigation }) => {
             "USD",
             currency
           );
-          rates[item.id] = Math.ceil(convertedAmount) ;
+          rates[item._id] = Math.ceil(convertedAmount) ;
         }
       }
       setConvertedAmounts(rates);
@@ -44,6 +44,11 @@ const MembershipScreen = ({ navigation }) => {
 
   // handle back button
   const handleBackBtn = () => {
+    // isLocked return
+    if (isLocked) {
+      Alert.alert("Subscription", "You are not allowed to access this screen");
+      return;
+    }
     // navigate back
     navigation.goBack();
   };
@@ -55,6 +60,12 @@ const MembershipScreen = ({ navigation }) => {
       (item) => item.planName === values
     );
 
+    // check subscription data
+    if (!subscription) {
+      Alert.alert("Subscription", "Please select a subscription plan");
+      return;
+    }
+    
     // navigate to subscription screen and pass data
     navigation.navigate("SubscriptionScreen", { subscription });
   };
@@ -63,11 +74,11 @@ const MembershipScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
 
-      <View className="mt-16">
+      <ScrollView className="mt-16">
         <RadioGroup value={values} onChange={setValues}>
           <VStack space="sm">
             {subscriptionData.map((item) => (
-              <Radio key={item.id} value={item.planName}>
+              <Radio key={item._id} value={item.planName}>
                 <View
                   style={styles.radioItem}
                   className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
@@ -90,9 +101,9 @@ const MembershipScreen = ({ navigation }) => {
                     <Text className="font-medium text-lg">{item.title}</Text>
                     <Text>{item.description}</Text>
                     <Text>
-                      {currency !== "USD" && convertedAmounts[item.id]
+                      {currency !== "USD" && convertedAmounts[item._id]
                         ? `${currencySymbol || ""} ${convertedAmounts[
-                            item.id
+                            item._id
                           ].toFixed(2)}`
                         : null}
                     </Text>
@@ -106,10 +117,10 @@ const MembershipScreen = ({ navigation }) => {
           </VStack>
         </RadioGroup>
 
-        <View className="mt-28">
+        <View className="my-6">
           <CustomButton label="Subscribe Now" buttonFunc={handleSubscription} />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

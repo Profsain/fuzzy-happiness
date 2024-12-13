@@ -117,7 +117,6 @@ const AddAddressScreen = ({ navigation }) => {
       currency,
       currencySymbol,
     };
-    // Alert.alert("Data", JSON.stringify(data));
     navigationToScreen(navigation, "BioScreen", data);
   };
 

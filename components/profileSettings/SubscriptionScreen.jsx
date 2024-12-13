@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  TextInput,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
@@ -27,7 +28,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
   const fwPublicKey = process.env.FW_PUBLIC_KEY;
 
   // extract from useLogin context
-  const { userProfile, token } = useLogin();
+  const { userProfile, token, promoCodes } = useLogin();
   const {
     emailAddress,
     firstName,
@@ -46,6 +47,8 @@ const SubscriptionScreen = ({ navigation, route }) => {
   const [processing, setProcessing] = useState(false);
   const [webViewVisible, setWebViewVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [promoCode, setPromoCode] = useState(null);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
 
   // check if currency is not USD and convert amount
   useEffect(() => {
@@ -121,7 +124,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
       // update isSubscriber and subscriptionPlan
       const updateData = {
         isSubscriber: true,
-        subscriptionPlan: planData.data.name
+        subscriptionPlan: planData.data.name,
       };
 
       const response = await fetch(
@@ -236,9 +239,10 @@ const SubscriptionScreen = ({ navigation, route }) => {
     <body>
       <form>
         <div class="order-details">
-          Complete your payment to subscribe to: ${
-            planData?.data?.name
-          }
+          Complete your payment to subscribe to: ${planData?.data?.name}
+        </div>
+        <div class="order-details">
+         Amount to be paid : ${currencySymbol} ${convertedAmount || amount}
         </div>
         <button type="button" id="start-payment-button" onclick="makePayment()">Pay Now with Flutterwave</button>
       </form>
@@ -278,9 +282,55 @@ const SubscriptionScreen = ({ navigation, route }) => {
   </html>
 `;
 
+  // Handle apply promo code
+  const handleApplyPromoCode = async () => {
+    // Check if the promoCode and amount are valid
+    if (!promoCode) {
+      Alert.alert("Please enter a promo code");
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      Alert.alert("Invalid amount");
+      return;
+    }
+
+    // Find the matching promo code from the available promo codes
+    const promo = promoCodes.find((item) => item.promoCode === promoCode);
+
+    // Check if the promo code exists and is active
+    if (!promo) {
+      Alert.alert("Invalid promo code");
+      return;
+    }
+
+    if (promo.status !== "active") {
+      Alert.alert("This promo code is inactive");
+      return;
+    }
+
+    // Apply the promo code and calculate the new discounted amount
+    const discount = promo.discountPercent;
+    const newAmount = amount - (amount * discount) / 100;
+
+    // convert amount if currency is not USD
+    if (currency !== "USD") {
+      const convertedAmount = await convertCurrency(newAmount, "USD", currency);
+      setConvertedAmount(Math.ceil(convertedAmount));
+      setIsPromoApplied(true);
+    } else {
+      setConvertedAmount(newAmount);
+      setIsPromoApplied(true);
+    }
+    setPromoCode(null);
+
+    Alert.alert("Promo code applied successfully!", "Discount applied");
+  };
+
   // handle subscription
   const handleSubscription = async () => {
     setProcessing(true);
+    setIsPromoApplied(false);
     try {
       //check activeTab is Baller
       // pass planName, amount, interval direct
@@ -295,10 +345,9 @@ const SubscriptionScreen = ({ navigation, route }) => {
         const interval = "monthly";
         plan = await handleCreatePlan(planName, amount, interval);
       }
-    
+
       if (plan && plan.data.id) {
         setWebViewVisible(true);
-
       } else {
         setProcessing(false);
       }
@@ -338,9 +387,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
                 styles.tabText,
                 activeTab === "Ballers" && styles.activeTabText,
               ]}
-            >
-              
-            </Text>
+            ></Text>
           </TouchableOpacity>
         </View>
 
@@ -355,7 +402,8 @@ const SubscriptionScreen = ({ navigation, route }) => {
                 <Text className="text-xl font-bold text-white">{title}</Text>
                 {convertedAmount ? (
                   <Text className="text-xs font-bold text-white">
-                    {currencySymbol}{convertedAmount?.toFixed(2)}/month
+                    {currencySymbol}
+                    {convertedAmount?.toFixed(2)}/month
                   </Text>
                 ) : (
                   <Text className="text-xs font-bold text-white">{price}</Text>
@@ -412,6 +460,30 @@ const SubscriptionScreen = ({ navigation, route }) => {
                   </View>
                 </View>
 
+                {/* promo code input and button */}
+                <View className="my-8">
+                  <Text className="text-sm font-bold">Promo Code</Text>
+                  {/* new price after promo code */}
+                  {isPromoApplied && (
+                    <Text className="text-sm font-bold my-2">
+                      {currencySymbol} {convertedAmount}
+                    </Text>
+                  )}
+                  <View className="flex flex-row items-center">
+                    <TextInput
+                      className="border-2 border-gray-300 rounded-lg p-2 w-3/4 mr-1"
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChangeText={(text) => setPromoCode(text)}
+                    />
+                    <CustomButton
+                      label="Apply"
+                      width={70}
+                      mt={4}
+                      buttonFunc={handleApplyPromoCode}
+                    />
+                  </View>
+                </View>
                 {/* subscribe button */}
                 <View className="mt-8 mb-16">
                   {/* show loading spinner */}
@@ -495,6 +567,25 @@ const SubscriptionScreen = ({ navigation, route }) => {
                       Get early access to beta features and product testing,
                       allowing Ballers to influence the direction of the app.
                     </Text>
+                  </View>
+                </View>
+
+                {/* promo code input and button */}
+                <View className="my-8">
+                  <Text className="text-sm font-bold">Promo Code</Text>
+                  <View className="flex flex-row items-center">
+                    <TextInput
+                      className="border-2 border-gray-300 rounded-lg p-2 w-3/4 mr-2"
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChangeText={(text) => setPromoCode(text)}
+                    />
+                    <CustomButton
+                      label="Apply"
+                      width={60}
+                      mt={4}
+                      buttonFunc={handleApplyPromoCode}
+                    />
                   </View>
                 </View>
 

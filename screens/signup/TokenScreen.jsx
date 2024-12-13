@@ -6,12 +6,17 @@ import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { TouchableOpacity, Alert } from "react-native";
+import { TouchableOpacity, Alert, StyleSheet, Platform } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from "react-native-confirmation-code-field";
 
 const TokenScreen = () => {
-  
   // data from signUp screen
   const receivedData = useReceivedData();
   const phoneNumber = receivedData.phone;
@@ -34,9 +39,11 @@ const TokenScreen = () => {
         const otp = await getItem("otp");
         if (otp) {
           Alert.alert("Splinx OTP", `Your OTP is ${otp}`);
-          setAutoFillOtp(otp);
+
+          //setting state which doesn't exist
+          //setAutoFillOtp(otp);
         }
-      } catch (error) { 
+      } catch (error) {
         console.log(error);
       }
     };
@@ -60,8 +67,6 @@ const TokenScreen = () => {
     // Cleanup the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
-
-  // Alert.alert("Otp value", JSON.stringify(tokenValue));
 
   const codeInputRef = useRef(null);
 
@@ -92,11 +97,12 @@ const TokenScreen = () => {
       const otp = await getItem("otp");
 
       if (otp == tokenValue) {
-        const data = {
-          phoneNumber: phoneNumber,
-        };
+        // const data = {
+        //   phoneNumber: phoneNumber,
+        // };
 
-        navigation.replace("AddEmailScreen", data);
+        // Alert.alert("Token", JSON.stringify(data));
+        navigation.replace("AddEmailScreen", { phoneNumber: phoneNumber });
 
         // remove otp
         await removeItem("otp");
@@ -114,8 +120,17 @@ const TokenScreen = () => {
   // handle token resend
   const handleResendToken = () => {
     // navigate back to SignUpScreen
-     navigationToScreen(navigation, "SignUpScreen");
+    navigationToScreen(navigation, "SignUpScreen");
   };
+
+  const [value, setValue] = useState("");
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
+
+  const CELL_COUNT = 6;
 
   return (
     <Box width="100%" justifyContent="center" p={24}>
@@ -128,59 +143,80 @@ const TokenScreen = () => {
           your account.
         </Text>
 
-        <Box width="100%">
-          <CodeInput
-            ref={codeInputRef}
-            codeLength={6}
-            // secureTextEntry
-            borderType={"underline"}
-            space={8}
-            size={40}
-            activeColor="#BDBDBD"
-            inactiveColor="#E5E5E5"
-            autoFocus={false}
-            inputPosition="center"
-            codeInputStyle={{
-              fontSize: 18,
-              fontWeight: "bold",
-              borderWidth: 1.5,
-              borderRadius: 5,
-              backgroundColor: "#E5E5E5",
-            }}
-            onFulfill={(code) => handleTokenValue(code)}
-          />
-          {error && (
-            <Text mt={48} pl={16} size="sm" style={{ color: "#ea9977" }}>
-              {error}
-            </Text>
-          )}
+        {
+          //this package is too old and had comptibility issues
+          /* <CodeInput
+          codeLength={6}
+          // secureTextEntry
+          borderType={"underline"}
+          space={8}
+          size={40}
+          activeColor="#BDBDBD"
+          inactiveColor="#E5E5E5"
+          autoFocus={false}
+          inputPosition="center"
+          codeInputStyle={{
+            fontSize: 18,
+            fontWeight: "bold",
+            borderWidth: 1.5,
+            borderRadius: 5,
+            backgroundColor: "#E5E5E5",
+          }}
+          onFulfill={(code) => handleTokenValue(code)}
+        /> */
 
-          {/* resend token after 1 minute */}
-          <Box mt={mt}>
-            <Text
-              pl={16}
-              size="sm"
-              style={{ color: "#000", textAlign: "left" }}
-            >
-              Didn't receive the code?{" "}
-              {!showResend ? (
-                <Text>Resend in 0:{timer}</Text>
-              ) : (
-                <Text
-                  size="sm"
-                  style={{ color: "#000", textAlign: "center" }}
-                  onPress={handleResendToken}
-                >
-                  Resend
-                </Text>
-              )}
-            </Text>
-          </Box>
+          <CodeField
+            ref={ref}
+            {...props}
+            value={tokenValue}
+            onChangeText={handleTokenValue}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete={Platform.select({
+              android: "sms-otp",
+              default: "one-time-code",
+            })}
+            testID="my-code-input"
+            renderCell={({ index, symbol, isFocused }) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}
+              >
+                {symbol || (isFocused ? <Cursor /> : null)}
+              </Text>
+            )}
+          />
+        }
+        {error && (
+          <Text mt={48} pl={16} size="sm" style={{ color: "#ea9977" }}>
+            {error}
+          </Text>
+        )}
+
+        {/* resend token after 1 minute */}
+        <Box mt={mt}>
+          <Text pl={16} size="sm" style={{ color: "#000", textAlign: "left" }}>
+            Didn't receive the code?{" "}
+            {!showResend ? (
+              <Text>Resend in 0:{timer}</Text>
+            ) : (
+              <Text
+                size="sm"
+                style={{ color: "#000", textAlign: "center" }}
+                onPress={handleResendToken}
+              >
+                Resend
+              </Text>
+            )}
+          </Text>
         </Box>
 
         {/* next button */}
         <Box mt={110}>
-          {processing && (<LoadingSpinner />)}
+          {processing && <LoadingSpinner />}
           {!isValid ? (
             <CustomButton
               label="Next"
@@ -216,5 +252,23 @@ const TokenScreen = () => {
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  root: { flex: 1, padding: 20 },
+  title: { textAlign: "center", fontSize: 30 },
+  codeFieldRoot: { marginTop: 20 },
+  cell: {
+    width: 40,
+    height: 40,
+    lineHeight: 38,
+    fontSize: 24,
+    borderWidth: 2,
+    borderColor: "#00000030",
+    textAlign: "center",
+  },
+  focusCell: {
+    borderColor: "#000",
+  },
+});
 
 export default TokenScreen;

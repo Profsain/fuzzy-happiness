@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Share } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
@@ -58,7 +58,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
           setIsLiked(false);
         }
       } else {
-       throw new Error("Error fetching post likes");
+        throw new Error("Error fetching post likes");
       }
     } catch (error) {
       throw new Error("Error fetching post likes catch:", error);
@@ -96,6 +96,24 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
     } catch (error) {
       console.log("Error liking post catch:", error);
       // Handle any network or other errors
+    }
+  };
+
+  // handle share post
+  const handleSharePost = async () => {
+    try {
+      const result = await Share.share({
+        message: `${post.postText}\n\nCheck out this post!`,
+        url: post.postImage, // Share image if available
+        title: "Share Post",
+      });
+      if (result.action === Share.sharedAction) {
+        console.log("Post shared successfully.");
+      } else if (result.action === Share.dismissedAction) {
+        console.log("Post share dismissed.");
+      }
+    } catch (error) {
+      console.log("Error sharing post:", error);
     }
   };
 
@@ -154,10 +172,13 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
             </TouchableOpacity>
           )}
 
-          <View className="flex flex-row items-center">
+          <TouchableOpacity
+            onPress={handleSharePost}
+            className="flex flex-row items-center"
+          >
             <FontAwesome5 name="share-square" size={12} color="black" />
             <Text className="pl-1 font-medium text-xs">Share</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
