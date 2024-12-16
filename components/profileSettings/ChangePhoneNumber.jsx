@@ -2,15 +2,15 @@ import React, { useState, useRef } from "react";
 // import "firebase/compat/auth";
 import axios from "axios";
 import { useLogin } from "../../context/LoginProvider";
-import { setItem } from "../../utils/asyncStorage";
+import { setItem } from "../../navigation/utils/asyncStorage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
-import PhoneInput from "react-native-phone-number-input";
-import { secondaryColor } from "../../utils/appstyle";
-import navigationToScreen from "../../utils/navigationUtil";
+// import PhoneInput from "react-native-phone-number-input";
+import { secondaryColor } from "../../navigation/utils/appstyle";
+import navigationToScreen from "../../navigation/utils/navigationUtil";
 import { View, TouchableOpacity, Alert } from "react-native";
 import { BackTopBar } from "../../components/home";
-import sendPushNotification from "../../utils/sendPushNotification";
+import sendPushNotification from "../../navigation/utils/sendPushNotification";
 
 const ChangePhoneNumber = ({ navigation }) => {
   // extract context
@@ -73,7 +73,6 @@ const ChangePhoneNumber = ({ navigation }) => {
       html: message,
     };
 
-    
     try {
       const response = await fetch(`${baseUrl}/email/send-email`, {
         method: "POST",
@@ -87,8 +86,12 @@ const ChangePhoneNumber = ({ navigation }) => {
       const result = await response.json();
       if (response.ok) {
         // send otp to phone
-        sendPushNotification(userProfile._id, "Splinx Planet", `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`);
-        
+        sendPushNotification(
+          userProfile._id,
+          "Splinx Planet",
+          `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
+        );
+
         setLoading(false);
         navigationToScreen(navigation, "VerifyNumber", {
           phoneNumber,
@@ -120,7 +123,7 @@ const ChangePhoneNumber = ({ navigation }) => {
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter new mobile number to get a OTP.</Text>
 
-        <Box width="100%">
+        {/* <Box width="100%">
           <PhoneInput
             ref={phoneInput}
             defaultValue={phoneValue}
@@ -138,7 +141,7 @@ const ChangePhoneNumber = ({ navigation }) => {
               {error}
             </Text>
           )}
-        </Box>
+        </Box> */}
 
         <Box mt={160}>
           {!isValid ? (

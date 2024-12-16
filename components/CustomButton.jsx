@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
-import { fonts, primeryColor } from "../utils/appstyle";
+import { fonts, primeryColor } from "../navigation/utils/appstyle";
 
 const CustomButton = ({
   width = 300,
@@ -12,7 +12,7 @@ const CustomButton = ({
   mr,
   mt = 25,
   fSize = 18,
-  bradius = 25
+  bradius = 25,
 }) => {
   const styles = StyleSheet.create({
     button: {

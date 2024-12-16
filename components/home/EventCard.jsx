@@ -1,6 +1,6 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import formatDate from "../../utils/dateConverter";
+import formatDate from "../../navigation/utils/dateConverter";
 
 const EventCard = ({
   img = "https://img.freepik.com/free-vector/party-crowd-silhouettes-dancing-nightclub_1048-11557.jpg?t=st=1708730579~exp=1708734179~hmac=2a9d298a9c66d5a34961be7cec78ad87a11a02d4ec56cceb25245649a4cfab97&w=900",
@@ -9,7 +9,7 @@ const EventCard = ({
   location,
   date,
   time,
-  func
+  func,
 }) => {
   return (
     <TouchableOpacity onPress={func} style={styles.container}>
@@ -36,23 +36,23 @@ const EventCard = ({
 };
 
 const styles = StyleSheet.create({
-    container: {
-        display: "flex",
-        justifyContent: "start",
-        alignItems: "center",
-        height: 221,
-        width: 162,
-        backgroundColor: "#f5fcff",
-        borderRadius: 10,
-        marginBottom: 10,
-        marginRight: 10
-    },
-    image: {
-        width: "100%",
-        height: 100,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-    },
-    });
+  container: {
+    display: "flex",
+    justifyContent: "start",
+    alignItems: "center",
+    height: 221,
+    width: 162,
+    backgroundColor: "#f5fcff",
+    borderRadius: 10,
+    marginBottom: 10,
+    marginRight: 10,
+  },
+  image: {
+    width: "100%",
+    height: 100,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+});
 
 export default EventCard;

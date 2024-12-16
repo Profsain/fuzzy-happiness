@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Modal, Button, StyleSheet } from "react-native";
 import CustomButton from "./CustomButton";
-import { secondaryColor } from "../utils/appstyle";
+import { secondaryColor } from "../navigation/utils/appstyle";
 
 const SubscriptionModal = ({ visible, daysLeft, onSubscribe, onClose }) => {
   return (

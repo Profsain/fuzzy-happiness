@@ -15,11 +15,11 @@ import CustomButton from "../CustomButton";
 import { Fontisto } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import formatDate from "../../utils/dateConverter";
-import daysBetweenDates from "../../utils/getNumbersOfDays";
-import handleSocialShare from "../../utils/socialSharefunc";
+import formatDate from "../../navigation/utils/dateConverter";
+import daysBetweenDates from "../../navigation/utils/getNumbersOfDays";
+import handleSocialShare from "../../navigation/utils/socialSharefunc";
 import { Feather } from "@expo/vector-icons";
-import { secondBgColor } from "../../utils/appstyle";
+import { secondBgColor } from "../../navigation/utils/appstyle";
 
 const SingleEvent = ({ navigation, route }) => {
   // get login user from context

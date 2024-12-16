@@ -5,7 +5,7 @@ import {
   ScrollView,
   TextInput,
   SafeAreaView,
-  Alert
+  Alert,
 } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
 import Checkbox from "expo-checkbox";
@@ -13,9 +13,9 @@ import React, { useEffect, useState } from "react";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 import LoadingSpinner from "../LoadingSpinner";
-import { primeryColor, secondBgColor } from "../../utils/appstyle";
-import daysBetweenDates from "../../utils/getNumbersOfDays";
-import sendPushNotification from "../../utils/sendPushNotification";
+import { primeryColor, secondBgColor } from "../../navigation/utils/appstyle";
+import daysBetweenDates from "../../navigation/utils/getNumbersOfDays";
+import sendPushNotification from "../../navigation/utils/sendPushNotification";
 
 const EventRegistration = ({ navigation, route }) => {
   // login context
@@ -71,33 +71,33 @@ const EventRegistration = ({ navigation, route }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitErrorMsg, setSubmitErrorMsg] = useState("");
 
-const handleEventRegistration = async () => {
-  setIsSubmitting(true);
+  const handleEventRegistration = async () => {
+    setIsSubmitting(true);
 
-  const { _id: userId, firstName } = userProfile;
-  const { _id: eventId, id, eventName, eventDate } = eventDetails;
-  const isAllowReminder = isGetEventReminder;
-  const eventID = eventId || id;
+    const { _id: userId, firstName } = userProfile;
+    const { _id: eventId, id, eventName, eventDate } = eventDetails;
+    const isAllowReminder = isGetEventReminder;
+    const eventID = eventId || id;
 
-  try {
-    const registrationResponse = await fetch(
-      `${process.env.BASE_URL}/event/${eventID}/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId, isAllowReminder }),
+    try {
+      const registrationResponse = await fetch(
+        `${process.env.BASE_URL}/event/${eventID}/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ userId, isAllowReminder }),
+        }
+      );
+
+      if (!registrationResponse.ok) {
+        const errorData = await registrationResponse.json();
+        throw new Error(errorData.message);
       }
-    );
 
-    if (!registrationResponse.ok) {
-      const errorData = await registrationResponse.json();
-      throw new Error(errorData.message);
-    }
-
-    const message = `
+      const message = `
       <div style="font-family: Arial, sans-serif; color: #333;">
         <h1 style="color: #f9784b;">Splinx Event Registration</h1>
         <p>Dear ${firstName},</p>
@@ -108,51 +108,49 @@ const handleEventRegistration = async () => {
       </div>
     `;
 
-    const emailResponse = await fetch(
-      `${process.env.BASE_URL}/email/send-email`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: emailAddress,
-          subject: "SplinX Planet Event Registration",
-          html: message,
-        }),
-      }
-    );
-
-    if (emailResponse.ok) {
-      await sendPushNotification(
-        userId,
-        "Splinx Planet",
-        `${eventName} registration is successful. Hurray!😍.`
+      const emailResponse = await fetch(
+        `${process.env.BASE_URL}/email/send-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: emailAddress,
+            subject: "SplinX Planet Event Registration",
+            html: message,
+          }),
+        }
       );
-    } else {
-      const emailError = await emailResponse.json();
-      console.error("Email error:", emailError.message);
+
+      if (emailResponse.ok) {
+        await sendPushNotification(
+          userId,
+          "Splinx Planet",
+          `${eventName} registration is successful. Hurray!😍.`
+        );
+      } else {
+        const emailError = await emailResponse.json();
+        console.error("Email error:", emailError.message);
+      }
+
+      setIsSubmitting(false);
+      // show alert
+      Alert.alert("Success", "Event registration successful", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("HomeScreen"),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error:", error);
+      setIsSubmitting(false);
+      // show error message
+      Alert.alert("Error", JSON.stringify(error.message));
+      setSubmitErrorMsg(error.message);
     }
-
-    setIsSubmitting(false);
-    // show alert
-    Alert.alert("Success", "Event registration successful", [
-      {
-        text: "OK",
-        onPress: () => navigation.navigate("HomeScreen"),
-      },
-    ]);
-
-  } catch (error) {
-    console.error("Error:", error);
-    setIsSubmitting(false);
-    // show error message
-    Alert.alert("Error", JSON.stringify(error.message));
-    setSubmitErrorMsg(error.message);
-  }
-};
-
+  };
 
   return (
     <>

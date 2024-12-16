@@ -17,7 +17,7 @@ import {
 import { StyleSheet, View } from "react-native";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
-import {primeryColor} from "../../utils/appstyle";
+import { primeryColor } from "../../navigation/utils/appstyle";
 
 const DateModal = ({ showDateModal, setShowDateModal, date, setDate }) => {
   const ref = React.useRef(null);
@@ -45,7 +45,9 @@ const DateModal = ({ showDateModal, setShowDateModal, date, setDate }) => {
                 mode="single"
                 selectedItemColor={primeryColor}
                 date={date}
-                onChange={(params) => setDate(() => dayjs(params.date).format("YYYY-MM-DD"))}
+                onChange={(params) =>
+                  setDate(() => dayjs(params.date).format("YYYY-MM-DD"))
+                }
               />
             </View>
           </ModalBody>
