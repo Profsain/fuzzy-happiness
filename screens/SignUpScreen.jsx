@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
-import PhoneInput from "react-native-phone-number-input";
+// import PhoneInput from "react-native-phone-number-input";
 import { registerIndieID } from "native-notify";
 import sendPushNotification from "../utils/sendPushNotification";
 import { setItem } from "../utils/asyncStorage";
@@ -83,7 +83,7 @@ const SignUpScreen = ({ navigation }) => {
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter your mobile number to get a token.</Text>
 
-        <Box width="100%">
+        {/* <Box width="100%">
           <PhoneInput
             ref={phoneInput}
             defaultValue={phoneValue}
@@ -101,7 +101,7 @@ const SignUpScreen = ({ navigation }) => {
               {error}
             </Text>
           )}
-        </Box>
+        </Box> */}
 
         <Box mt={160}>
           {!isValid ? (

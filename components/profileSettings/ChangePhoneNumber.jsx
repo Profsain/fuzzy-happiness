@@ -5,7 +5,7 @@ import { useLogin } from "../../context/LoginProvider";
 import { setItem } from "../../utils/asyncStorage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
-import PhoneInput from "react-native-phone-number-input";
+// import PhoneInput from "react-native-phone-number-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { View, TouchableOpacity, Alert } from "react-native";
@@ -120,7 +120,7 @@ const ChangePhoneNumber = ({ navigation }) => {
       <VStack space="xl" mt={15}>
         <Text fontSize={16}>Enter new mobile number to get a OTP.</Text>
 
-        <Box width="100%">
+        {/* <Box width="100%">
           <PhoneInput
             ref={phoneInput}
             defaultValue={phoneValue}
@@ -138,7 +138,7 @@ const ChangePhoneNumber = ({ navigation }) => {
               {error}
             </Text>
           )}
-        </Box>
+        </Box> */}
 
         <Box mt={160}>
           {!isValid ? (
