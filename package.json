@@ -105,7 +105,14 @@
           "react-native-code-input",
           "react-native-virtualized-view",
           "react-redux",
-          "tailwindcss"
+          "tailwindcss",
+          "lucide-react-native",
+          "react-native-element-dropdown",
+          "react-native-emoji-selector",
+          "react-native-html-to-pdf",
+          "react-native-paper-dates",
+          "react-native-phone-input",
+          "react-native-phone-number-input"
         ]
       }
     }
