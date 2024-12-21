@@ -129,7 +129,7 @@ const HomeCarousel = ({ func }) => {
 
   return (
     <View>
-      <Animated.FlatList
+      {/* <Animated.FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item, index) => `carousel-item-${index}`}
@@ -143,7 +143,8 @@ const HomeCarousel = ({ func }) => {
         contentContainerStyle={{
           paddingHorizontal: SPACING / 2,
         }}
-      />
+      /> */}
+      <Text>Home Slider</Text>
     </View>
   );
 };

@@ -1,6 +1,6 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import formatDate from "../../navigation/utils/dateConverter";
+import formatDate from "../../utils/dateConverter";
 
 const EventCard = ({
   img = "https://img.freepik.com/free-vector/party-crowd-silhouettes-dancing-nightclub_1048-11557.jpg?t=st=1708730579~exp=1708734179~hmac=2a9d298a9c66d5a34961be7cec78ad87a11a02d4ec56cceb25245649a4cfab97&w=900",

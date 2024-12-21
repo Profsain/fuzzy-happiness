@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
-import { fonts, primeryColor } from "../navigation/utils/appstyle";
+import { fonts, primeryColor } from "../utils/appstyle";
 
 const CustomButton = ({
   width = 300,

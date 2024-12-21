@@ -3,10 +3,10 @@ import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 // import PhoneInput from "react-native-phone-number-input";
 import { registerIndieID } from "native-notify";
-import sendPushNotification from "../navigation/utils/sendPushNotification";
-import { setItem } from "../navigation/utils/asyncStorage";
-import { secondaryColor } from "../navigation/utils/appstyle";
-import navigationToScreen from "../navigation/utils/navigationUtil";
+import sendPushNotification from "../utils/sendPushNotification";
+import { setItem } from "../utils/asyncStorage";
+import { secondaryColor } from "../utils/appstyle";
+import navigationToScreen from "../utils/navigationUtil";
 import { TouchableOpacity, Alert } from "react-native";
 
 const SignUpScreen = ({ navigation }) => {

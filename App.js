@@ -1,3 +1,4 @@
+import "./global.css"
 import { registerRootComponent } from 'expo';
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";

@@ -16,14 +16,14 @@ import { Box } from "@gluestack-ui/themed";
 import { CustomButton, SearchBox, LoadingSpinner } from "..";
 import { EventCard, HorizontalTitle, HomeCarousel, SearchResult } from ".";
 import eventData from "../../mockdata/eventData";
-import filterEventsByCreator from "../../navigation/utils/filterEventByUser";
-import searchEvents from "../../navigation/utils/searchEvent";
-import sortEventsByDate from "../../navigation/utils/sortEventsByDate";
+import filterEventsByCreator from "../../utils/filterEventByUser";
+import searchEvents from "../../utils/searchEvent";
+import sortEventsByDate from "../../utils/sortEventsByDate";
 import { ScrollView } from "react-native-virtualized-view";
 // subscription
 import SubscriptionModal from "../SubscriptionModal";
 import useSubscription from "../../hooks/useSubscription";
-import { primeryColor } from "../../navigation/utils/appstyle";
+import { primeryColor } from "../../utils/appstyle";
 import { TouchableOpacity } from "react-native";
 import TopAdvertCarousel from "./TopAdvertCarousel";
 import EventCardAds from "./EventCardAds";

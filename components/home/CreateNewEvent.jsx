@@ -19,10 +19,10 @@ import DateModal from "./DateModal";
 import { Fontisto } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import TimeModal from "./TimeModal";
-import { primeryColor, secondBgColor } from "../../navigation/utils/appstyle";
-import formatCurrency from "../../navigation/utils/formatCurrency";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
+import formatCurrency from "../../utils/formatCurrency";
 
-import sendPushNotification from "../../navigation/utils/sendPushNotification";
+import sendPushNotification from "../../utils/sendPushNotification";
 
 // fetch event categories from an api
 const fetchData = async () => {

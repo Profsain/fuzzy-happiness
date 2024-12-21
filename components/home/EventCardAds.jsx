@@ -61,7 +61,7 @@
 // export default EventCardAds
 
 import React, { useEffect, useState } from "react";
-import { View, Alert, Linking, Dimensions, StyleSheet } from "react-native";
+import { View, Alert, Linking, Dimensions, StyleSheet, Text } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -138,7 +138,7 @@ const EventCardAds = () => {
 
   return (
     <View>
-      <Animated.FlatList
+      {/* <Animated.FlatList
         data={eventCardAdvert}
         renderItem={renderItem}
         keyExtractor={(item, index) => `carousel-item-${index}`}
@@ -152,7 +152,8 @@ const EventCardAds = () => {
         contentContainerStyle={{
           paddingHorizontal: SPACING / 2,
         }}
-      />
+      /> */}
+      <Text>Event ads slider</Text>
     </View>
   );
 };

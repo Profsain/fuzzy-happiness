@@ -6,6 +6,7 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
   ],
+  presets: [require("nativewind/preset")],
   theme: {
     extend: {},
   },

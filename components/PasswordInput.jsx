@@ -8,7 +8,7 @@ import {
   Text,
 } from "@gluestack-ui/themed";
 import { EyeIcon, EyeOffIcon } from "lucide-react-native";
-import { errorColor } from "../navigation/utils/appstyle";
+import { errorColor } from "../utils/appstyle";
 
 const PasswordInput = ({
   mb = 12,

@@ -13,9 +13,9 @@ import React, { useEffect, useState } from "react";
 import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 import LoadingSpinner from "../LoadingSpinner";
-import { primeryColor, secondBgColor } from "../../navigation/utils/appstyle";
-import daysBetweenDates from "../../navigation/utils/getNumbersOfDays";
-import sendPushNotification from "../../navigation/utils/sendPushNotification";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
+import daysBetweenDates from "../../utils/getNumbersOfDays";
+import sendPushNotification from "../../utils/sendPushNotification";
 
 const EventRegistration = ({ navigation, route }) => {
   // login context

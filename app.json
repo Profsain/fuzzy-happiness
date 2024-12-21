@@ -71,7 +71,8 @@
     },
     "web": {
       "build": {
-        "output": "static"
+        "output": "static",
+        "bundler": "metro"
       }
     }
   }

@@ -62,7 +62,7 @@
 // export default TopAdvertCarousel;
 
 import React, { useEffect, useState } from "react";
-import { View, Alert, Linking, Dimensions, StyleSheet } from "react-native";
+import { View, Alert, Linking, Dimensions, StyleSheet, Text } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -139,7 +139,7 @@ const TopAdvertCarousel = () => {
 
   return (
     <View>
-      <Animated.FlatList
+      {/* <Animated.FlatList
         data={topAdverts}
         renderItem={renderItem}
         keyExtractor={(item, index) => `carousel-item-${index}`}
@@ -153,7 +153,8 @@ const TopAdvertCarousel = () => {
         contentContainerStyle={{
           paddingHorizontal: SPACING / 2,
         }}
-      />
+      /> */}
+      <Text>Ads slider</Text>
     </View>
   );
 };

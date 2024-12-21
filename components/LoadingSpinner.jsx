@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { HStack, Spinner, Text } from "@gluestack-ui/themed";
 import React from "react";
-import { primaryColor } from "../navigation/utils/appstyle";
+import { primaryColor } from "../utils/appstyle";
 
 const LoadingSpinner = ({ text = "Please Wait", color = "$amber600" }) => {
   return (

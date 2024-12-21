@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@gluestack-ui/themed";
 import { AntDesign } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
-import { fonts, primeryColor } from "../../navigation/utils/appstyle";
+import { fonts, primeryColor } from "../../utils/appstyle";
 
 const CarouselCard = ({
   imageSource = require("../../assets/images/slide1.jpg"),

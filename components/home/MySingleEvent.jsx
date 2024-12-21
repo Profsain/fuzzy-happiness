@@ -12,13 +12,13 @@ import BackTopBar from "./BackTopBar";
 import CustomButton from "../CustomButton";
 import EventRegistration from "./EventRegistration";
 import BottomModal from "./InviteToEvent";
-import { primeryColor, secondBgColor } from "../../navigation/utils/appstyle";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
 // icons
 import { Fontisto } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import formatDate from "../../navigation/utils/dateConverter";
-import daysBetweenDates from "../../navigation/utils/getNumbersOfDays";
-import handleSocialShare from "../../navigation/utils/socialSharefunc";
+import formatDate from "../../utils/dateConverter";
+import daysBetweenDates from "../../utils/getNumbersOfDays";
+import handleSocialShare from "../../utils/socialSharefunc";
 import { BackHandler } from "react-native";
 import { Feather } from "@expo/vector-icons";
 

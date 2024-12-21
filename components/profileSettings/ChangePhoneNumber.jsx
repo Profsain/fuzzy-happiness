@@ -2,15 +2,15 @@ import React, { useState, useRef } from "react";
 // import "firebase/compat/auth";
 import axios from "axios";
 import { useLogin } from "../../context/LoginProvider";
-import { setItem } from "../../navigation/utils/asyncStorage";
+import { setItem } from "../../utils/asyncStorage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
 // import PhoneInput from "react-native-phone-number-input";
-import { secondaryColor } from "../../navigation/utils/appstyle";
-import navigationToScreen from "../../navigation/utils/navigationUtil";
+import { secondaryColor } from "../../utils/appstyle";
+import navigationToScreen from "../../utils/navigationUtil";
 import { View, TouchableOpacity, Alert } from "react-native";
 import { BackTopBar } from "../../components/home";
-import sendPushNotification from "../../navigation/utils/sendPushNotification";
+import sendPushNotification from "../../utils/sendPushNotification";
 
 const ChangePhoneNumber = ({ navigation }) => {
   // extract context

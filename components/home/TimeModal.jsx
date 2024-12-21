@@ -3,7 +3,7 @@ import { Center } from "@gluestack-ui/themed";
 import { View } from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import { primeryColor } from "../../navigation/utils/appstyle";
+import { primeryColor } from "../../utils/appstyle";
 
 const TimeModal = ({ showTimeModal, setShowTimeModal, setTime }) => {
   const formatTime = ({ hours, minutes }) => {
