@@ -35,7 +35,7 @@
     "platforms": ["ios", "android"],
     "splash": {
       "image": "./assets/splinxsplash.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#f9784b"
     },
     "updates": {
