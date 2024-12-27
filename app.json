@@ -10,6 +10,7 @@
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-localization",
+      "@config-plugins/android-jsc-intl",
       [
         "expo-contacts",
         {
