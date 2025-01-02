@@ -1,6 +1,6 @@
 {
   "name": "splinxApp",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "main": "App.js",
   "scripts": {
     "start": "expo start --tunnel",

@@ -2,11 +2,16 @@
   "expo": {
     "name": "splinxApp",
     "slug": "splinxApp",
-    "version": "1.0.2",
+    "version": "1.0.6",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/playstore.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splinxsplash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9784b"
+    },
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-localization",
@@ -34,11 +39,6 @@
     ],
     "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
     "platforms": ["ios", "android"],
-    "splash": {
-      "image": "./assets/splinxsplash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f9784b"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/2e530c6c-3de4-4408-829e-f4e6cbb1b030"
@@ -53,7 +53,7 @@
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 3,
+      "versionCode": 6,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
@@ -61,7 +61,7 @@
       "package": "com.splinxapp",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/playstore.png",
         "backgroundColor": "#FFFFFF"
       }
     },
