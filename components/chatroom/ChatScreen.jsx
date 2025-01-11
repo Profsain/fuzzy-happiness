@@ -22,6 +22,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import EmojiSelector from "react-native-emoji-selector";
+import EmojiPicker from "rn-emoji-keyboard";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -40,6 +41,7 @@ const ChatScreen = () => {
   const userId = userProfile._id;
 
   const [showEmojiSelector, setShowEmojiSelector] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [messages, setMessages] = useState([]);
   const [recipientData, setRecipientData] = useState();
@@ -555,10 +557,12 @@ const ChatScreen = () => {
       </View>
 
       {showEmojiSelector && (
-        <EmojiSelector
+        <EmojiPicker
           onEmojiSelected={(emoji) => {
             setMessage((prevMessage) => prevMessage + emoji);
           }}
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
           style={{ height: 250 }}
         />
       )}

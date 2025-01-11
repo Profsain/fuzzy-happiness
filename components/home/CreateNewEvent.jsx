@@ -185,7 +185,7 @@ const CreateNewEvent = ({ navigation }) => {
   };
 
   // handle event budget info
-  const handleEventBudgetInfo = () => { 
+  const handleEventBudgetInfo = () => {
     Alert.alert(
       "Event Budget",
       "The event budget is the total amount you plan to spend on the event, which will be split among the event participants. It includes costs such as the venue, food, drinks, entertainment, and more."

@@ -2,14 +2,20 @@
   "expo": {
     "name": "splinxApp",
     "slug": "splinxApp",
-    "version": "1.0.2",
+    "version": "1.0.7",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/playstore.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splashlog.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9784b"
+    },
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-localization",
+      "@config-plugins/android-jsc-intl",
       [
         "expo-contacts",
         {
@@ -20,12 +26,12 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "34.0.0"
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.4",
+            "deploymentTarget": "15.1",
             "useFrameworks": "static"
           }
         }
@@ -33,11 +39,6 @@
     ],
     "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
     "platforms": ["ios", "android"],
-    "splash": {
-      "image": "./assets/splinxsplash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f9784b"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/2e530c6c-3de4-4408-829e-f4e6cbb1b030"
@@ -52,7 +53,7 @@
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 3,
+      "versionCode": 7,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
@@ -60,13 +61,19 @@
       "package": "com.splinxapp",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/playstore.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "extra": {
       "eas": {
         "projectId": "9b0d58cf-86fa-4e41-a65d-0e54e481576f"
+      }
+    },
+    "web": {
+      "build": {
+        "output": "static",
+        "bundler": "metro"
       }
     }
   }

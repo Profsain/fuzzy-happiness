@@ -9,7 +9,7 @@ const EventCard = ({
   location,
   date,
   time,
-  func
+  func,
 }) => {
   return (
     <TouchableOpacity onPress={func} style={styles.container}>
@@ -36,23 +36,23 @@ const EventCard = ({
 };
 
 const styles = StyleSheet.create({
-    container: {
-        display: "flex",
-        justifyContent: "start",
-        alignItems: "center",
-        height: 221,
-        width: 162,
-        backgroundColor: "#f5fcff",
-        borderRadius: 10,
-        marginBottom: 10,
-        marginRight: 10
-    },
-    image: {
-        width: "100%",
-        height: 100,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-    },
-    });
+  container: {
+    display: "flex",
+    justifyContent: "start",
+    alignItems: "center",
+    height: 221,
+    width: 162,
+    backgroundColor: "#f5fcff",
+    borderRadius: 10,
+    marginBottom: 10,
+    marginRight: 10,
+  },
+  image: {
+    width: "100%",
+    height: 100,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+});
 
 export default EventCard;

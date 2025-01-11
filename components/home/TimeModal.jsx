@@ -42,9 +42,9 @@ const TimeModal = ({ showTimeModal, setShowTimeModal, setTime }) => {
           styles={{
             theme: "light",
             confirmButton: {
-                backgroundColor: primeryColor,
-                color: "white",
-                borderColor: primeryColor,
+              backgroundColor: primeryColor,
+              color: "white",
+              borderColor: primeryColor,
             },
           }}
           modalProps={{
