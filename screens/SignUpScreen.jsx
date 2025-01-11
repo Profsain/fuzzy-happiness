@@ -58,7 +58,7 @@ const SignUpScreen = ({ navigation }) => {
         "Splinx Planet",
         `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
       );
-    
+
       navigationToScreen(navigation, "TokenScreen", data);
       setLoading(false);
     } catch (error) {

@@ -1,3 +1,7 @@
+import "./global.css"
+// polyfill for intl
+import '@formatjs/intl';
+
 import { registerRootComponent } from 'expo';
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";

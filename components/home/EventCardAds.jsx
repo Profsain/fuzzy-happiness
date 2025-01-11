@@ -59,3 +59,4 @@ const EventCardAds = () => {
 };
 
 export default EventCardAds
+

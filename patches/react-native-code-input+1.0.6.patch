@@ -1,13 +1,13 @@
 diff --git a/node_modules/react-native-code-input/components/ConfirmationCodeInput.js b/node_modules/react-native-code-input/components/ConfirmationCodeInput.js
-index 17a707d..85c005b 100644
+index 17a707d..7b9485b 100644
 --- a/node_modules/react-native-code-input/components/ConfirmationCodeInput.js
 +++ b/node_modules/react-native-code-input/components/ConfirmationCodeInput.js
 @@ -1,6 +1,7 @@
  import React, {Component} from 'react'
  import PropTypes from 'prop-types'
 -import {View, TextInput, StyleSheet, Dimensions, Platform, ViewPropTypes} from 'react-native'
-+import {View, TextInput, StyleSheet, Dimensions, Platform} from 'react-native'
-+import {TextInputPropTypes, ViewPropTypes} from 'deprecated-react-native-prop-types';
++import { View, StyleSheet, Dimensions, Platform } from 'react-native'
++import { TextInputPropTypes, ViewPropTypes } from 'deprecated-react-native-prop-types';
  import _ from 'lodash'
  
  const defaultKeyboardType = Platform.select({
@@ -25,3 +25,12 @@ index 17a707d..85c005b 100644
  	}
  
  	static defaultProps = {
+@@ -81,7 +82,7 @@ export default class ConfirmationCodeInput extends Component {
+ 		activeColor: 'rgba(255, 255, 255, 1)',
+ 		inactiveColor: 'rgba(255, 255, 255, 0.2)',
+ 		space: 8,
+-		inputComponent: TextInput,
++		inputComponent: TextInputPropTypes,
+ 		onFulfill: () => undefined,
+ 		keyboardType: defaultKeyboardType,
+ 	}

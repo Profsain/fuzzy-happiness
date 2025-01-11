@@ -73,7 +73,6 @@ const ChangePhoneNumber = ({ navigation }) => {
       html: message,
     };
 
-    
     try {
       const response = await fetch(`${baseUrl}/email/send-email`, {
         method: "POST",
@@ -87,8 +86,12 @@ const ChangePhoneNumber = ({ navigation }) => {
       const result = await response.json();
       if (response.ok) {
         // send otp to phone
-        sendPushNotification(userProfile._id, "Splinx Planet", `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`);
-        
+        sendPushNotification(
+          userProfile._id,
+          "Splinx Planet",
+          `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
+        );
+
         setLoading(false);
         navigationToScreen(navigation, "VerifyNumber", {
           phoneNumber,

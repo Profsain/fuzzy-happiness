@@ -19,7 +19,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import formatDate from "../../utils/dateConverter";
 import daysBetweenDates from "../../utils/getNumbersOfDays";
 import handleSocialShare from "../../utils/socialSharefunc";
-import { BackHandler } from 'react-native';
+import { BackHandler } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 const MySingleEvent = ({
@@ -34,8 +34,8 @@ const MySingleEvent = ({
     const backAction = () => {
       return true;
     };
-// handle back to prev screen when device back button press
-   
+    // handle back to prev screen when device back button press
+
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction

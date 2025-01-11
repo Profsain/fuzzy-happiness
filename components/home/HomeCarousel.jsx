@@ -43,9 +43,9 @@ const HomeCarousel = ({func}) => {
         autoplayInterval={5000} // Set autoplay interval (in milliseconds)
         loop={true} // Enable looping
       />
-      {/* <Text>Hello Carousel</Text> */}
     </View>
   );
 };
 
 export default HomeCarousel;
+

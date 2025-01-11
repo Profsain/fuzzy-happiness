@@ -12,7 +12,7 @@ const CustomButton = ({
   mr,
   mt = 25,
   fSize = 18,
-  bradius = 25
+  bradius = 25,
 }) => {
   const styles = StyleSheet.create({
     button: {
