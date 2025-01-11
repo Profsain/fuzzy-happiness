@@ -2,13 +2,13 @@
   "expo": {
     "name": "splinxApp",
     "slug": "splinxApp",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/playstore.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
     "splash": {
-      "image": "./assets/splinxsplash.png",
+      "image": "./assets/splashlog.png",
       "resizeMode": "contain",
       "backgroundColor": "#f9784b"
     },
@@ -53,7 +53,7 @@
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 6,
+      "versionCode": 7,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
