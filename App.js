@@ -23,7 +23,6 @@ export default function App() {
       <LoginProvider>
         <GluestackUIProvider config={config}>
           <NavigationContainer>
-            {/* main navigation switcher */}
             <MainNavigator />
           </NavigationContainer>
         </GluestackUIProvider>
