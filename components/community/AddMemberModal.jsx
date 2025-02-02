@@ -1,8 +1,6 @@
-import React from "react";
-import { Modal, View, Text, Button } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Modal, View, TextInput } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
-import { TextInput } from "react-native";
 import CustomButton from "../CustomButton";
 import UserList from "./UserList";
 
@@ -24,31 +22,22 @@ const AddMemberModal = ({ visible, onClose }) => {
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-        }}
-      >
-        <View className="w-full h-full bg-white p-6 rounded-lg overflow-y-auto">
-          <View>
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <View style={{ width: "90%", height: "80%", backgroundColor: "white", borderRadius: 10, padding: 16 }}>
+          {/* Search and User List - Takes available space */}
+          <View style={{ flex: 1 }}>
             <TextInput
               placeholder="Search..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: 10, padding: 8, borderWidth: 1, borderRadius: 5 }}
             />
             <UserList searchQuery={searchQuery} onToggle={handleToggleUser} />
           </View>
-          <View className="mt-8 ml-2">
+
+          {/* Fixed Bottom Button */}
+          <View style={{ position: "absolute", bottom: 20, left: 16, right: 16 }}>
             <CustomButton label="Finish Adding" buttonFunc={onClose} />
           </View>
         </View>

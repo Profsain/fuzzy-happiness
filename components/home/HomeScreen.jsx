@@ -8,7 +8,7 @@ import {
   Text,
   View,
   Alert,
-  Button,
+  StyleSheet ,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -373,7 +373,7 @@ const HomeScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+    <SafeAreaView style={styles.container}>
       {/* Top bar */}
       <Box>
         <View className="flex flex-row justify-between">
@@ -574,5 +574,15 @@ const HomeScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, // Equivalent to flex-1
+    paddingHorizontal: 24, // Equivalent to px-6 (6 * 4 = 24px)
+    paddingTop: 56, // Equivalent to pt-14 (14 * 4 = 56px)
+    backgroundColor: '#ffffff', // Equivalent to bg-white
+  },
+});
+
 
 export default HomeScreen;
