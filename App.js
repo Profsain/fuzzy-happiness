@@ -13,11 +13,38 @@ import { LoginProvider } from "./context/LoginProvider";
 import store from "./store";
 import { Provider } from "react-redux";
 
+// iap setups
+import { Platform } from 'react-native';
+import Purchases from 'react-native-purchases';
 
 
 
 export default function App() {
+  // initialize revenueCat
+  const APIKeys = {
+    apple: process.env.REVENUECAT_IOS_KEY,
+    google: "your_revenuecat_google_api_key",
+  };
 
+  // useEffect(() => {
+  //   const setup = async () => {
+  //     if (Platform.OS == "ios") {
+  //       await Purchases.configure({ apiKey: APIKeys.apple });
+  //     } else if (Platform.OS == "android") {
+  //       await Purchases.configure({ apiKey: APIKeys.google });
+  //     }
+      
+  //     const offerings = await Purchases.getOfferings();
+  //     setCurrentOffering(offerings.current);
+  //   };
+    
+  //   // log
+  //   Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+  //   setup()
+  //     .catch(console.log);
+
+  // }, []);
+  
   const token = process.env.NATIVE_NOTIFY_TOKEN;
   registerNNPushToken(22245, token);
   
