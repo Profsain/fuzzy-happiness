@@ -67,14 +67,16 @@ const TransactionHistory = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
       {/* top bar */}
-      <BackTopBar headline="Transaction History" func={handleBack} />
+      <View className="px-6">
+        <BackTopBar headline="Transaction History" func={handleBack} />
+      </View>
 
       {/* show loading spinner */}
       {loading && <LoadingSpinner />}
 
       {/* Render the FlatList only if not loading */}
       {!loading && (
-        <View className="my-8">
+        <View className="my-8 px-6">
           <FlatList
             data={transactionHistory}
             renderItem={renderItem}

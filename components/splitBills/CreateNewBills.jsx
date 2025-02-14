@@ -180,8 +180,10 @@ const CreateNewBills = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Create New Bill" func={() => navigation.goBack()} />
-      <ScrollView>
+      <View className="px-6">
+        <BackTopBar headline="Create New Bill" func={() => navigation.goBack()} />
+      </View>
+      <ScrollView className="px-6">
         <View className="my-8 ">
           <RNPickerSelect
             onValueChange={(value) => setSelectedEvent(value)}

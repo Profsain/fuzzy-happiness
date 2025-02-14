@@ -170,7 +170,7 @@ const TransferMoney = ({ navigation }) => {
 
   // Render user item
   const renderItem = ({ item }) => (
-    <View style={styles.userItem}>
+    <View style={styles.userItem} className="px-6">
       <Text>@{item.firstName}</Text>
       <Text>{item.emailAddress.slice(0, 20)}</Text>
       <TouchableOpacity
@@ -193,17 +193,20 @@ const TransferMoney = ({ navigation }) => {
     <>
       <SafeAreaView style={styles.container}>
         {/* Top bar */}
-        <BackTopBar headline="Transfer Money" func={handleBack} />
+        <View className="px-6">
+          <BackTopBar headline="Transfer Money" func={handleBack} />
 
-        {/* Wallet balance */}
-        <Text style={styles.balanceText}>
-          Balance{" "}
-          {wallet
-            ? `${currencySymbol || "$"}${wallet?.balance?.toFixed(2)}`
-            : "0.00"}
-        </Text>
+          {/* Wallet balance */}
+          <Text style={styles.balanceText}>
+            Balance{" "}
+            {wallet
+              ? `${currencySymbol || "$"}${wallet?.balance?.toFixed(2)}`
+              : "0.00"}
+          </Text>
+        </View>
 
         {/* Add money section */}
+        <View className="px-6">   
         <Text style={styles.errorText}>{balanceError}</Text>
         <CustomInput
           mb={24}
@@ -240,8 +243,12 @@ const TransferMoney = ({ navigation }) => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        </View>
 
         {/* User list */}
+        <View className="px-6">
+
+        </View>
         <FlatList
           data={filteredUsers}
           renderItem={renderItem}
@@ -250,7 +257,7 @@ const TransferMoney = ({ navigation }) => {
         />
 
         {/* Transfer button */}
-        <View style={styles.buttonContainer}>
+        <View style={styles.buttonContainer} className=" flex justify-center flex-row">
           {processing && <LoadingSpinner />}
           {canProceed ? (
             <CustomButton label="Transfer" buttonFunc={handleTransfer} />
@@ -292,6 +299,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     marginVertical: 16,
+    paddingLeft: 22,
   },
   searchBar: {
     borderColor: "#ccc",
