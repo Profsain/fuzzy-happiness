@@ -100,7 +100,7 @@ const ProfileHome = ({ navigation }) => {
       </View>
 
       {/* option list */}
-      <ScrollView className="mt-6">
+      <ScrollView className="mt-6 px-6">
         <OptionButton
           btnText="Personal Information"
           iconLeft=""

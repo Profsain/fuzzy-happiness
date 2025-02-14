@@ -101,10 +101,12 @@ const PersonalInfoScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Personal Details" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+       <BackTopBar headline="Personal Details" icon2="" func={handleBackBtn} />
+      </View>
 
       {/* profile image */}
-      <View className="my-8">
+      <View className="my-8 px-6">
         <Image
           source={{
             uri:
@@ -128,7 +130,7 @@ const PersonalInfoScreen = ({ navigation }) => {
       </View>
 
       {/* profile details */}
-      <View>
+      <View className="px-6">
         <OptionButton
           btnText={
             userProfile.firstName

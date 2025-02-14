@@ -74,8 +74,10 @@ const MembershipScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
+    <SafeAreaView style={styles.container} >
+      <View className="px-6">
+        <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
+      </View>
       {/* ios or android plan view */}
       {Platform.OS === "ios" ? (
         <View className="flex items-center justify-center h-12 w-full border-t border-slate-300">

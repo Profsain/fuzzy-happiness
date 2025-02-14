@@ -65,9 +65,11 @@ const AccountSettings = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Settings & Privacy" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+        <BackTopBar headline="Settings & Privacy" icon2="" func={handleBackBtn} />
+      </View>
 
-      <View className="mt-14 flex">
+      <View className="mt-14 px-6 flex">
         <OptionButton
           btnText="Restricted Accounts"
           iconLeft=""
