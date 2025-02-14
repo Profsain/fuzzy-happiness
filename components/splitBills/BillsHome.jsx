@@ -145,21 +145,21 @@ const BillsHome = ({ navigation }) => {
   // filter event where userProfile._id is eventMember.user
   const userEventBills = userEvents.filter((event) =>
     event.eventMembers.some((member) => member.user === _id)
-  
+
   );
 
   // render recent bill item
-   const renderRecentBill = ({ item }) => (
+  const renderRecentBill = ({ item }) => (
     <EventBillCard
       eventName={item?.eventName}
       eventDate={formatDate(item?.eventDate)}
-       splitCost={item?.eventMembers[0].splitCost}
-       status={item?.eventMembers[0].paymentStatus}
+      splitCost={item?.eventMembers[0].splitCost}
+      status={item?.eventMembers[0].paymentStatus}
       currency={currencySymbol}
-      // onPress={() => handleOpenBillDetails(item._id)}
+    // onPress={() => handleOpenBillDetails(item._id)}
     />
   );
-  
+
   // handle view all recent bills
   const handleRecentBills = () => {
     Alert.alert("View all recent bills");
@@ -316,58 +316,61 @@ const BillsHome = ({ navigation }) => {
       <BackTopBar headline="Split Bills" icon="" />
 
       {/* top card */}
-      <View
-        style={{ backgroundColor: primeryColor }}
-        className="p-3 pb-0 my-4 rounded-xl"
-      >
-        <Text className="text-xl font-semibold pb-2 text-slate-600">
-          Total Spent
-        </Text>
-        <Text className="text-2xl font-bold text-slate-600">
-          {currencySymbol || "$"}
-          {wallet?.totalSpent?.toFixed(2) || "0.00"}
-        </Text>
+      <View className="px-8">
+        <View
+          style={{ backgroundColor: primeryColor }}
+          className="p-3 pb-0 my-4 rounded-xl"
+        >
+          <Text className="text-xl font-semibold pb-2 text-slate-600">
+            Total Spent
+          </Text>
+          <Text className="text-2xl font-bold text-slate-600">
+            {currencySymbol || "$"}
+            {wallet?.totalSpent?.toFixed(2) || "0.00"}
+          </Text>
 
-        <View className="flex flex-row justify-end mt-6">
-          {isWalletCreated ? (
-            <CustomButton
-              color="black"
-              width={60}
-              height={34}
-              fSize={12}
-              mr={12}
-              backgroundColor="white"
-              label="Wallet"
-              buttonFunc={() => navigation.navigate("TransactionScreen")}
-            />
-          ) : !processing ? (
+          <View className="flex flex-row justify-end mt-6">
+            {isWalletCreated ? (
+              <CustomButton
+                color="black"
+                width={60}
+                height={34}
+                fSize={12}
+                mr={12}
+                backgroundColor="white"
+                label="Wallet"
+                buttonFunc={() => navigation.navigate("TransactionScreen")}
+              />
+            ) : !processing ? (
+              <CustomButton
+                color="black"
+                width={120}
+                height={34}
+                fSize={12}
+                mr={12}
+                backgroundColor="white"
+                label="Activate Wallet"
+                buttonFunc={handleActivateWallet}
+              />
+            ) : (
+              <LoadingSpinner text="" color="white" />
+            )}
+
             <CustomButton
               color="black"
               width={120}
               height={34}
               fSize={12}
-              mr={12}
               backgroundColor="white"
-              label="Activate Wallet"
-              buttonFunc={handleActivateWallet}
+              label="Transaction History"
+              buttonFunc={() => navigation.navigate("TransactionHistory")}
             />
-          ) : (
-            <LoadingSpinner text="" color="white" />
-          )}
-
-          <CustomButton
-            color="black"
-            width={120}
-            height={34}
-            fSize={12}
-            backgroundColor="white"
-            label="Transaction History"
-            buttonFunc={() => navigation.navigate("TransactionHistory")}
-          />
+          </View>
         </View>
       </View>
 
-      <ScrollView>
+
+      <ScrollView className="px-8">
         {/* top group section, title header  */}
         <HorizontalTitle
           title="Groups"
@@ -382,13 +385,13 @@ const BillsHome = ({ navigation }) => {
             >
               <AntDesign
                 name="plus"
-                size={14}
+                size={10}
                 color="black"
                 style={{ textAlign: "center", fontWeight: 900 }}
               />
             </TouchableOpacity>
             <Text style={{ fontSize: 10, fontWeight: 700 }}>
-              Create new bill
+              Create New
             </Text>
           </View>
 
@@ -448,7 +451,7 @@ const BillsHome = ({ navigation }) => {
           <HorizontalTitle
             title="Recent Bills"
             action=""
-            // func={handleRecentBills}
+          // func={handleRecentBills}
           />
           <View className="mb-4 pb-2">
             {userEventBills?.length === 0 && (

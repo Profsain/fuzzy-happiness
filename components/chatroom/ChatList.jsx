@@ -114,7 +114,7 @@ const ChatList = ({ navigation }) => {
 
         {/* search bar */}
 
-        <View className="mt-4">
+        <View className="mt-4 px-8">
           <SearchBox
             searchTerm={searchTerm}
             handleSearch={handleSearchChange}
@@ -134,7 +134,7 @@ const ChatList = ({ navigation }) => {
           </View>
         )}
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} className="px-8">
           <Pressable>
             {acceptedFriends.map((item, index) => (
               <UserChat key={index} item={item} />

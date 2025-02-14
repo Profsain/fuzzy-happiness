@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, ScrollView } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -156,7 +156,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Box>
 
         {/* remember password? Login */}
-        <Box mt={120}>
+        <View className="flex items-center justify-center mt-12 w-full">
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >
@@ -172,7 +172,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
               </Text>
             </Text>
           </TouchableOpacity>
-        </Box>
+        </View>
       </VStack>
     </Box>
     </ScrollView>

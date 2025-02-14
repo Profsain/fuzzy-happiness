@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { getItem, removeItem } from "../../utils/asyncStorage";
-import { Alert, TouchableOpacity, ScrollView } from "react-native";
+import { Alert, TouchableOpacity, ScrollView, View } from "react-native";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,

@@ -166,6 +166,7 @@ const ChatScreen = () => {
   //     console.log("error in sending the message", error);
   //   }
   // };
+  
   const handleSend = async (messageType, imageUri) => {
     try {
       const body = {

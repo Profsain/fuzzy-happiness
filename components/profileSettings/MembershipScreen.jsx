@@ -7,13 +7,16 @@ import {
   RadioIcon,
   CircleIcon,
 } from "@gluestack-ui/themed";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import CustomButton from "../CustomButton";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
+
+// revenueCat ui
+import RevenueCatUI from "react-native-purchases-ui";
 
 const MembershipScreen = ({ navigation }) => {
   const { userProfile, subscriptionPlans, isLocked } = useLogin();
@@ -34,7 +37,7 @@ const MembershipScreen = ({ navigation }) => {
             "USD",
             currency
           );
-          rates[item._id] = Math.ceil(convertedAmount) ;
+          rates[item._id] = Math.ceil(convertedAmount);
         }
       }
       setConvertedAmounts(rates);
@@ -65,7 +68,7 @@ const MembershipScreen = ({ navigation }) => {
       Alert.alert("Subscription", "Please select a subscription plan");
       return;
     }
-    
+
     // navigate to subscription screen and pass data
     navigation.navigate("SubscriptionScreen", { subscription });
   };
@@ -73,54 +76,63 @@ const MembershipScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
+      {/* ios or android plan view */}
+      {Platform.OS === "ios" ? (
+        <View className="flex items-center justify-center h-12 w-full border-t border-slate-300">
+          <RevenueCatUI.Paywall />
+        </View>
+      ) : (
+        <ScrollView className="mt-16">
+          <RadioGroup value={values} onChange={setValues}>
+            <VStack space="sm">
+              {subscriptionData.map((item) => (
+                <Radio key={item._id} value={item.planName}>
+                  <View
+                    style={styles.radioItem}
+                    className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
+                  >
+                    <View>
+                      {/* Show active status */}
+                      {isSubscriber && subscriptionPlan === item.planName && (
+                        <View className="flex justify-start flex-row items-center">
+                          <Text className="text-xs mr-4 font-bold text-orange-200">
+                            Active
+                          </Text>
+                          <AntDesign
+                            name="checkcircleo"
+                            size={12}
+                            color={primeryColor}
+                          />
+                        </View>
+                      )}
 
-      <ScrollView className="mt-16">
-        <RadioGroup value={values} onChange={setValues}>
-          <VStack space="sm">
-            {subscriptionData.map((item) => (
-              <Radio key={item._id} value={item.planName}>
-                <View
-                  style={styles.radioItem}
-                  className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
-                >
-                  <View>
-                    {/* Show active status */}
-                    {isSubscriber && subscriptionPlan === item.planName && (
-                      <View className="flex justify-start flex-row items-center">
-                        <Text className="text-xs mr-4 font-bold text-orange-200">
-                          Active
-                        </Text>
-                        <AntDesign
-                          name="checkcircleo"
-                          size={12}
-                          color={primeryColor}
-                        />
-                      </View>
-                    )}
-
-                    <Text className="font-medium text-lg">{item.title}</Text>
-                    <Text>{item.description}</Text>
-                    <Text>
-                      {currency !== "USD" && convertedAmounts[item._id]
-                        ? `${currencySymbol || ""} ${convertedAmounts[
+                      <Text className="font-medium text-lg">{item.title}</Text>
+                      <Text>{item.description}</Text>
+                      <Text>
+                        {currency !== "USD" && convertedAmounts[item._id]
+                          ? `${currencySymbol || ""} ${convertedAmounts[
                             item._id
                           ].toFixed(2)}`
-                        : null}
-                    </Text>
+                          : null}
+                      </Text>
+                    </View>
+                    <RadioIndicator style={styles.radioIndicator}>
+                      <RadioIcon style={styles.radioIcon} as={CircleIcon} />
+                    </RadioIndicator>
                   </View>
-                  <RadioIndicator style={styles.radioIndicator}>
-                    <RadioIcon style={styles.radioIcon} as={CircleIcon} />
-                  </RadioIndicator>
-                </View>
-              </Radio>
-            ))}
-          </VStack>
-        </RadioGroup>
+                </Radio>
+              ))}
+            </VStack>
+          </RadioGroup>
 
-        <View className="my-6">
-          <CustomButton label="Subscribe Now" buttonFunc={handleSubscription} />
-        </View>
-      </ScrollView>
+          <View className="my-6">
+            <CustomButton label="Subscribe Now" buttonFunc={handleSubscription} />
+          </View>
+        </ScrollView>
+      )}
+
+
+
     </SafeAreaView>
   );
 };

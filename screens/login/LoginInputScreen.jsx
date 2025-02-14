@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { registerIndieID } from "native-notify";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, Image, TouchableOpacity, ScrollView } from "react-native";
+import { Alert, View, TouchableOpacity, ScrollView } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -263,7 +263,7 @@ const LoginInputScreen = () => {
           </Box> */}
 
           {/* login button */}
-          <Box mt={60}>
+          <View className="flex items-center justify-center mt-12 w-full">
             {!isAllValid ? (
               <CustomButton
                 label="Log in"
@@ -279,7 +279,7 @@ const LoginInputScreen = () => {
                 )}
               </Box>
             )}
-          </Box>
+          </View>
 
           {/* signup text at the bottom*/}
           <Box mt={20} mb={20}>

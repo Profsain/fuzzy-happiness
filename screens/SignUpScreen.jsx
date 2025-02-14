@@ -7,7 +7,7 @@ import sendPushNotification from "../utils/sendPushNotification";
 import { setItem } from "../utils/asyncStorage";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
-import { TouchableOpacity, Alert } from "react-native";
+import { TouchableOpacity, Alert, View } from "react-native";
 
 const SignUpScreen = ({ navigation }) => {
   const [isValid, setIsValid] = useState(false);
@@ -103,7 +103,7 @@ const SignUpScreen = ({ navigation }) => {
           )}
         </Box>
 
-        <Box mt={160}>
+        <View className="flex items-center justify-center mt-24 w-full">
           {!isValid ? (
             <CustomButton
               label="Get Token"
@@ -119,7 +119,7 @@ const SignUpScreen = ({ navigation }) => {
               )}
             </Box>
           )}
-        </Box>
+        </View>
 
         <Box mt={160}>
           <TouchableOpacity

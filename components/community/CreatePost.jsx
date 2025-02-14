@@ -99,7 +99,7 @@ const CreatePost = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 pt-14 bg-white">
+    <SafeAreaView className="flex-1 pt-14 px-8 bg-white">
       {/* top section */}
       <View className="mb-3 border-b-2 border-gray-300 py-3 px-6">
         <View className="flex flex-row justify-between items-center">

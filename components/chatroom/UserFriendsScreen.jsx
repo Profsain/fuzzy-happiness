@@ -1,7 +1,9 @@
 import { View, Text, SafeAreaView, Alert, FlatList } from "react-native";
+import { Fab, Box, FabIcon, FabLabel, EditIcon } from "@gluestack-ui/themed";
 import { ScrollView } from "react-native-virtualized-view";
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
+import { secondaryColor, primeryColor } from "../../utils/appstyle";
 import { BackTopBar, HorizontalTitle } from "../home";
 import SearchBox from "../SearchBox";
 
@@ -9,7 +11,7 @@ import User from "./User";
 import LoadingSpinner from "../LoadingSpinner";
 import FriendsScreen from "./FriendsScreen";
 
-const UserFriendsScreen = () => {
+const UserFriendsScreen = ({ navigation }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -69,6 +71,13 @@ const UserFriendsScreen = () => {
     <User item={item} setUserList={setUserList} userList={userList} />
   );
 
+  // handle fab 
+  const handleFab = () => {
+    // navigate to UserFriendsScreen
+    navigation.navigate("ChatList");
+  };
+
+  // render
   return (
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
@@ -76,14 +85,14 @@ const UserFriendsScreen = () => {
         <BackTopBar headline="My Connect" icon="" />
 
         {/* search bar */}
-        <View className="mt-4">
+        <View className="mt-4 px-8">
           <SearchBox
             searchTerm={searchTerm}
             handleSearch={handleSearchChange}
           />
         </View>
 
-        <ScrollView>
+        <ScrollView className="px-8">
           {/* All connected friends list */}
           <View>
             {/* horizontal headings */}
@@ -116,6 +125,24 @@ const UserFriendsScreen = () => {
             )}
           </View>
         </ScrollView>
+        <Box
+          w={320}
+          bg={secondaryColor}
+          $dark-bg="$backgroundDark900"
+          borderRadius="$md"
+        >
+          <Fab
+            bg={primeryColor}
+            size="md"
+            placement="bottom right"
+            isHovered={false}
+            isDisabled={false}
+            isPressed={false}
+            onPress={handleFab}
+          >
+            <FabLabel>Close</FabLabel>
+          </Fab>
+        </Box>
       </SafeAreaView>
     </>
   );

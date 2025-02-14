@@ -371,11 +371,11 @@ const HomeScreen = ({ navigation }) => {
     // Cleanup on component unmount
     return () => clearInterval(interval);
   }, []);
-
+ 
   return (
     <SafeAreaView style={styles.container}>
       {/* Top bar */}
-      <Box>
+      <View className="flex px-8 mt-12 w-full">
         <View className="flex flex-row justify-between">
           <Text className="font-4xl font-semibold">
             Hello {userProfile.firstName || "User"}
@@ -423,7 +423,7 @@ const HomeScreen = ({ navigation }) => {
           mt={14}
           mb={18}
         />
-      </Box>
+      </View>
 
       {/* Search result list */}
       {searching && <LoadingSpinner text="Searching..." />}
@@ -437,7 +437,7 @@ const HomeScreen = ({ navigation }) => {
           headlineText="Search Results"
         />
       ) : (
-        <ScrollView>
+        <ScrollView className="px-8">
           {/* Carousel section */}
           <Box mt={8}>
             {currentCarousel === 0 ? (

@@ -125,7 +125,7 @@ const CreateCommunity = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+    <SafeAreaView className="flex-1 px-8 pt-14 bg-white">
       {/* top section */}
       <View>
         <BackTopBar
