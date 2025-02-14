@@ -37,7 +37,7 @@ const AddMemberModal = ({ visible, onClose }) => {
           </View>
 
           {/* Fixed Bottom Button */}
-          <View style={{ position: "absolute", bottom: 20, left: 16, right: 16 }}>
+          <View style={{ position: "absolute", bottom: 20, left: 16, right: 16 }} className="px-8">
             <CustomButton label="Finish Adding" buttonFunc={onClose} />
           </View>
         </View>

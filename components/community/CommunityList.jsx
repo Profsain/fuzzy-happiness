@@ -69,9 +69,9 @@ const CommunityList = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 px-8 pt-14 bg-white">
+    <SafeAreaView className="flex-1 pt-14 bg-white">
       {/* top section */}
-      <View>
+      <View className="px-8">
         <BackTopBar
           headline="Community"
           icon=""
@@ -94,7 +94,7 @@ const CommunityList = ({ navigation }) => {
       {loading ? (
         <LoadingSpinner />
       ) : filteredCommunities.length === 0 ? (
-        <View>
+        <View className="px-8">
           <Text className="text-center text-gray-500 text-lg">
             No community found
           </Text>
@@ -107,11 +107,13 @@ const CommunityList = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       ) : (
-        <FlatList
-          data={filteredCommunities}
-          renderItem={({ item }) => <CommunityCard community={item} />}
-          keyExtractor={(item) => item._id} // No need to use toString(), _id is unique
-        />
+        <View className="px-8">
+          <FlatList
+            data={filteredCommunities}
+            renderItem={({ item }) => <CommunityCard community={item} />}
+            keyExtractor={(item) => item._id} // No need to use toString(), _id is unique
+          />
+        </View>
       )}
     </SafeAreaView>
   );
