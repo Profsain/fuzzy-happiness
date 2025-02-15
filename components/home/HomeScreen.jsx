@@ -439,13 +439,13 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <ScrollView className="px-8">
           {/* Carousel section */}
-          <Box mt={8}>
+          <View className="mt-4 flex flex-row justify-center">
             {currentCarousel === 0 ? (
               <HomeCarousel func={handleViewAllEvents} />
             ) : (
               <TopAdvertCarousel />
             )}
-          </Box>
+          </View>
 
           {/* Create event button */}
           <Box mt={18}>
@@ -555,9 +555,9 @@ const HomeScreen = ({ navigation }) => {
             </Box>
 
             {/* Advert section */}
-            <Box mt={8}>
+            <View className="mt-4 flex flex-row justify-center">
               <EventCardAds />
-            </Box>
+            </View>
           </Box>
         </ScrollView>
       )}

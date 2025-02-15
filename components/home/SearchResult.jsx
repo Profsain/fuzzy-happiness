@@ -65,7 +65,7 @@ const SearchResult = ({
           {/* top bar  */}
 
           <BackTopBar headline={headlineText} icon="" />
-          <View className="mt-8">
+          <View className="mt-8 px-8">
             <FlatList
               data={eventList}
               renderItem={renderEvents}

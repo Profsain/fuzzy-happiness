@@ -82,10 +82,12 @@ const ChangePassword = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Change Password" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+        <BackTopBar headline="Change Password" icon2="" func={handleBackBtn} />
+      </View>
 
       {/* input field section */}
-      <View className="mt-14">
+      <View className="mt-14 px-6">
         <CustomInput
           placeholder="Enter current email"
           mb={28}
@@ -132,7 +134,7 @@ const ChangePassword = ({ navigation }) => {
       </View>
 
       {/* change password button */}
-      <View className="mt-14">
+      <View className="mt-14 flex items-center">
         {/* loading spinner */}
         {processing && <LoadingSpinner />}
 
