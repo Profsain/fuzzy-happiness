@@ -12,7 +12,7 @@ import {
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import useReceivedData from "../../hooks/useReceivedData";
-import { Alert } from "react-native";
+import { View } from "react-native";
 
 const AddAddressScreen = ({ navigation }) => {
   const receivedData = useReceivedData();
@@ -144,7 +144,7 @@ const AddAddressScreen = ({ navigation }) => {
           handleTextChange={handleAddressChange}
           error={addressError}
         />
-        <Box mt={90}>
+        <View className="flex flex-row justify-center mt-28">
           {loading && <LoadingSpinner />}
           {!isValid ? (
             <CustomButton
@@ -155,7 +155,7 @@ const AddAddressScreen = ({ navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

@@ -135,7 +135,7 @@ const EnterNewPasswordScreen = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView className="px-6">
       <Box width="100%" justifyContent="center" p={24}>
         <CustomHeadings title="Enter New Password?" />
 
@@ -168,7 +168,7 @@ const EnterNewPasswordScreen = () => {
           />
 
           {/* next button */}
-          <Box mt={160}>
+          <View className="flex flow-row justify-center mt-24">
             {loading ? (
               <LoadingSpinner />
             ) : !isAllValid ? (
@@ -183,7 +183,7 @@ const EnterNewPasswordScreen = () => {
                 buttonFunc={handlePasswordUpdate}
               />
             )}
-          </Box>
+          </View>
 
           {/* remember password? Login */}
           <Box mt={140}>

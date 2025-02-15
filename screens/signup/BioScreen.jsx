@@ -9,7 +9,7 @@ import {
 
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import useReceivedData from "../../hooks/useReceivedData";
 
 const BioScreen = ({ navigation }) => {
@@ -103,7 +103,7 @@ const BioScreen = ({ navigation }) => {
         </Box>
 
         {/* next button */}
-        <Box mt={90}>
+        <View className="flex flex-row justify-center mt-28">
           {!isValid ? (
             <CustomButton
               label="Proceed"
@@ -113,7 +113,7 @@ const BioScreen = ({ navigation }) => {
           ) : (
             <CustomButton label="Proceed" buttonFunc={handleProceed} />
           )}
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

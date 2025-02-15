@@ -280,7 +280,7 @@ const UserProfileScreen = () => {
               <View style={styles.container}>{renderTags}</View>
             </Box>
 
-            <Box>
+            <View className="flex flex-row justify-center">
               {!isValid ? (
                 <CustomButton
                   label="Create Account"
@@ -298,7 +298,7 @@ const UserProfileScreen = () => {
                   )}
                 </Box>
               )}
-            </Box>
+            </View>
           </VStack>
         </VStack>
       </ScrollView>

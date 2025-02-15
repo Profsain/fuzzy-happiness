@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -61,7 +61,7 @@ const AddEmailScreen = ({ route, navigation }) => {
         />
 
         {/* next button */}
-        <Box mt={130}>
+        <View className="flex flex-row justify-center mt-28">
           {!isValid ? (
             <CustomButton
               label="Next"
@@ -71,7 +71,7 @@ const AddEmailScreen = ({ route, navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
 
         {/* remember password? Login */}
         <Box mt={140}>

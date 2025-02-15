@@ -105,9 +105,11 @@ const ReportProblem = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="Report" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+         <BackTopBar headline="Report" icon2="" func={handleBackBtn} />
+      </View>
 
-      <View className="mt-14 flex">
+      <View className="mt-14 flex px-6">
         <TextInput
           multiline={true}
           numberOfLines={8}
@@ -121,7 +123,7 @@ const ReportProblem = ({ navigation }) => {
           <Text className="text-red-500 text-sm">{reportError}</Text>
         )}
 
-        <View className="mt-28">
+        <View className="mt-28 flex flex-row justify-center">
           {reportSent && <LoadingSpinner />}
 
           {isValid ? (

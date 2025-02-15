@@ -290,10 +290,12 @@ const CreateNewEvent = ({ navigation }) => {
     <>
       <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar headline={headlineText} func={handleBack} />
+        <View className="px-6">
+          <BackTopBar headline={headlineText} func={handleBack} />
+        </View>
 
         {/* form input section */}
-        <ScrollView className="mt-4">
+        <ScrollView className="mt-4 px-6">
           {/* image upload */}
           <View className="mt-8 mb-12">
             <Image
@@ -472,7 +474,7 @@ const CreateNewEvent = ({ navigation }) => {
           </View>
 
           {/* create event button */}
-          <View className="mt-14 mb-16">
+          <View className="flex flex-row justify-center mt-14 mb-16">
             {!isAllValid ? (
               <CustomButton
                 label="Create Event"

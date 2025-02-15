@@ -141,7 +141,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
         {/* next button */}
 
-        <Box mt={160}>
+        <View className="flex flex-row justify-center mt-24">
           {loading ? (
             <LoadingSpinner />
           ) : !isValid ? (
@@ -153,10 +153,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
 
         {/* remember password? Login */}
-        <View className="flex items-center justify-center mt-12 w-full">
+        <View className="flex items-center justify-center mt-12 px-8">
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >

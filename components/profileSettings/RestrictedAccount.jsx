@@ -133,9 +133,11 @@ const RestrictedAccount = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+         <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      </View>
 
-      <View className="flex-row justify-between items-center mt-8">
+      <View className="flex-row justify-between items-center mt-8 px-6">
         <TouchableOpacity>
           <Text className="text-slate-500 font-bold"></Text>
         </TouchableOpacity>
@@ -145,7 +147,7 @@ const RestrictedAccount = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={{ marginTop: 56, flex: 1 }}>
+      <View style={{ marginTop: 56, flex: 1 }} className="px-6">
         {loading ? (
           <LoadingSpinner />
         ) : userList.length === 0 ? (

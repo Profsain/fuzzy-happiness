@@ -6,7 +6,7 @@ import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { TouchableOpacity, Alert, StyleSheet, Platform } from "react-native";
+import { TouchableOpacity, Alert, StyleSheet, Platform, View } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
 import {
@@ -215,7 +215,7 @@ const TokenScreen = () => {
         </Box>
 
         {/* next button */}
-        <Box mt={110}>
+        <View className="flex flex-row justify-center mt-28">
           {processing && <LoadingSpinner />}
           {!isValid ? (
             <CustomButton
@@ -226,7 +226,7 @@ const TokenScreen = () => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleConfirmToken} />
           )}
-        </Box>
+        </View>
 
         {/* remember password? Login */}
         <Box mt={70}>

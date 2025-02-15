@@ -98,9 +98,10 @@ const MySingleEvent = ({
       ) : (
         <ScrollView className="flex-1 px-6 pt-14 bg-white">
           {/* top bar  */}
-
-          <BackTopBar headline={headlineText} func={setBack} />
-          <View className="mt-8">
+          <View className="px-6">
+             <BackTopBar headline={headlineText} func={setBack} />
+          </View>
+          <View className="mt-8 px-6">
             <Image
               source={{
                 uri: event.eventImage
