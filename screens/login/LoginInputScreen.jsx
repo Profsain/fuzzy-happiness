@@ -180,7 +180,7 @@ const LoginInputScreen = () => {
       }
     } catch (error) {
       setLoading(false);
-      setLoginMsg("An error occurred while logging in. Please try again.");
+      setLoginMsg(error.message || "Network error, please try again.");
     }
   };
 
