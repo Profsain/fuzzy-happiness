@@ -282,7 +282,7 @@ const AddMoney = ({ navigation }) => {
           {wallet?.balance?.toFixed(2) || "0.00"}
         </Text>
 
-        <View>
+        <View className="flex justify-center">
           <CustomInput
             mb={24}
             placeholder="Amount"
