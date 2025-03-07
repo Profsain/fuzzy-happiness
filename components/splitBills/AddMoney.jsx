@@ -297,7 +297,7 @@ const AddMoney = ({ navigation }) => {
             handleTextChange={handleNote}
           />
 
-          <View className="mt-28">
+          <View className="mt-28 flex justify-center">
             {processing && <LoadingSpinner />}
             {isValid ? (
               <CustomButton label="Add Money" buttonFunc={handleAddMoney} />

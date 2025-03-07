@@ -106,11 +106,11 @@ const ProfileHome = ({ navigation }) => {
           iconLeft=""
           btnFunc={handlePersonalInfo}
         />
-        <OptionButton
+        {/* <OptionButton
           btnText="Membership"
           iconLeft=""
           btnFunc={handleMembership}
-        />
+        /> */}
         <OptionButton
           btnText="Notifications Preferences"
           iconLeft=""
