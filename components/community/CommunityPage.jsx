@@ -220,6 +220,7 @@ const CommunityPage = ({ navigation, route }) => {
           >
             <Text>close</Text>
           </TouchableOpacity>
+          
           <Menu
             visible={menuVisible}
             onDismiss={toggleMenu}
