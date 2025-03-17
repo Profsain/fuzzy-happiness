@@ -388,110 +388,113 @@ const ChatScreen = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         onContentSizeChange={handleContentSizeChange}
       >
-        {messages.map((item, index) => {
-          if (item.messageType === "text") {
-            const isSelected = selectedMessages.includes(item._id);
-            return (
-              <Pressable
-                onLongPress={() => handleSelectMessage(item)}
-                key={index}
-                style={[
-                  item?.senderId?._id === userId
-                    ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: secondBgColor,
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: "flex-start",
-                        backgroundColor: secondaryColor,
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
 
-                  isSelected && { width: "100%", backgroundColor: "#F0FFFF" },
-                ]}
-              >
-                <Text
-                  style={{
-                    fontSize: 13,
-                    textAlign: isSelected ? "right" : "left",
-                  }}
-                >
-                  {item?.message}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: "right",
-                    fontSize: 9,
-                    color: "gray",
-                    marginTop: 5,
-                  }}
-                >
-                  {formatTime(item.createdAt)}
-                </Text>
-              </Pressable>
-            );
-          }
+        <View>
+          {messages.map((item, index) => {
+            if (item.messageType === "text") {
+              const isSelected = selectedMessages.includes(item._id);
+              return (
+                <Pressable
+                  onLongPress={() => handleSelectMessage(item)}
+                  key={index}
+                  style={[
+                    item?.senderId?._id === userId
+                      ? {
+                          alignSelf: "flex-end",
+                          backgroundColor: secondBgColor,
+                          padding: 8,
+                          maxWidth: "60%",
+                          borderRadius: 7,
+                          margin: 10,
+                        }
+                      : {
+                          alignSelf: "flex-start",
+                          backgroundColor: secondaryColor,
+                          padding: 8,
+                          margin: 10,
+                          borderRadius: 7,
+                          maxWidth: "60%",
+                        },
 
-          if (item.messageType === "image") {
-            const source = {
-              uri:
-                item.imageUrl ||
-                "https://res.cloudinary.com/dvwxyofm2/image/upload/v1713992847/qijnsgcr13wjnyukuzfs.jpg",
-            };
-            return (
-              <Pressable
-                key={index}
-                style={[
-                  item?.senderId?._id === userId
-                    ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
-                ]}
-              >
-                <View>
-                  <Image
-                    source={source}
-                    style={{ width: 200, height: 200, borderRadius: 7 }}
-                  />
+                    isSelected && { width: "100%", backgroundColor: "#F0FFFF" },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      textAlign: isSelected ? "right" : "left",
+                    }}
+                  >
+                    {item?.message}
+                  </Text>
                   <Text
                     style={{
                       textAlign: "right",
                       fontSize: 9,
-                      position: "absolute",
-                      right: 10,
-                      bottom: 7,
-                      color: "white",
+                      color: "gray",
                       marginTop: 5,
                     }}
                   >
-                    {formatTime(item?.createdAt)}
+                    {formatTime(item.createdAt)}
                   </Text>
-                </View>
-              </Pressable>
-            );
-          }
-        })}
-      </ScrollView>
+                </Pressable>
+              );
+            }
+
+            if (item.messageType === "image") {
+              const source = {
+                uri:
+                  item.imageUrl ||
+                  "https://res.cloudinary.com/dvwxyofm2/image/upload/v1713992847/qijnsgcr13wjnyukuzfs.jpg",
+              };
+              return (
+                <Pressable
+                  key={index}
+                  style={[
+                    item?.senderId?._id === userId
+                      ? {
+                          alignSelf: "flex-end",
+                          backgroundColor: "#DCF8C6",
+                          padding: 8,
+                          maxWidth: "60%",
+                          borderRadius: 7,
+                          margin: 10,
+                        }
+                      : {
+                          alignSelf: "flex-start",
+                          backgroundColor: "white",
+                          padding: 8,
+                          margin: 10,
+                          borderRadius: 7,
+                          maxWidth: "60%",
+                        },
+                  ]}
+                >
+                  <View>
+                    <Image
+                      source={source}
+                      style={{ width: 200, height: 200, borderRadius: 7 }}
+                    />
+                    <Text
+                      style={{
+                        textAlign: "right",
+                        fontSize: 9,
+                        position: "absolute",
+                        right: 10,
+                        bottom: 7,
+                        color: "white",
+                        marginTop: 5,
+                      }}
+                    >
+                      {formatTime(item?.createdAt)}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            }
+          })}
+        </View>
+
 
       <View
         style={{
@@ -556,6 +559,8 @@ const ChatScreen = () => {
           <Text style={{ color: "white", fontWeight: "bold" }}>Send</Text>
         </Pressable>
       </View>
+      </ScrollView>
+
 
       {showEmojiSelector && (
         <EmojiPicker
