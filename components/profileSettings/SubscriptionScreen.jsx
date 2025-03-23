@@ -10,7 +10,11 @@ import {
   ScrollView,
   Alert,
   Modal,
+<<<<<<< HEAD
   Platform,
+=======
+  Platform
+>>>>>>> f6fd5fbf808b1b2b1ec181bc74887f57b0207f6e
 } from "react-native";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -363,6 +367,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
   return (
     <>
+<<<<<<< HEAD
       {Platform.OS === "ios" ? (
         <Text className="m-5 text-center">Free Subscription</Text>
       ) : (
@@ -634,6 +639,277 @@ const SubscriptionScreen = ({ navigation, route }) => {
           </Modal>
         </SafeAreaView>
       )}
+=======
+      <SafeAreaView style={styles.container}>
+        <BackTopBar headline="Subscribe Now" icon2="" func={handleBackBtn} />
+        {Platform === "ios" ? (
+          <View>
+            <Text className="text-center font-semibold text-slate-600">Free Trial</Text>
+          </View>
+        ) : (
+          <View>
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === "Platinum" && styles.activeTab]}
+                onPress={() => setActiveTab("Platinum")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "Platinum" && styles.activeTabText,
+                  ]}
+                >
+                  Your Plan
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === "Ballers" && styles.activeTab]}
+                onPress={() => setActiveTab("Ballers")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "Ballers" && styles.activeTabText,
+                  ]}
+                ></Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Render content based on active tab */}
+            <View style={styles.content}>
+              {activeTab === "Platinum" ? (
+                <ScrollView>
+                  <View
+                    style={{ backgroundColor: primeryColor }}
+                    className="p-3 pb-0 my-4 rounded-xl h-40"
+                  >
+                    <Text className="text-xl font-bold text-white">{title}</Text>
+                    {convertedAmount ? (
+                      <Text className="text-xs font-bold text-white">
+                        {currencySymbol}
+                        {convertedAmount?.toFixed(2)}/month
+                      </Text>
+                    ) : (
+                      <Text className="text-xs font-bold text-white">{price}</Text>
+                    )}
+
+                    <View className="mt-12">
+                      <View className="flex flex-row items-center">
+                        <AntDesign name="gift" size={14} color="white" />
+                        <Text className="text-xs text-white ml-2">
+                          {description}
+                        </Text>
+                      </View>
+                      <Image
+                        source={require("../../assets/Vector.png")}
+                        style={styles.overlayImage}
+                      />
+                    </View>
+                  </View>
+
+                  <View>
+                    <Text className="my-2 font-bold text-lg">Top Features</Text>
+
+                    <View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">Bill Splitting</Text>
+                        <Text className="text-xs">
+                          Platinum members can split bills seamlessly with an
+                          extended grace period, allowing for more flexibility in
+                          managing shared expenses.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">Event Creation</Text>
+                        <Text className="text-xs">
+                          Platinum members can create events with advanced
+                          customization options, including exclusive themes, custom
+                          invitations, and event branding.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">Recommendation</Text>
+                        <Text className="text-xs">
+                          Receive personalized event and venue recommendations based
+                          on preferences, location, and past activity within the
+                          app.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">Customer Support</Text>
+                        <Text className="text-xs">
+                          Access a priority support hotline with 24/7 assistance for
+                          immediate and personalized problem resolution.
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* promo code input and button */}
+                    <View className="my-8">
+                      <Text className="text-sm font-bold">Promo Code</Text>
+                      {/* new price after promo code */}
+                      {isPromoApplied && (
+                        <Text className="text-sm font-bold my-2">
+                          {currencySymbol} {convertedAmount}
+                        </Text>
+                      )}
+                      <View className="flex flex-row items-center">
+                        <TextInput
+                          className="border-2 border-gray-300 rounded-lg p-2 w-3/4 mr-1"
+                          placeholder="Enter promo code"
+                          value={promoCode}
+                          onChangeText={(text) => setPromoCode(text)}
+                        />
+                        <CustomButton
+                          label="Apply"
+                          width={70}
+                          mt={4}
+                          buttonFunc={handleApplyPromoCode}
+                        />
+                      </View>
+                    </View>
+                    {/* subscribe button */}
+                    <View className="mt-8 mb-16">
+                      {/* show loading spinner */}
+                      {processing ? (
+                        <LoadingSpinner />
+                      ) : (
+                        <CustomButton
+                          label="Subscribe Now"
+                          buttonFunc={handleSubscription}
+                        />
+                      )}
+
+                      <Text className="mt-8">
+                        This is a 12 month plan. By proceeding you have read and
+                        agree to the Terms and Conditions.
+                      </Text>
+                    </View>
+                  </View>
+                </ScrollView>
+              ) : (
+                <ScrollView>
+                  <View
+                    style={{ backgroundColor: primeryColor }}
+                    className="p-3 pb-0 my-4 rounded-xl h-40"
+                  >
+                    <Text className="text-xl font-bold text-white">Ballers</Text>
+                    <Text className="text-xs font-bold text-white">
+                      $14.99/month
+                    </Text>
+
+                    <View className="mt-12">
+                      <View className="flex flex-row items-center">
+                        <AntDesign name="gift" size={14} color="white" />
+                        <Text className="text-xs text-white ml-2">
+                          {description}
+                        </Text>
+                      </View>
+                      <Image
+                        source={require("../../assets/Vector.png")}
+                        style={styles.overlayImage}
+                      />
+                    </View>
+                  </View>
+
+                  <View>
+                    <Text className="my-2 font-bold text-lg">Top Features</Text>
+
+                    <View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">
+                          Elite Community Access
+                        </Text>
+                        <Text className="text-xs">
+                          Join and create elite, invitation-only communities,
+                          ensuring a highly curated and exclusive social circle
+                          within the app.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">Media</Text>
+                        <Text className="text-xs">
+                          Experience the ability to not only view but also download
+                          images and videos whenever you want as a Baller.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">
+                          Profile Enhancement Tools
+                        </Text>
+                        <Text className="text-xs">
+                          Access tools for enhanced profile customization, allowing
+                          Ballers to showcase their status with unique badges,
+                          premium backgrounds, and exclusive profile elements.
+                        </Text>
+                      </View>
+                      <View className="mb-3">
+                        <Text className="text-sm font-bold">
+                          Early Product Testing
+                        </Text>
+                        <Text className="text-xs">
+                          Get early access to beta features and product testing,
+                          allowing Ballers to influence the direction of the app.
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* promo code input and button */}
+                    <View className="my-8">
+                      <Text className="text-sm font-bold">Promo Code</Text>
+                      <View className="flex flex-row items-center">
+                        <TextInput
+                          className="border-2 border-gray-300 rounded-lg p-2 w-3/4 mr-2"
+                          placeholder="Enter promo code"
+                          value={promoCode}
+                          onChangeText={(text) => setPromoCode(text)}
+                        />
+                        <CustomButton
+                          label="Apply"
+                          width={60}
+                          mt={4}
+                          buttonFunc={handleApplyPromoCode}
+                        />
+                      </View>
+                    </View>
+
+                    {/* subscribe button */}
+                    <View className="my-8">
+                      {/* show loading spinner */}
+                      {processing ? (
+                        <LoadingSpinner />
+                      ) : (
+                        <CustomButton
+                          label="Subscribe Now"
+                          buttonFunc={handleSubscription}
+                        />
+                      )}
+
+                      <Text>
+                        This is a 12 month plan. By proceeding you have read and
+                        agree to the Terms and Conditions.
+                      </Text>
+                    </View>
+                  </View>
+                </ScrollView>
+              )}
+            </View>
+
+            {/* modal screen */}
+            <Modal visible={webViewVisible} animationType="slide">
+              <WebView
+                originWhitelist={["*"]}
+                source={{ html: flutterwaveHTML }}
+                onMessage={handleMessage}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+              />
+            </Modal>
+          </View>
+        )}
+
+      </SafeAreaView>
+>>>>>>> f6fd5fbf808b1b2b1ec181bc74887f57b0207f6e
 
       {/* success bottom sheet */}
       {isModalVisible && (

@@ -1,4 +1,5 @@
-import { View, Text, Image, TouchableOpacity, Share } from "react-native";
+import { View, Text, Image, TouchableOpacity, Share, Modal, TextInput, Alert } from "react-native";
+import { Provider, Menu, IconButton, } from "react-native-paper";
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
@@ -6,6 +7,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import MemberProfieTop from "./MemberProfieTop";
+import LoadingSpinner from "../LoadingSpinner";
+import { primeryColor } from "../../utils/appstyle";
 import timeAgo from "../../utils/timeAgo";
 
 const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
@@ -15,6 +18,11 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
   const postId = post._id;
   const commentsLen = post.comments.length;
   const [commentCount, setCommentCount] = useState(commentsLen);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [reportUsername, setReportUsername] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
+  const [reportSent, setReportSent] = useState(false);
 
   // extract from useLogin context
   const { allUsers, userProfile, setCurrentPost } = useLogin();
@@ -117,10 +125,94 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
     }
   };
 
+  // Toggle menu visibility
+  const toggleMenu = () => setMenuVisible(!menuVisible);
+
+  // Handle menu actions
+  const handleReportMember = () => {
+    setMenuVisible(false);
+    setReportModalVisible(true);
+  };
+
+  const submitReport = async () => {
+    setReportSent(true);
+    // use html template for email
+    const message = `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h1 style="color: #f9784b;">App Problems Report</h1>
+  
+      <p>Dear Support Team,</p>
+      <p>Report from ${userProfile.firstName} | Phone Number:  ${userProfile.phoneNumber} | Email Address: ${userProfile.emailAddress}.</p>
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      <p>Reported User: ${reportUsername}</p>
+      <p>Reported Issues: ${reportMessage}</p>
+  
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      <p style="font-size: 12px; color: #666;">Best regards,<br>${userProfile.firstName} ${userProfile.lastName}</p>
+    </div>
+  `;
+
+    const emailAddress = "splinxplanent@gmail.com";
+
+    const data = {
+      email: emailAddress,
+      subject: "SplinX Planet User Report Problem",
+      html: message,
+    };
+
+    try {
+      const response = await fetch(`${baseUrl}/email/send-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setReportSent(false);
+        setReportModalVisible(false);
+        setReportUsername("");
+        setReportMessage("");
+        // show success alert and navigate to AccountSettings
+        Alert.alert("Report Sent", "Report sent successfully");
+      } else {
+        setReportSent(false);
+        Alert.alert("error", result.message);
+      }
+    } catch (error) {
+      Alert.alert("error", error);
+    }
+  };
+
+  // handle block user
+  const handleBlockUser = () => {
+    // wait for 3 seconds and show alert
+    setTimeout(() => {
+      Alert.alert("Blocked User", "User blocked successfully");
+    }, 3000);
+    
+  }
   return (
     <View className="px-6 py-4 border-b-2 border-gray-300">
       {/* publisher profile section */}
-      <MemberProfieTop postedAgo={postedAgo} postCreator={user} />
+      <View className="flex justify-between flex-row">
+
+        <MemberProfieTop postedAgo={postedAgo} postCreator={user} />
+
+        <Menu
+          visible={menuVisible}
+          onDismiss={toggleMenu}
+          anchor={
+            <IconButton icon="dots-vertical" size={24} onPress={toggleMenu} />
+          }
+        >
+          <Menu.Item onPress={handleReportMember} title="Report Member" />
+          <Menu.Item onPress={handleBlockUser} title="Block User" />
+        </Menu>
+      </View>
 
       {/* post content */}
       <View className="mt-4">
@@ -181,6 +273,87 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Report Member Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={reportModalVisible}
+        onRequestClose={() => setReportModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              width: "90%",
+              padding: 20,
+              backgroundColor: "white",
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}
+            >
+              Report Member
+            </Text>
+            <TextInput
+              placeholder="Enter member username"
+              value={reportUsername}
+              onChangeText={setReportUsername}
+              style={{
+                borderWidth: 1,
+                borderColor: "#ddd",
+                borderRadius: 5,
+                padding: 10,
+                marginBottom: 15,
+              }}
+            />
+            <TextInput
+              placeholder="Report Message"
+              value={reportMessage}
+              onChangeText={setReportMessage}
+              multiline
+              style={{
+                borderWidth: 1,
+                borderColor: "#ddd",
+                borderRadius: 5,
+                padding: 10,
+                height: 100,
+                marginBottom: 20,
+              }}
+            />
+            {reportSent && <LoadingSpinner text="Submitting" />}
+            <TouchableOpacity
+              onPress={submitReport}
+              style={{
+                backgroundColor: primeryColor,
+                padding: 15,
+                borderRadius: 5,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Submit Report
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setReportModalVisible(false)}
+              style={{
+                marginTop: 10,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "red" }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

@@ -1,7 +1,12 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "splinxApp",
     "slug": "splinxApp",
+=======
+    "name": "splinxPlanetApp",
+    "slug": "splinxPlanetApp",
+>>>>>>> f6fd5fbf808b1b2b1ec181bc74887f57b0207f6e
     "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/playstore.png",
@@ -10,7 +15,7 @@
       "**/*"
     ],
     "splash": {
-      "image": "./assets/splashlog.png",
+      "image": "./assets/splscreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#f9784b"
     },
@@ -58,7 +63,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.splinxapp",
+      "bundleIdentifier": "com.splinxplanetapp",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSContactsUsageDescription": "Allow Splinx-App to access your contacts.",
@@ -74,22 +79,22 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.splinxapp",
+      "package": "com.splinxplanetapp",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/playstore.png",
         "backgroundColor": "#FFFFFF"
       }
     },
-    "extra": {
-      "eas": {
-        "projectId": "9b0d58cf-86fa-4e41-a65d-0e54e481576f"
-      }
-    },
     "web": {
       "build": {
         "output": "static",
         "bundler": "metro"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "85a2b43e-56a0-487d-84f4-fe6af34b965a"
       }
     }
   }
