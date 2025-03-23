@@ -1,12 +1,7 @@
 {
   "expo": {
-<<<<<<< HEAD
-    "name": "splinxApp",
-    "slug": "splinxApp",
-=======
     "name": "splinxPlanetApp",
     "slug": "splinxPlanetApp",
->>>>>>> f6fd5fbf808b1b2b1ec181bc74887f57b0207f6e
     "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/playstore.png",
