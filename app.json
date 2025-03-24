@@ -62,6 +62,8 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSContactsUsageDescription": "Allow Splinx-App to access your contacts.",
+        "NSLocationWhenInUseUsageDescription": "Splinx Planet needs location access to show you events happening near you and improve recommendations.",
+        "NSLocationAlwaysUsageDescription": "Splinx Planet uses your location to track real-time event check-ins and suggest personalized events nearby.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

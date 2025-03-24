@@ -542,7 +542,7 @@ const ChatScreen = () => {
                 color="gray"
               />
 
-              <Feather name="mic" size={24} color="gray" />
+              {/* <Feather name="mic" size={24} color="gray" /> */}
             </View>
 
             <Pressable
