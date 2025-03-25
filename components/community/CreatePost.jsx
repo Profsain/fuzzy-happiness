@@ -68,9 +68,52 @@ const CreatePost = ({ navigation, route }) => {
     navigation.goBack();
   };
 
+  // objectionable words should not be posted
+  const objectionableWords = [
+    "fuck",
+    "shit",
+    "asshole",
+    "bitch",
+    "cunt",
+    "dick",
+    "faggot",
+    "gay",
+    "homo",
+    "jerk",
+    "kike",
+    "lesbian",
+    "motherfucker",
+    "nigger",
+    "piss",
+    "queer",
+    "retard",
+    "sex",
+    "shithead",
+    "slut",
+    "tits",
+    "twat",
+    "vagina",
+    "whore",
+    "yank",
+    "zombie",
+    "spam",
+    "scam",
+    "hate",
+    "rape",
+    "voilence",
+  ];
+
+  const isObjectionable = objectionableWords.some((word) =>
+    postText.toLowerCase().includes(word)
+  );
+
   const handlePostSend = async () => {
     if (postText.length < 1) {
       setPostTextError("Text is required");
+      return;
+    }
+    if (isObjectionable) {
+      Alert.alert("Warning", "Your post content contains inappropriate words.");
       return;
     }
 
