@@ -25,7 +25,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
   const [reportSent, setReportSent] = useState(false);
 
   // extract from useLogin context
-  const { allUsers, userProfile, setCurrentPost } = useLogin();
+  const { allUsers, userProfile, token, setCurrentPost } = useLogin();
   const userId = userProfile._id;
 
   const navigation = useNavigation();
@@ -129,7 +129,8 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
   const toggleMenu = () => setMenuVisible(!menuVisible);
 
   // Handle menu actions
-  const handleReportMember = () => {
+  const handleReportMember = (postCreator) => {
+    setReportUsername(`@${postCreator.firstName.toLowerCase()}`);
     setMenuVisible(false);
     setReportModalVisible(true);
   };
@@ -183,7 +184,8 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
         Alert.alert("error", result.message);
       }
     } catch (error) {
-      Alert.alert("error", error);
+      console.log("Error sending report email catch:", error);
+      setReportSent(false);
     }
   };
 
@@ -198,8 +200,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
   return (
     <View className="px-6 py-4 border-b-2 border-gray-300">
       {/* publisher profile section */}
-      <View className="flex justify-between flex-row">
-
+      <View className="flex flex-row justify-between">
         <MemberProfieTop postedAgo={postedAgo} postCreator={user} />
 
         <Menu
@@ -209,7 +210,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
             <IconButton icon="dots-vertical" size={24} onPress={toggleMenu} />
           }
         >
-          <Menu.Item onPress={handleReportMember} title="Report Member" />
+          <Menu.Item onPress={() => handleReportMember(user)} title="Report Post" />
           <Menu.Item onPress={handleBlockUser} title="Block User" />
         </Menu>
       </View>
@@ -302,6 +303,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
             >
               Report Member
             </Text>
+            <Text>Member name:</Text>
             <TextInput
               placeholder="Enter member username"
               value={reportUsername}
@@ -314,6 +316,7 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
                 marginBottom: 15,
               }}
             />
+            <Text>Report reason:</Text>
             <TextInput
               placeholder="Report Message"
               value={reportMessage}
