@@ -92,7 +92,7 @@ const CommunityPage = ({ navigation, route }) => {
   };
 
   const renderPost = ({ item }) => {
-    return <PostCom post={item} />;
+    return <PostCom post={item} fetchAllPosts={fetchAllPosts}/>;
   };
 
   // Toggle menu visibility

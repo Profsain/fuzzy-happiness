@@ -10,6 +10,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { useLogin } from "../../context/LoginProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { primeryColor } from "../../utils/appstyle";
@@ -21,6 +22,8 @@ const imgUrl =
   "https://img.freepik.com/free-photo/decorated-banquet-hall-with-served-round-table-with-hydrangea-centerpiece-chiavari-chairs_8353-10059.jpg?t=st=1714005008~exp=1714008608~hmac=808f01105efa63d0d81162d24a9046582dd11564e9c9f209c4e2a6d90ea88cf1&w=826";
 
 const AddComment = () => {
+  const navigation = useNavigation();
+
   const baseUrl = process.env.BASE_URL;
 
   const [isAddCommentPage, setIsAddCommentPage] = useState(true);
@@ -121,6 +124,13 @@ const AddComment = () => {
     }
   };
 
+  // handle back button click
+  const handleClose = () => {
+    // go back 
+    navigation.goBack();
+
+  };
+
   return (
     <SafeAreaView className="flex-1 pt-14 bg-white">
       {/* top section */}
@@ -148,7 +158,13 @@ const AddComment = () => {
           >
             <View className="flex items-center justify-between mb-2 ">
               <View className="w-20 h-2 bg-slate-200 rounded-2xl mb-4"></View>
-              <Text className="font-semibold ">Comments</Text>
+              <View className="flex flex-row justify-between w-full py-4">
+                <Text className="font-semibold ">Comments</Text>
+
+                <TouchableOpacity onPress={handleClose}>
+                  <Text className="text-gray-500">Close</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ImageBackground>

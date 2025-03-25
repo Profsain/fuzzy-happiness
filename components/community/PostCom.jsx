@@ -11,7 +11,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import { primeryColor } from "../../utils/appstyle";
 import timeAgo from "../../utils/timeAgo";
 
-const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
+const PostCom = ({ post, fetchAllPosts, isAddCommentPage, commentCounter }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -197,22 +197,63 @@ const PostCom = ({ post, isAddCommentPage, commentCounter }) => {
     }, 3000);
     
   }
+
+  // handle delete post by user that posted it and group creator
+  const handleDeletePost = async (postId) => {
+    // check if user is the creator of the post
+    if (post.postCreator === userId) {
+      // delete post using DELETE request to /post/:postId
+      try {
+        const response = await fetch(`${baseUrl}/post/${postId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.ok) {
+          Alert.alert("Post deleted successfully");
+
+          setMenuVisible(false);
+
+          // fetch all posts again
+          fetchAllPosts();
+          
+        } else {
+          throw new Error("Error deleting post");
+        }
+      } catch (error) {
+        console.log("Error deleting post catch:", error);
+        setMenuVisible(false);
+      }
+    } else {
+      alert("You can only delete your own posts");
+      setMenuVisible(false);
+    }
+    
+  };
+
   return (
     <View className="px-6 py-4 border-b-2 border-gray-300">
       {/* publisher profile section */}
       <View className="flex flex-row justify-between">
         <MemberProfieTop postedAgo={postedAgo} postCreator={user} />
 
-        <Menu
-          visible={menuVisible}
-          onDismiss={toggleMenu}
-          anchor={
-            <IconButton icon="dots-vertical" size={24} onPress={toggleMenu} />
-          }
-        >
-          <Menu.Item onPress={() => handleReportMember(user)} title="Report Post" />
-          <Menu.Item onPress={handleBlockUser} title="Block User" />
-        </Menu>
+        {!isAddCommentPage && (
+           <Menu
+           visible={menuVisible}
+           onDismiss={toggleMenu}
+           anchor={
+             <IconButton icon="dots-vertical" size={24} onPress={toggleMenu} />
+           }
+         >
+           <Menu.Item onPress={() => handleReportMember(user)} title="Report Post" />
+           <Menu.Item onPress={handleBlockUser} title="Block User" />
+           <Menu.Item onPress={() => handleDeletePost(post._id)} title="Delete Post" />
+         </Menu>
+        )}
+
+       
       </View>
 
       {/* post content */}
