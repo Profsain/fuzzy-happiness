@@ -21,7 +21,7 @@
       [
         "expo-contacts",
         {
-          "contactsPermission": "Allow Splinx-App to access your contacts."
+          "contactsPermission": "Splinx-App needs access to your contacts to help you easily invite friends, connect with contacts, and enhance your event planning experience."
         }
       ],
       [
@@ -61,10 +61,13 @@
       "bundleIdentifier": "com.splinxplanetapp",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSContactsUsageDescription": "Allow Splinx-App to access your contacts.",
+        "NSContactsUsageDescription": "Splinx-App needs access to your contacts to help you easily invite friends, connect with contacts, and enhance your event planning experience.",
         "NSLocationWhenInUseUsageDescription": "Splinx Planet needs location access to show you events happening near you and improve recommendations.",
         "NSLocationAlwaysUsageDescription": "Splinx Planet uses your location to track real-time event check-ins and suggest personalized events nearby.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "This app requires access to your camera to allow users to capture and upload pictures",
+        "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to allow users upload photos",
+        "NSMicrophoneUsageDescription": "This app requires access to the microphone for voice calls and voice messages"
       }
     },
     "android": {
