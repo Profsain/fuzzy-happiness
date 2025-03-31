@@ -9,6 +9,8 @@ import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
 import { TouchableOpacity, Alert, View } from "react-native";
 
+import { sendSmsVerification } from "../utils/twillioApi";
+
 const SignUpScreen = ({ navigation }) => {
   const [isValid, setIsValid] = useState(false);
   const [phoneValue, setPhoneValue] = useState("");
@@ -18,8 +20,40 @@ const SignUpScreen = ({ navigation }) => {
 
   const phoneInput = useRef(null);
 
-  // native notify token
-  const notifyToken = process.env.NATIVE_NOTIFY_TOKEN;
+  // textflow api key
+  const textflowKey = process.env.TEXTFLOW_API_KEY;
+  const textflowUrl = "https://textflow.me/api/send-code";
+
+  // handle back button
+  const handleBackBtn = () => {
+    navigationToScreen(navigation, "LoginScreen");
+  };
+
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      // send otp to phone
+      sendPushNotification(
+        formattedValue,
+        "Splinx Planet",
+        `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
+      );
+
+      // navigate to OTP screen
+      navigationToScreen(navigation, "OTPScreen", { phoneNumber: formattedValue });
+    } catch (error) {
+      setError("Failed to send OTP. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePhoneChange = (phoneNumber) => {
+    setFormattedValue(phoneNumber);
+    handleChangeValue(phoneNumber);
+  };
 
   const handleChangeValue = (text) => {
     setPhoneValue(text);
@@ -36,35 +70,27 @@ const SignUpScreen = ({ navigation }) => {
     }
   };
 
-  const sendVerificationCode = async (phoneNumber) => {
+  const sendVerificationCode = async () => {
     setLoading(true);
-
-    // generate 6 digit random number as otp
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    // store otp to local storage
-    await setItem("otp", otp);
 
     // data
     const data = {
-      phone: formattedValue,
+      phoneNumber: formattedValue,
     };
 
-    try {
-      await registerIndieID(`${phoneNumber}`, 22245, notifyToken);
+    sendSmsVerification(formattedValue).then((sent) => {
 
-      // send otp to phone
-      sendPushNotification(
-        phoneNumber,
-        "Splinx Planet",
-        `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
-      );
+      if (sent.success) {
+        // navigate to OTP screen
+        navigationToScreen(navigation, "TokenScreen", data);
+        setLoading(false);
+       
+      } else {
+        Alert.alert("Error", sent.error);
+        setLoading(false);
+      }
+    });
 
-      navigationToScreen(navigation, "TokenScreen", data);
-      setLoading(false);
-    } catch (error) {
-      Alert.alert("Error", error.message);
-      setLoading(false);
-    }
   };
 
   const handleGetToken = () => {
@@ -87,7 +113,7 @@ const SignUpScreen = ({ navigation }) => {
           <PhoneInput
             ref={phoneInput}
             defaultValue={phoneValue}
-            defaultCode="NG"
+            defaultCode="GB"
             layout="first"
             onChangeText={handleChangeValue}
             onChangeFormattedText={(text) => {

@@ -169,47 +169,86 @@ const UserProfileScreen = () => {
       .catch((err) => console.log("err", err));
   };
 
+  // const handleCreateAccount = async () => {
+  //   setSubmitting(true);
+  //   try {
+  //     const data = {
+  //       ...receivedData,
+  //       profileImg,
+  //       age,
+  //       bio,
+  //       interestList,
+  //       tagList,
+  //     };
+
+  //     const myHeaders = new Headers();
+  //     myHeaders.append("Content-Type", "application/json");
+
+  //     const requestOptions = {
+  //       method: "POST",
+  //       headers: myHeaders,
+  //       body: JSON.stringify(data),
+  //       redirect: "follow",
+  //     };
+
+  //     const response = await fetch(
+  //       `${baseUrl}/auth/register`,
+  //       requestOptions
+  //     );
+
+  //     if (!response.ok) {
+  //       Alert.alert("Error", JSON.stringify(response.message));
+  //       setSubmitting(false);
+  //       return;
+  //     }
+
+  //     const result = await response.text();
+  //     setSubmitting(false);
+  //     navigation.replace("InviteFriendsScreen");
+  //   } catch (error) {
+  //     Alert.alert("Error", "An error occurred, please try again");
+  //     setSubmitting(false);
+  //   }
+  // };
+
   const handleCreateAccount = async () => {
     setSubmitting(true);
+
     try {
-      const data = {
-        ...receivedData,
-        profileImg,
-        age,
-        bio,
-        interestList,
-        tagList,
-      };
+        const data = {
+            ...receivedData,
+            profileImg,
+            age,
+            bio,
+            interestList,
+            tagList,
+        };
 
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+        const response = await fetch(`${baseUrl}/auth/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
 
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(data),
-        redirect: "follow",
-      };
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            console.log(errorMessage);
+            Alert.alert("Network Error", "Registration failed. Try again");
+            return;
+        }
 
-      const response = await fetch(
-        `${baseUrl}/auth/register`,
-        requestOptions
-      );
-
-      if (!response.ok) {
-        Alert.alert("Error", JSON.stringify(response.message));
         setSubmitting(false);
-        return;
-      }
-
-      const result = await response.text();
-      setSubmitting(false);
-      navigation.replace("InviteFriendsScreen");
+        navigation.replace("InviteFriendsScreen");
     } catch (error) {
-      Alert.alert("Error", "An error occurred, please try again");
-      setSubmitting(false);
+      console.log(error);
+        Alert.alert("Error", "An error occurred, please try again");
+    } finally {
+        setSubmitting(false);
     }
-  };
+};
+
 
   return (
     <Box width="100%" justifyContent="center" p={24} pt={28}>

@@ -23,15 +23,15 @@ const LoginScreen = ({ navigation }) => {
   const handleSignUp = async () => {
     navigationToScreen(navigation, "SignUpScreen");
     // set isExplorer to false in async storage
-    await AsyncStorage.setItem("isExplorer", "false");
+    // await AsyncStorage.setItem("isExplorer", "false");
   };
 
-  // handle explore
-  const handleExplore = async () => {
-    // set isExplorer to true in async storage
-    await AsyncStorage.setItem("isExplorer", "true");
-    navigationToScreen(navigation, "TabNavigation");
-  };
+  // // handle explore
+  // const handleExplore = async () => {
+  //   // set isExplorer to true in async storage
+  //   await AsyncStorage.setItem("isExplorer", "true");
+  //   navigationToScreen(navigation, "TabNavigation");
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,14 +51,14 @@ const LoginScreen = ({ navigation }) => {
           buttonFunc={handleSignUp}
         />
         {/* just explore */}
-        <Box mt={6}>
+        {/* <Box mt={6}>
           <CustomButton
             backgroundColor="lightgray"
             color={secondaryColor}
             label="Just explore"
             buttonFunc={handleExplore}
           />
-        </Box>
+        </Box> */}
       </View>
     </SafeAreaView>
   );
