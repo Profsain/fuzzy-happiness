@@ -169,49 +169,8 @@ const UserProfileScreen = () => {
       .catch((err) => console.log("err", err));
   };
 
-  // const handleCreateAccount = async () => {
-  //   setSubmitting(true);
-  //   try {
-  //     const data = {
-  //       ...receivedData,
-  //       profileImg,
-  //       age,
-  //       bio,
-  //       interestList,
-  //       tagList,
-  //     };
-
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Content-Type", "application/json");
-
-  //     const requestOptions = {
-  //       method: "POST",
-  //       headers: myHeaders,
-  //       body: JSON.stringify(data),
-  //       redirect: "follow",
-  //     };
-
-  //     const response = await fetch(
-  //       `${baseUrl}/auth/register`,
-  //       requestOptions
-  //     );
-
-  //     if (!response.ok) {
-  //       Alert.alert("Error", JSON.stringify(response.message));
-  //       setSubmitting(false);
-  //       return;
-  //     }
-
-  //     const result = await response.text();
-  //     setSubmitting(false);
-  //     navigation.replace("InviteFriendsScreen");
-  //   } catch (error) {
-  //     Alert.alert("Error", "An error occurred, please try again");
-  //     setSubmitting(false);
-  //   }
-  // };
-
   const handleCreateAccount = async () => {
+
     setSubmitting(true);
 
     try {
@@ -223,7 +182,6 @@ const UserProfileScreen = () => {
             interestList,
             tagList,
         };
-
         const response = await fetch(`${baseUrl}/auth/register`, {
             method: "POST",
             headers: {
@@ -234,16 +192,16 @@ const UserProfileScreen = () => {
 
         if (!response.ok) {
             const errorMessage = await response.text();
-            console.log(errorMessage);
-            Alert.alert("Network Error", "Registration failed. Try again");
+            // console.log(errorMessage);
+            Alert.alert("Error", "Registration failed. Try again");
             return;
         }
 
         setSubmitting(false);
         navigation.replace("InviteFriendsScreen");
     } catch (error) {
-      console.log(error);
-        Alert.alert("Error", "An error occurred, please try again");
+      // console.log(error.message);
+        Alert.alert("Network Error", "An error occurred, please try again later.");
     } finally {
         setSubmitting(false);
     }

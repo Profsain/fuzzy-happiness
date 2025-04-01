@@ -37,7 +37,7 @@ export default function App() {
       
       // test fetching product
       const offerings = await Purchases.getOfferings();
-      console.log("Product", offerings);
+      console.log("RC Products", offerings);
     };
     
     // log
