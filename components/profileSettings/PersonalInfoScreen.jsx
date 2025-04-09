@@ -145,6 +145,7 @@ const PersonalInfoScreen = ({ navigation }) => {
               style={{ marginRight: 14 }}
             />
           }
+          iconRight=""
         />
         <OptionButton
           btnFunc={handleChangeEmail}

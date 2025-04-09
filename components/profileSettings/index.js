@@ -19,4 +19,6 @@ export { default as PaymentSuccessScreen } from './PaymentSuccessScreen';
 export { default as LiveChatSupport } from './LiveChatSupport';
 export { default as FaqScreen } from './FaqScreen';
 export { default as PushNotification } from './PushNotification';
+export { default as AddSocialHandle } from './AddSocialHandle';
+export { default as UploadMorePictures } from './UploadMorePictures';
 
