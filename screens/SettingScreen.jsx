@@ -161,7 +161,7 @@ const SettingScreen = () => {
         navigation={navigation}
       />
       <Stack.Screen
-        name="AddSocialHanle"
+        name="AddSocialHandle"
         component={AddSocialHandle}
         options={{ headerShown: false }}
         navigation={navigation}

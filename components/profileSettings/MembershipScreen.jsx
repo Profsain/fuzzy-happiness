@@ -16,7 +16,7 @@ import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
 
 // revenueCat ui
-import RevenueCatUI from "react-native-purchases-ui";
+// import RevenueCatUI from "react-native-purchases-ui";
 
 const MembershipScreen = ({ navigation }) => {
   const { userProfile, subscriptionPlans, isLocked } = useLogin();
