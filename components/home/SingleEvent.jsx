@@ -153,7 +153,7 @@ const SingleEvent = ({ navigation, route }) => {
                   <CustomButton
                     mr={14}
                     width={110}
-                    label="Register"
+                    label="Expired"
                     backgroundColor={secondBgColor}
                   />
                 </View>
@@ -175,14 +175,14 @@ const SingleEvent = ({ navigation, route }) => {
                       <CustomButton
                         mr={14}
                         width={110}
-                        label="Registered"
+                        label="Joined"
                         backgroundColor={secondBgColor}
                       />
                     ) : (
                       <CustomButton
                         mr={14}
                         width={110}
-                        label="Register"
+                        label="Join"
                         buttonFunc={handleRegistration}
                       />
                     )}

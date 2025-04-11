@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useLogin } from "../../context/LoginProvider";
+import { View, Text, SafeAreaView, TouchableOpacity, Image, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { BackTopBar } from '../home';
 import handlePhoto from "../../utils/uploadImage";
 import LoadingSpinner from "../LoadingSpinner";
 
-
 const UploadMorePictures = ({ navigation }) => {
-  const [photos, setPhotos] = useState([]);
+  const { userProfile, setUserProfile, token } = useLogin();
+  const baseUrl = process.env.BASE_URL;
+
+  const [photos, setPhotos] = useState(userProfile?.uploadedPhotos || []);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [loadingImages, setLoadingImages] = useState({}); // To track loading per image
 
-  const handleBackBtn = () => {
-    navigation.goBack();
-  };
+  // set initial photos value from userProfile.uploadedPhotos
+  useEffect(() => {
+    if (userProfile) {
+      setPhotos(userProfile.uploadedPhotos || []);
+    }
+  }, [userProfile]);
 
+  const handleBackBtn = () => navigation.goBack();
+
+  // handle upload picture to backend
   const pickImage = async (index = null) => {
     if (photos.length >= 6 && index === null) {
       Alert.alert('Limit Reached', 'You can only upload up to 6 pictures.');
@@ -21,21 +31,53 @@ const UploadMorePictures = ({ navigation }) => {
 
     try {
       setIsProcessing(true);
-      const uploadedImageUrl = await handlePhoto();  // Call the handlePhoto function to upload the image
+      const uploadedImageUrl = await handlePhoto();
+
       if (uploadedImageUrl) {
         const newPhotos = [...photos];
         if (index !== null) {
-          newPhotos[index] = uploadedImageUrl;  // Replace the existing photo if index is provided
+          newPhotos[index] = uploadedImageUrl;
         } else {
-          newPhotos.push(uploadedImageUrl);  // Add the new image URL to the photos array
+          newPhotos.push(uploadedImageUrl);
         }
+
         setPhotos(newPhotos);
-        setIsProcessing(false);
+        await updateUserPhotos(newPhotos);
       }
-    } catch (error) {
+
       setIsProcessing(false);
+    } catch (error) {
       console.log("Error uploading image:", error);
-      Alert.alert('Error', 'There was an issue uploading the image.');
+      Alert.alert('Network Error', 'There was an issue uploading the image.');
+      setIsProcessing(false);
+    }
+  };
+
+  const updateUserPhotos = async (updatedPhotos) => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/user/update-user/${userProfile._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ uploadedPhotos: updatedPhotos }),
+        }
+      );
+
+      if (response.ok) {
+        setUserProfile((prev) => ({
+          ...prev,
+          uploadedPhotos: updatedPhotos,
+        }));
+      } else {
+        Alert.alert('Error', 'Failed to update your photos on the server.');
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      Alert.alert('Error', 'Could not update user profile.');
     }
   };
 
@@ -48,24 +90,44 @@ const UploadMorePictures = ({ navigation }) => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             const updatedPhotos = [...photos];
             updatedPhotos.splice(index, 1);
             setPhotos(updatedPhotos);
+            await updateUserPhotos(updatedPhotos); // 🔁 Update backend after delete
           },
         },
       ]
     );
   };
 
+  const handleImageLoadStart = (index) => {
+    setLoadingImages((prev) => ({ ...prev, [index]: true }));
+  };
+
+  const handleImageLoadEnd = (index) => {
+    setLoadingImages((prev) => ({ ...prev, [index]: false }));
+  };
+
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => pickImage(index)}
       onLongPress={() => confirmDelete(index)}
-      className="w-[31%] aspect-square rounded-xl overflow-hidden mb-4"
+      className="w-[31%] aspect-square rounded-xl overflow-hidden mb-4 relative"
       style={{ marginRight: (index + 1) % 3 === 0 ? 0 : '3%' }}
     >
-      <Image source={{ uri: item }} className="w-full h-full" resizeMode="cover" />
+      {loadingImages[index] && (
+        <View className="absolute inset-0 justify-center items-center bg-white/60 z-10">
+          <ActivityIndicator size="small" color="#f9784b" />
+        </View>
+      )}
+      <Image
+        source={{ uri: item }}
+        className="w-full h-full"
+        resizeMode="cover"
+        onLoadStart={() => handleImageLoadStart(index)}
+        onLoadEnd={() => handleImageLoadEnd(index)}
+      />
     </TouchableOpacity>
   );
 
@@ -89,13 +151,8 @@ const UploadMorePictures = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         />
 
-        <View>
-          {isProcessing && (
-            <LoadingSpinner
-              text="Uploading..."
-            />
-          )}
-        </View>
+        {isProcessing && <LoadingSpinner text="Uploading..." />}
+
         {photos.length < 6 && (
           <TouchableOpacity
             className="my-16 bg-[#f9784b] py-4 rounded-xl items-center"
