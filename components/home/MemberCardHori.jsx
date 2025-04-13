@@ -4,13 +4,13 @@ import { Feather } from "@expo/vector-icons";
 
 const MemberCardHori = ({ user, showActions = false, onAccept, onDecline, onView }) => {
     return (
-      <View className="flex flex-row justify-between items-center mx-2 p-3 border border-gray-300 rounded-xl w-full bg-gray-50">
+      <View className="flex flex-row justify-between items-center mx-2 my-2 p-3 border border-gray-300 rounded-xl w-full bg-gray-50">
         <Image
           source={{ uri: user.profileImg }}
           className="w-14 h-14 rounded-full"
           resizeMode="cover"
         />
-        <Text className="text-xs mt-1 text-center">{user.firstName}</Text>
+        <Text className="text-xs mt-1 text-center">{user.firstName || user.userName}</Text>
         <View className="flex flex-row mt-1 space-x-2">
           <TouchableOpacity onPress={() => onView(user)}>
             <Feather name="eye" size={18} color="black" />

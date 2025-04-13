@@ -190,6 +190,7 @@ const SingleEvent = ({ navigation, route }) => {
 		fetchMembership();
 	}, [isUserMember]);
 
+	console.log("membership", membership);
 	return (
 		<>
 			<ScrollView className="flex-1 px-6 pt-14 bg-white">
@@ -397,7 +398,9 @@ const SingleEvent = ({ navigation, route }) => {
 														handleOpenAllMembers(
 															"membership",
 															membership,
-															eventIdnavigation,
+															eventId,
+															navigation,
+															fetchMembership
 														)
 													}
 												/>
@@ -407,7 +410,7 @@ const SingleEvent = ({ navigation, route }) => {
 													}
 													horizontal
 													keyExtractor={(item) =>
-														item._id
+														item.id
 													}
 													showsHorizontalScrollIndicator={
 														false
@@ -444,6 +447,7 @@ const SingleEvent = ({ navigation, route }) => {
 														handleOpenAllMembers(
 															"request",
 															membership,
+															eventId,
 															navigation,
 														)
 													}

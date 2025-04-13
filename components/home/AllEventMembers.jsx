@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, View, ScrollView, FlatList, Alert } from "react-native";
+import { useLogin } from "../../context/LoginProvider";
 import BackTopBar from "./BackTopBar";
 import HorizontalTitle from "./HorizontalTitle";
 import MemberCardHori from "./MemberCardHori";
@@ -11,8 +12,9 @@ import {
 } from "./funcs/membershipOperation";
 
 const AllEventMembers = ({ navigation, route }) => {
+	const { userProfile, token } = useLogin();
 	// extract membership list
-	const { memberList, option } = route.params;
+	const { memberList, option, eventId } = route.params;
 
 	const [processing, setProcessing] = useState(false);
 
@@ -20,7 +22,7 @@ const AllEventMembers = ({ navigation, route }) => {
 	const handleBackBtn = () => navigation.goBack();
 
 	return (
-		<ScrollView className="flex-1 px-6 pt-14 bg-white">
+		<View className="flex-1 px-6 pt-14 bg-white">
 			<BackTopBar headline="Membership" icon2="" func={handleBackBtn} />
 			{/* loading spinner */}
 			<View>{processing && <LoadingSpinner />}</View>
@@ -89,10 +91,10 @@ const AllEventMembers = ({ navigation, route }) => {
 											)
 										}
 										onAccept={(user) =>
-											Alert.alert("Accept", {
-												title: `Accept ${user.firstName}`,
-												message: "Are you sure?",
-												buttons: [
+											Alert.alert(
+												`Accept ${user.firstName}`,
+												"Are you sure?",
+												[
 													{
 														text: "Cancel",
 														style: "cancel",
@@ -102,13 +104,13 @@ const AllEventMembers = ({ navigation, route }) => {
 														onPress: () =>
 															handleAcceptMembershipRequest(
 																setProcessing,
-																memberList._id,
+																eventId,
 																user._id,
-																memberList.token,
+																token,
 															),
 													},
 												],
-											})
+											)
 										}
 										onDecline={(user) =>
 											Alert.alert(
@@ -123,7 +125,7 @@ const AllEventMembers = ({ navigation, route }) => {
 					)}
 				</View>
 			)}
-		</ScrollView>
+		</View>
 	);
 };
 
