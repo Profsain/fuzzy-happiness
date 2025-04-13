@@ -26,7 +26,12 @@ import { Feather } from "@expo/vector-icons";
 import { secondBgColor } from "../../utils/appstyle";
 import HorizontalTitle from "./HorizontalTitle";
 
-import { handleOpenAllMembers } from "./funcs/membershipOperation";
+import {
+	handleOpenAllMembers,
+	handleViewMemberDetails,
+	handleAcceptMembershipRequest,
+	handleDeclineMembershipRequest,
+} from "./funcs/membershipOperation";
 
 const SingleEvent = ({ navigation, route }) => {
 	// get login user from context
@@ -101,7 +106,8 @@ const SingleEvent = ({ navigation, route }) => {
 			);
 
 			const data = await response.json();
-			if (response.ok) {
+			console.log(data)
+			if (data) {
 				setIsProcessing(false);
 				setIsRequestSent(true);
 				console.log("Event registration successful:", data);
@@ -190,7 +196,6 @@ const SingleEvent = ({ navigation, route }) => {
 		fetchMembership();
 	}, [isUserMember]);
 
-	console.log("membership", membership);
 	return (
 		<>
 			<ScrollView className="flex-1 px-6 pt-14 bg-white">
@@ -345,7 +350,7 @@ const SingleEvent = ({ navigation, route }) => {
 									/>
 								</View>
 								<TouchableOpacity className="ml-4">
-									<Text>Register to Join Chat</Text>
+									<Text>Register to Join Chat.</Text>
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -374,7 +379,7 @@ const SingleEvent = ({ navigation, route }) => {
 						)}
 
 						{/* about event  */}
-						<View className="mt-4 mb-24">
+						<View className="mt-4 mb-8">
 							<Text className="text-lg font-semibold">
 								About Event
 							</Text>
@@ -400,7 +405,7 @@ const SingleEvent = ({ navigation, route }) => {
 															membership,
 															eventId,
 															navigation,
-															fetchMembership
+															fetchMembership,
 														)
 													}
 												/>
@@ -424,9 +429,10 @@ const SingleEvent = ({ navigation, route }) => {
 															user={item}
 															showActions={false}
 															onView={(user) =>
-																Alert.alert(
-																	"View",
-																	`${user.firstName}'s profile`,
+																handleViewMemberDetails(
+																	user.id,
+																	token,
+																	navigation,
 																)
 															}
 														/>
@@ -479,14 +485,46 @@ const SingleEvent = ({ navigation, route }) => {
 															}
 															onAccept={(user) =>
 																Alert.alert(
-																	"Accept",
-																	`Accepted ${user.firstName}`,
+																	`Accept ${user.firstName}`,
+																	"Are you sure?",
+																	[
+																		{
+																			text: "Cancel",
+																			style: "cancel",
+																		},
+																		{
+																			text: "OK",
+																			onPress: () =>
+																				handleAcceptMembershipRequest(
+																					setProcessing,
+																					eventId,
+																					user._id,
+																					token,
+																				),
+																		},
+																	],
 																)
 															}
 															onDecline={(user) =>
 																Alert.alert(
-																	"Decline",
-																	`Declined ${user.firstName}`,
+																	`Decline ${user.firstName}`,
+																	"Are you sure?",
+																	[
+																		{
+																			text: "Cancel",
+																			style: "cancel",
+																		},
+																		{
+																			text: "Decline",
+																			onPress: () =>
+																				handleDeclineMembershipRequest(
+																					setProcessing,
+																					eventId,
+																					user._id,
+																					token,
+																				),
+																		},
+																	],
 																)
 															}
 														/>

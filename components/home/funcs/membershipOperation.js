@@ -22,13 +22,9 @@ const handleAcceptMembershipRequest = async (
 	userId,
 	token,
 ) => {
-	console.log("eventId", eventId);
-	console.log("userId", userId);
-	console.log("token", token);
-	console.log(setProcessing);
 	try {
 		setProcessing(true);
-		const response = await fetch(
+		const response = await global.fetch(
 			`${baseUrl}/event/events/${eventId}/approve-request`,
 			{
 				method: "POST",
@@ -64,10 +60,10 @@ const handleDeclineMembershipRequest = async (
 ) => {
 	try {
 		setProcessing(true);
-		const response = await fetch(
+		const response = await global.fetch(
 			`${baseUrl}/event/events/${eventId}/approve-request`,
 			{
-				method: "",
+				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
@@ -82,6 +78,8 @@ const handleDeclineMembershipRequest = async (
 			throw new Error(data.message || "Something went wrong!");
 		}
 		setProcessing(false);
+        // update the membership list
+        fetch();
 		return data;
 	} catch (error) {
 		setProcessing(false);
@@ -90,9 +88,34 @@ const handleDeclineMembershipRequest = async (
 };
 
 // handle view member details
+const handleViewMemberDetails = async (userId, token, navigation) => {
+    // fetch user details
+    // navigate to memeber details screen and pass user details
+    try {
+        const response = await global.fetch(`${baseUrl}/user/get-user/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Something went wrong!");
+        }
+        // navigate to member details screen and pass user details
+        navigation.navigate("MemberDetails", { user: data });
+
+    } catch (error) {
+        console.error("Error Loading member details:", error);
+        
+    }
+}
 
 export {
 	handleOpenAllMembers,
 	handleAcceptMembershipRequest,
 	handleDeclineMembershipRequest,
+    handleViewMemberDetails
 };

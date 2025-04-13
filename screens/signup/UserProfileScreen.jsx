@@ -193,7 +193,7 @@ const UserProfileScreen = () => {
         if (!response.ok) {
             const errorMessage = await response.text();
             // console.log(errorMessage);
-            Alert.alert("Error", "Registration failed. Try again");
+            Alert.alert("Error", "User already exists");
             return;
         }
 

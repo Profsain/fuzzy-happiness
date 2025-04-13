@@ -9,6 +9,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import {
 	handleAcceptMembershipRequest,
 	handleDeclineMembershipRequest,
+	handleViewMemberDetails
 } from "./funcs/membershipOperation";
 
 const AllEventMembers = ({ navigation, route }) => {
@@ -28,7 +29,7 @@ const AllEventMembers = ({ navigation, route }) => {
 			<View>{processing && <LoadingSpinner />}</View>
 
 			{option === "membership" ? (
-				<View className="mt-4">
+				<View className="mt-4 mb-14">
 					{memberList && memberList.eventMembers?.length > 0 && (
 						<>
 							<HorizontalTitle
@@ -50,10 +51,7 @@ const AllEventMembers = ({ navigation, route }) => {
 										user={item}
 										showActions={false}
 										onView={(user) =>
-											Alert.alert(
-												"View",
-												`${user.firstName}'s profile`,
-											)
+											handleViewMemberDetails(user.id, token, navigation)
 										}
 									/>
 								)}
@@ -85,10 +83,7 @@ const AllEventMembers = ({ navigation, route }) => {
 										user={item}
 										showActions
 										onView={(user) =>
-											Alert.alert(
-												"View",
-												`${user.firstName}'s profile`,
-											)
+											handleViewMemberDetails(user._id, token, navigation)
 										}
 										onAccept={(user) =>
 											Alert.alert(
@@ -114,8 +109,24 @@ const AllEventMembers = ({ navigation, route }) => {
 										}
 										onDecline={(user) =>
 											Alert.alert(
-												"Decline",
-												`Declined ${user.firstName}`,
+												`Decline ${user.firstName}`,
+												"Are you sure?",
+												[
+													{
+														text: "Cancel",
+														style: "cancel",
+													},
+													{
+														text: "Decline",
+														onPress: () =>
+															handleDeclineMembershipRequest(
+																setProcessing,
+																eventId,
+																user._id,
+																token,
+															),
+													},
+												],
 											)
 										}
 									/>
