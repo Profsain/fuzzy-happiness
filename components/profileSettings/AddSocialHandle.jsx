@@ -105,7 +105,6 @@ const AddSocialHandle = ({ navigation }) => {
 					...prevUserProfile,
 					...handles,
 				}));
-				console.log("Profile updated successfully");
 				Alert.alert("Success", "Social handles updated successfully");
 				setIsProcessing(false);
 			} else {

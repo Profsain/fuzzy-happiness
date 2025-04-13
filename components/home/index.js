@@ -12,3 +12,5 @@ export { default as CreateNewEvent } from './CreateNewEvent';
 export { default as DateModal } from './DateModal';
 export { default as TimeModal } from './TimeModal';
 export { default as SearchResult } from './SearchResult';
+export { default as MemberDetails } from './MemberDetails';
+export { default as AllEventMembers } from './AllEventMembers';

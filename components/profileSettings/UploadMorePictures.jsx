@@ -8,7 +8,7 @@ import LoadingSpinner from "../LoadingSpinner";
 const UploadMorePictures = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
   const baseUrl = process.env.BASE_URL;
-
+// console.log(userProfile.uploadedPhotos)
   const [photos, setPhotos] = useState(userProfile?.uploadedPhotos || []);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loadingImages, setLoadingImages] = useState({}); // To track loading per image

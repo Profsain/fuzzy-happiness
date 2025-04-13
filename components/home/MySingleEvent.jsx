@@ -80,7 +80,7 @@ const MySingleEvent = ({
 
   // handle share event
   const handleShare = () => {
-    const appUrl = "https://www.google.com";
+    const appUrl = process.env.APP_DOWNLOAD_URL;
     const message = `Join me at ${eventName} event. Download the app to register and join the event ${appUrl}`;
     handleSocialShare(message);
   };
@@ -190,7 +190,7 @@ const MySingleEvent = ({
                   <FontAwesome5 name="rocketchat" size={18} color="black" />
                 </View>
                 <TouchableOpacity className="ml-4">
-                  <Text>Register to Join Chat</Text>
+                  <Text>Event Group Chat</Text>
                 </TouchableOpacity>
               </View>
             </View>
