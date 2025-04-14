@@ -74,7 +74,7 @@ const CreateNewEvent = ({ navigation }) => {
   // form data
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
-  const [eventCategory, setEventCategory] = useState("");
+  const [eventCategory, setEventCategory] = useState("General");
   const [eventImage, setEventImage] = useState("");
   const [eventImageUrl, setEventImageUrl] = useState("");
   const [isAllValid, setIsAllValid] = useState(false);

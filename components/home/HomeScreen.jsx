@@ -197,39 +197,49 @@ const HomeScreen = ({ navigation }) => {
   });
 
   // Fetch events
+  const fetchData = useCallback(async () => {
+		setState((prevState) => ({ ...prevState, eventsLoading: true }));
+		try {
+			const response = await fetch(`${baseUrl}/event`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					// Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to fetch data");
+			}
+
+			const data = await response.json();
+			const filteredEvents = data.events.filter(
+				(event) => event.eventCreator !== userProfile._id,
+			);
+			const allEvents = [...filteredEvents];
+			setAllEventsList(allEvents);
+			setState((prevState) => ({
+				...prevState,
+				fetchEventData: data.events,
+				allAppEvents: sortEventsByDate(allEvents),
+				myEvents: filterEventsByCreator(data.events, userProfile._id),
+				eventsLoading: false,
+			}));
+		} catch (error) {
+			setState((prevState) => ({ ...prevState, eventsLoading: false }));
+			console.error("fetchData error:", error);
+		}
+  }, [baseUrl, userProfile._id]);
+
+  useFocusEffect(
+		useCallback(() => {
+			fetchData();
+		}, [fetchData]),
+  );
+
   useEffect(() => {
-    const fetchData = async () => {
-      setState((prevState) => ({ ...prevState, eventsLoading: true }));
-      try {
-        const response = await fetch(`${baseUrl}/event`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
-        const data = await response.json();
-        const allEvents = [...data.events, ...eventData];
-        setAllEventsList(allEvents);
-        setState((prevState) => ({
-          ...prevState,
-          fetchEventData: data.events,
-          allAppEvents: sortEventsByDate(allEvents),
-          myEvents: filterEventsByCreator(data.events, userProfile._id),
-          eventsLoading: false,
-        }));
-      } catch (error) {
-        setState((prevState) => ({ ...prevState, eventsLoading: false }));
-      }
-    };
-
     fetchData();
-  }, [token, userProfile._id]);
+  }, [fetchData]);
 
   // handle view my events
   const handleViewMyEvents = useCallback(() => {
@@ -240,9 +250,9 @@ const HomeScreen = ({ navigation }) => {
 
     // navigate to all events screen and pass the event list
     navigation.navigate("AllEvents", {
-      eventList: myEvents,
-      headText: "My Events",
-    });
+		eventList: state.myEvents,
+		headText: "My Events",
+	});
   }, [allEventsList]);
 
   // handle view all events
@@ -276,17 +286,24 @@ const HomeScreen = ({ navigation }) => {
   // handle open single event
   const handleOpenSingleEvent = useCallback(
     (id) => {
-      const event = allEventsList.find((event) => {
-        // check if event._id is empty and use event.id
-        if (event._id) {
-          return event._id === id;
-        } else {
-          return event.id === id;
-        }
-      });
-
-      navigation.navigate("SingleEvent", { eventDetails: event });
-    },
+		// join events list
+		const joinedEvents = [...state.myEvents, ...state.allAppEvents];
+		// find event in the joined events list
+		const event = joinedEvents.find((event) => {
+			// check if event._id is empty and use event.id
+			if (event._id) {
+				return event._id === id;
+			} else {
+				return event.id === id;
+			}
+		});
+		// check if event is not found
+		if (!event) {
+			Alert.alert("Event not found", "Please try again later");
+			return;
+		}
+		navigation.navigate("SingleEvent", { eventDetails: event });
+	},
     [allEventsList]
   );
 
@@ -376,205 +393,236 @@ const HomeScreen = ({ navigation }) => {
   }, []);
  
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Top bar */}
-      <View className="flex px-8 mt-12 w-full">
-        <View className="flex flex-row justify-between">
-          <Text className="font-4xl font-semibold">
-            Hello {userProfile.firstName || "User"}
-          </Text>
-          <View>
-            <TouchableOpacity onPress={handleNotification}>
-              <View>
-                {/* Notification Icon */}
-                <Ionicons name="notifications" size={24} color="black" />
+		<SafeAreaView style={styles.container}>
+			{/* Top bar */}
+			<View className="flex px-8 mt-12 w-full">
+				<View className="flex flex-row justify-between">
+					<Text className="font-4xl font-semibold">
+						Hello {userProfile.firstName || "User"}
+					</Text>
+					<View>
+						<TouchableOpacity onPress={handleNotification}>
+							<View>
+								{/* Notification Icon */}
+								<Ionicons
+									name="notifications"
+									size={24}
+									color="black"
+								/>
 
-                {/* Badge to show unread notifications */}
-                {notRead > 0 && (
-                  <View
-                    style={{
-                      position: "absolute",
-                      right: -6, // Adjust the position to fit the icon
-                      top: -3, // Adjust the position to fit the icon
-                      backgroundColor: primeryColor, // Use your primary color
-                      borderRadius: 10, // Circular shape
-                      width: 16, // Badge size
-                      height: 16, // Badge size
-                      justifyContent: "center", // Center the text inside the badge
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 6,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {notRead}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* Search bar */}
-        <SearchBox
-          handleSearch={handleSearchTermChange}
-          searchTerm={searchTerm}
-          mt={14}
-          mb={18}
-        />
-      </View>
+								{/* Badge to show unread notifications */}
+								{notRead > 0 && (
+									<View
+										style={{
+											position: "absolute",
+											right: -6, // Adjust the position to fit the icon
+											top: -3, // Adjust the position to fit the icon
+											backgroundColor: primeryColor, // Use your primary color
+											borderRadius: 10, // Circular shape
+											width: 16, // Badge size
+											height: 16, // Badge size
+											justifyContent: "center", // Center the text inside the badge
+											alignItems: "center",
+										}}
+									>
+										<Text
+											style={{
+												color: "white",
+												fontSize: 6,
+												fontWeight: "bold",
+											}}
+										>
+											{notRead}
+										</Text>
+									</View>
+								)}
+							</View>
+						</TouchableOpacity>
+					</View>
+				</View>
+				{/* Search bar */}
+				<SearchBox
+					handleSearch={handleSearchTermChange}
+					searchTerm={searchTerm}
+					mt={14}
+					mb={18}
+				/>
+			</View>
 
-      {/* Search result list */}
-      {searching && <LoadingSpinner text="Searching..." />}
-      {/* if searchResult empty */}
-      {searchResults.length === 0 && searchTerm && !searching && (
-        <Text className="text-lg my-28">No search results found</Text>
-      )}
-      {searchResults.length > 0 ? (
-        <SearchResult
-          eventList={sortEventsByDate(searchResults)}
-          headlineText="Search Results"
-        />
-      ) : (
-        <ScrollView className="px-8">
-          {/* Carousel section */}
-          <View className="mt-4 flex flex-row justify-center">
-            {currentCarousel === 0 ? (
-              <HomeCarousel func={handleViewAllEvents} />
-            ) : (
-              <TopAdvertCarousel />
-            )}
-          </View>
+			{/* Search result list */}
+			{searching && <LoadingSpinner text="Searching..." />}
+			{/* if searchResult empty */}
+			{searchResults.length === 0 && searchTerm && !searching && (
+				<Text className="text-lg my-28">No search results found</Text>
+			)}
+			{searchResults.length > 0 ? (
+				<SearchResult
+					eventList={sortEventsByDate(searchResults)}
+					headlineText="Search Results"
+				/>
+			) : (
+				<ScrollView className="px-8">
+					{/* Carousel section */}
+					<View className="mt-4 flex flex-row justify-center h-[200] bg-slate-100 py-4">
+						{currentCarousel === 0 ? (
+							<HomeCarousel func={handleViewAllEvents} />
+						) : (
+							<TopAdvertCarousel />
+						)}
+					</View>
 
-          {/* Create event button */}
-          <Box mt={18}>
-            <CustomButton
-              backgroundColor="#000"
-              width={140}
-              label="Create Event"
-              buttonFunc={handleCreateNewEvent}
-            />
-          </Box>
+					{/* Create event button */}
+					<Box mt={18}>
+						<CustomButton
+							backgroundColor="#000"
+							width={140}
+							label="Create Event"
+							buttonFunc={handleCreateNewEvent}
+						/>
+					</Box>
 
-          {/* Event sections */}
-          <Box mt={10}>
-            {/* My events list */}
-            {state.myEvents && state.myEvents.length > 0 && (
-              <Box>
-                <HorizontalTitle title="My Events" func={handleViewMyEvents} />
-                {state.eventsLoading && <LoadingSpinner text="" />}
-                <View>
-                  <FlatList
-                    data={sortEventsByDate(state.myEvents)}
-                    renderItem={({ item }) => (
-                      <EventCard
-                        img={
-                          item.eventImage
-                            ? item.eventImage
-                            : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        }
-                        category={item.eventCategory}
-                        title={item.eventName}
-                        location={item.eventLocation}
-                        date={item.eventDate}
-                        time={item.eventTime}
-                        func={() => handleOpenSingleEvent(item._id)}
-                      />
-                    )}
-                    keyExtractor={(item) => item._id || item.id}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                  />
-                </View>
-              </Box>
-            )}
+					{/* Event sections */}
+					<Box mt={10}>
+						{/* My events list */}
+						{state.myEvents && state.myEvents.length > 0 && (
+							<Box>
+								<HorizontalTitle
+									title="My Events"
+									func={handleViewMyEvents}
+								/>
+								{state.eventsLoading && (
+									<LoadingSpinner text="" />
+								)}
+								<View>
+									<FlatList
+										data={sortEventsByDate(state.myEvents)}
+										renderItem={({ item }) => (
+											<EventCard
+												img={
+													item.eventImage
+														? item.eventImage
+														: "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+												}
+												category={item.eventCategory}
+												title={item.eventName}
+												location={item.eventLocation}
+												date={item.eventDate}
+												time={item.eventTime}
+												func={() =>
+													handleOpenSingleEvent(
+														item._id,
+													)
+												}
+											/>
+										)}
+										keyExtractor={(item) =>
+											item._id || item.id
+										}
+										horizontal
+										showsHorizontalScrollIndicator={false}
+									/>
+								</View>
+							</Box>
+						)}
 
-            {/* Upcoming events */}
-            <Box>
-              <HorizontalTitle title={headText} func={handleViewAllEvents} />
-              {state.eventsLoading && <LoadingSpinner text="" />}
-              <View>
-                <FlatList
-                  data={state.allAppEvents
-                    .filter(
-                      (event) =>
-                        event.isOpen && new Date(event.eventDate) > new Date()
-                    )
-                    .slice(0, 30)}
-                  renderItem={({ item }) => (
-                    <EventCard
-                      img={
-                        item.eventImage
-                          ? item.eventImage
-                          : "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      }
-                      category={item.eventCategory}
-                      title={item.eventName}
-                      location={item.eventLocation}
-                      date={item.eventDate}
-                      time={item.eventTime}
-                      func={() => handleOpenSingleEvent(item.id || item._id)}
-                    />
-                  )}
-                  keyExtractor={(item) => item.id || item._id}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                />
-              </View>
-            </Box>
+						{/* Upcoming events */}
+						<Box>
+							<HorizontalTitle
+								title={headText}
+								func={handleViewAllEvents}
+							/>
+							{state.eventsLoading && <LoadingSpinner text="" />}
+							<View>
+								<FlatList
+									data={state.allAppEvents
+										.filter(
+											(event) =>
+												event.isOpen &&
+												new Date(event.eventDate) >
+													new Date(),
+										)
+										.slice(0, 30)}
+									renderItem={({ item }) => (
+										<EventCard
+											img={
+												item.eventImage
+													? item.eventImage
+													: "https://images.unsplash.com/photo-1607827448387-a67db1383b59?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+											}
+											category={item.eventCategory}
+											title={item.eventName}
+											location={item.eventLocation}
+											date={item.eventDate}
+											time={item.eventTime}
+											func={() =>
+												handleOpenSingleEvent(
+													item.id || item._id,
+												)
+											}
+										/>
+									)}
+									keyExtractor={(item) => item.id || item._id}
+									horizontal
+									showsHorizontalScrollIndicator={false}
+								/>
+							</View>
+						</Box>
 
-            {/* Popular events */}
-            <Box>
-              <HorizontalTitle
-                title="Popular Events"
-                func={handleViewAllPopularEvents}
-              />
-              {state.eventsLoading && <LoadingSpinner text="" />}
-              <View>
-                <FlatList
-                  data={state.allAppEvents
-                    .filter((event) => event.isOpen && event.isPopular)
-                    .slice(0, 30)}
-                  renderItem={({ item }) => (
-                    <EventCard
-                      img={item.eventImage}
-                      category={item.eventCategory}
-                      title={item.eventName}
-                      location={item.eventLocation}
-                      date={item.eventDate}
-                      time={item.eventTime}
-                      func={() => handleOpenSingleEvent(item.id || item._id)}
-                    />
-                  )}
-                  keyExtractor={(item) => item.id || item._id}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                />
-              </View>
-            </Box>
+						{/* Popular events */}
+						<Box>
+							<HorizontalTitle
+								title="Popular Events"
+								func={handleViewAllPopularEvents}
+							/>
+							{state.eventsLoading && <LoadingSpinner text="" />}
+							<View>
+								<FlatList
+									data={state.allAppEvents
+										.filter(
+											(event) =>
+												event.isOpen && event.isPopular,
+										)
+										.slice(0, 30)}
+									renderItem={({ item }) => (
+										<EventCard
+											img={item.eventImage}
+											category={item.eventCategory}
+											title={item.eventName}
+											location={item.eventLocation}
+											date={item.eventDate}
+											time={item.eventTime}
+											func={() =>
+												handleOpenSingleEvent(
+													item.id || item._id,
+												)
+											}
+										/>
+									)}
+									keyExtractor={(item) => item.id || item._id}
+									horizontal
+									showsHorizontalScrollIndicator={false}
+								/>
+							</View>
+						</Box>
 
-            {/* Advert section */}
-            <View className="mt-4 flex flex-row justify-center">
-              <EventCardAds />
-            </View>
-          </Box>
-        </ScrollView>
-      )}
+						{/* Advert section */}
+						<View className="mt-4 flex flex-row justify-center">
+							<EventCardAds />
+						</View>
+					</Box>
+				</ScrollView>
+			)}
 
-      {/* Subscription modal */}
-      {isLocked && isExplorer !== "true" && (
-        <SubscriptionModal
-          visible={showTrialModal}
-          daysLeft={daysLeft}
-          onSubscribe={handleSubscribe}
-          onClose={() => setShowTrialModal(false)}
-        />
-      )}
-    </SafeAreaView>
+			{/* Subscription modal */}
+			{isLocked && isExplorer !== "true" && (
+				<SubscriptionModal
+					visible={showTrialModal}
+					daysLeft={daysLeft}
+					onSubscribe={handleSubscribe}
+					onClose={() => setShowTrialModal(false)}
+				/>
+			)}
+		</SafeAreaView>
   );
 };
 

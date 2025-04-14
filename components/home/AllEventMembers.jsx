@@ -40,7 +40,7 @@ const AllEventMembers = ({ navigation, route }) => {
 							<FlatList
 								data={memberList.eventMembers}
 								vertical
-								keyExtractor={(item) => item._id}
+								keyExtractor={(item) => item.id}
 								showsVerticalScrollIndicator={false}
 								contentContainerStyle={{
 									paddingHorizontal: 10,

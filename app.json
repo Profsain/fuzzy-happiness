@@ -14,6 +14,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#f9784b"
     },
+    "newArchEnabled": true,
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-localization",

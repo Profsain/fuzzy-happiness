@@ -10,7 +10,7 @@ const MemberCardHori = ({ user, showActions = false, onAccept, onDecline, onView
           className="w-14 h-14 rounded-full"
           resizeMode="cover"
         />
-        <Text className="text-xs mt-1 text-center">{user.firstName || user.userName}</Text>
+        <Text className="text-lg mt-1 text-center">{user.firstName || user.userName}</Text>
         <View className="flex flex-row mt-1 space-x-2">
           <TouchableOpacity onPress={() => onView(user)}>
             <Feather name="eye" size={18} color="black" />

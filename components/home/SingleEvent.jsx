@@ -74,7 +74,7 @@ const SingleEvent = ({ navigation, route }) => {
 		navigation.goBack();
 	};
 
-	const headlineText = `${eventDetails.eventCategory.substring(0, 20)} Event`;
+	const headlineText = eventDetails && eventDetails?.eventCategory ? `${eventDetails?.eventCategory.substring(0, 20)} Event` : "Event";
 	const inDays = `In ${daysBetweenDates(eventDetails.eventDate)} days`;
 
 	// extract event details
@@ -107,7 +107,7 @@ const SingleEvent = ({ navigation, route }) => {
 
 			const data = await response.json();
 			console.log(data)
-			if (data) {
+			if (response.ok) {
 				setIsProcessing(false);
 				setIsRequestSent(true);
 				console.log("Event registration successful:", data);
@@ -165,6 +165,7 @@ const SingleEvent = ({ navigation, route }) => {
 	// fetch membership
 	const [membership, setMembership] = useState(null);
 	const [isFetchingMembership, setIsFetchingMembership] = useState(false);
+	const [isProcessingMembership, setIsProcessingMembership] = useState(false);
 	const fetchMembership = async () => {
 		try {
 			setIsFetchingMembership(true);
@@ -390,7 +391,7 @@ const SingleEvent = ({ navigation, route }) => {
 						{eventDetails.eventCreator == userProfile._id && (
 							<View>
 								{/* event members */}
-								{isFetchingMembership && (
+								{isFetchingMembership || isProcessingMembership && (
 									<LoadingSpinner text="" />
 								)}
 								<View>
@@ -430,7 +431,7 @@ const SingleEvent = ({ navigation, route }) => {
 															showActions={false}
 															onView={(user) =>
 																handleViewMemberDetails(
-																	user.id,
+																	item.id,
 																	token,
 																	navigation,
 																)
@@ -455,6 +456,7 @@ const SingleEvent = ({ navigation, route }) => {
 															membership,
 															eventId,
 															navigation,
+															fetchMembership,
 														)
 													}
 												/>
@@ -478,14 +480,11 @@ const SingleEvent = ({ navigation, route }) => {
 															user={item}
 															showActions
 															onView={(user) =>
-																Alert.alert(
-																	"View",
-																	`${user.firstName}'s profile`,
-																)
+																handleViewMemberDetails(item._id, token, navigation)
 															}
 															onAccept={(user) =>
 																Alert.alert(
-																	`Accept ${user.firstName}`,
+																	`Accept ${item.firstName}`,
 																	"Are you sure?",
 																	[
 																		{
@@ -496,10 +495,11 @@ const SingleEvent = ({ navigation, route }) => {
 																			text: "OK",
 																			onPress: () =>
 																				handleAcceptMembershipRequest(
-																					setProcessing,
+																					setIsProcessingMembership,
 																					eventId,
-																					user._id,
+																					item._id,
 																					token,
+																					fetchMembership
 																				),
 																		},
 																	],
@@ -507,7 +507,7 @@ const SingleEvent = ({ navigation, route }) => {
 															}
 															onDecline={(user) =>
 																Alert.alert(
-																	`Decline ${user.firstName}`,
+																	`Decline ${item.firstName}`,
 																	"Are you sure?",
 																	[
 																		{
@@ -518,10 +518,11 @@ const SingleEvent = ({ navigation, route }) => {
 																			text: "Decline",
 																			onPress: () =>
 																				handleDeclineMembershipRequest(
-																					setProcessing,
+																					setIsProcessingMembership,
 																					eventId,
-																					user._id,
+																					item._id,
 																					token,
+																					fetchMembership,
 																				),
 																		},
 																	],

@@ -21,6 +21,7 @@ const handleAcceptMembershipRequest = async (
 	eventId,
 	userId,
 	token,
+	onSuccess,
 ) => {
 	try {
 		setProcessing(true);
@@ -37,18 +38,18 @@ const handleAcceptMembershipRequest = async (
 		);
 
 		const data = await response.json();
-		console.log("data", data);
-		if (!response.ok) {
-			setProcessing(false);
-			throw new Error(data.message || "Something went wrong!");
+		
+		if (response.ok) {
+			alert("Success", "Membership request accepted.");
+			if (onSuccess) onSuccess(); // 🔁 Re-fetch updated membership list
+		} else {
+			console.log(data);
+			alert("Error", data.message || "Could not accept membership.");
 		}
-		setProcessing(false);
-        // update the membership list
-        fetch();
-		return data;
 	} catch (error) {
-		setProcessing(false);
 		console.error("Error processing membership:", error);
+	} finally {
+		setProcessing(false);
 	}
 };
 // handle decline request
@@ -57,11 +58,12 @@ const handleDeclineMembershipRequest = async (
 	eventId,
 	userId,
 	token,
+	onSuccess
 ) => {
 	try {
 		setProcessing(true);
 		const response = await global.fetch(
-			`${baseUrl}/event/events/${eventId}/approve-request`,
+			`${baseUrl}/event/events/${eventId}/decline-request`,
 			{
 				method: "POST",
 				headers: {
@@ -73,17 +75,17 @@ const handleDeclineMembershipRequest = async (
 		);
 
 		const data = await response.json();
-		if (!response.ok) {
-			setProcessing(false);
-			throw new Error(data.message || "Something went wrong!");
+		if (response.ok) {
+			alert("Success", "Membership request declined.");
+			if (onSuccess) onSuccess(); // 🔁 Re-fetch updated membership list
+		} else {
+			console.log(data);
+			alert("Error", data.message || "Could not decliine membership.");
 		}
-		setProcessing(false);
-        // update the membership list
-        fetch();
-		return data;
 	} catch (error) {
-		setProcessing(false);
 		console.error("Error processing membership:", error);
+	} finally {
+		setProcessing(false);
 	}
 };
 

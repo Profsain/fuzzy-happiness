@@ -16,35 +16,35 @@ import { Provider } from "react-redux";
 // iap setups
 import { useEffect } from "react";
 import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
+// import Purchases from 'react-native-purchases';
 
 
 
 export default function App() {
   // Configure revenueCat
-  const APIKeys = {
-    apple: process.env.REVENUECAT_IOS_KEY,
-    google: process.env.REVENUECAT_GOOGLE_KEY,
-  };
+  // const APIKeys = {
+  //   apple: process.env.REVENUECAT_IOS_KEY,
+  //   google: process.env.REVENUECAT_GOOGLE_KEY,
+  // };
 
-  useEffect(() => {
-    const setup = async () => {
-      if (Platform.OS == "ios") {
-        await Purchases.configure({ apiKey: APIKeys.apple });
-      } else if (Platform.OS == "android") {
-        await Purchases.configure({ apiKey: APIKeys.google });
-      }
+  // useEffect(() => {
+  //   const setup = async () => {
+  //     if (Platform.OS == "ios") {
+  //       await Purchases.configure({ apiKey: APIKeys.apple });
+  //     } else if (Platform.OS == "android") {
+  //       await Purchases.configure({ apiKey: APIKeys.google });
+  //     }
       
-      // test fetching product
-      const offerings = await Purchases.getOfferings();
-      console.log("RC Products", offerings);
-    };
+  //     // test fetching product
+  //     const offerings = await Purchases.getOfferings();
+  //     console.log("RC Products", offerings);
+  //   };
     
-    // log
-    setup()
-      .catch(console.log);
+  //   // log
+  //   setup()
+  //     .catch(console.log);
 
-  }, []);
+  // }, []);
   
   const token = process.env.NATIVE_NOTIFY_TOKEN;
   registerNNPushToken(22245, token);
