@@ -48,6 +48,7 @@ const HomeScreen = ({ navigation }) => {
   const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
     useSubscription(userProfile); // Use the subscription hook
 
+
   const [notRead, setNotRead] = useState(null);
 
   const baseUrl = process.env.BASE_URL;
@@ -309,22 +310,20 @@ const HomeScreen = ({ navigation }) => {
 
   // handle create new event
   const handleCreateNewEvent = () => {
-    // check if user is explorer
-    if (isExplorer === "true") {
+    // check if user is pro user
+    if (!userProfile?.isSubscriber && state.myEvents.length >= 2) {
       Alert.alert(
-        "Explorer",
-        "You are not allowed to create an event. Login to create an event",
+        "Free Plan Limit Reached",
+        "You have reached the limit of 2 events on the free plan. Please upgrade to a pro plan to create more events.",
         [
           {
             text: "Cancel",
             style: "cancel",
           },
           {
-            text: "Login",
-            onPress: async () => {
-              navigation.navigate("LoginScreen");
-              // set isExplorer to false in async storage
-              await AsyncStorage.setItem("isExplorer", "false");
+            text: "Upgrade",
+            onPress: () => {
+              navigation.navigate("MembershipScreen");
             },
           },
         ]
