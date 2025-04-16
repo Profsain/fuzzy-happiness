@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ChatScreen from "../components/chatroom/ChatScreen";
 import ChatList from "../components/chatroom/ChatList";
 import UserFriendsScreen from "../components/chatroom/UserFriendsScreen";
+import { MembershipScreen, SubscriptionScreen } from "../components/profileSettings";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,18 @@ const ChatComScreen = () => {
       <Stack.Screen
         name="UserFriendsScreen"
         component={UserFriendsScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+       <Stack.Screen
+        name="MembershipScreen"
+        component={MembershipScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="SubscriptionScreen"
+        component={SubscriptionScreen}
         options={{ headerShown: false }}
         navigation={navigation}
       />

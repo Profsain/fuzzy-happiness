@@ -43,15 +43,16 @@ const handleAcceptMembershipRequest = async (
 			alert("Success", "Membership request accepted.");
 			if (onSuccess) onSuccess(); // 🔁 Re-fetch updated membership list
 		} else {
-			console.log(data);
 			alert("Error", data.message || "Could not accept membership.");
 		}
 	} catch (error) {
+		alert("Network Error", "Check your connection and try again");
 		console.error("Error processing membership:", error);
 	} finally {
 		setProcessing(false);
 	}
 };
+
 // handle decline request
 const handleDeclineMembershipRequest = async (
 	setProcessing,

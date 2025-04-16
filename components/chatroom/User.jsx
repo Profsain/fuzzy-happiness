@@ -1,257 +1,247 @@
-import { StyleSheet, Text, View, Pressable, Image } from "react-native";
-import React, { useState, useEffect } from "react";
+import {
+	StyleSheet,
+	Text,
+	View,
+	Pressable,
+	Image,
+	Alert,
+	ActivityIndicator,
+} from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
 
 const User = ({ item, setUserList, userList }) => {
-  // navigation
-  const navigation = useNavigation();
+	const navigation = useNavigation();
+	const baseUrl = process.env.BASE_URL;
+	const { userProfile, token } = useLogin();
+	const userId = userProfile._id;
 
-  // base url
-  const baseUrl = process.env.BASE_URL;
+	const [friendRequests, setFriendRequests] = useState([]);
+	const [userFriends, setUserFriends] = useState([]);
+	const [sentFriendRequests, setSentFriendRequests] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 
-  // extract from useLogin context
-  const { userProfile, token } = useLogin();
-  const userId = userProfile._id;
+	useEffect(() => {
+		const fetchAll = async () => {
+			try {
+				const [pendingRes, friendsRes, sentReqRes] = await Promise.all([
+					fetch(`${baseUrl}/user/friend-request/${userId}`, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
+						},
+					}),
+					fetch(`${baseUrl}/user/friends/${userId}`, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
+						},
+					}),
+					fetch(`${baseUrl}/user/sent-friend-request/${userId}`, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
+						},
+					}),
+				]);
 
-  const [requestSent, setRequestSent] = useState(false);
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [userFriends, setUserFriends] = useState([]);
-  const [sentFriendRequests, setSentFriendRequests] = useState([]);
+				if (pendingRes.ok) setFriendRequests(await pendingRes.json());
+				if (friendsRes.ok) setUserFriends(await friendsRes.json());
+				if (sentReqRes.ok) setSentFriendRequests(await sentReqRes.json());
+			} catch (error) {
+				console.log("Error fetching user connections", error);
+			}
+		};
 
-  useEffect(() => {
-    // fetch pending friends requests
-    const fetchFriendRequests = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/user/friend-request/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+		fetchAll();
 
-        const data = await response.json();
+		const interval = setInterval(() => {
+			fetch(`${baseUrl}/user/sent-friend-request/${userId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+			})
+				.then((res) => res.json())
+				.then((data) => setSentFriendRequests(data))
+				.catch((err) => console.log(err));
+		}, 10000);
 
-        if (response.ok) {
-          setFriendRequests(data);
-        } else {
-          console.log("error", response.status);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
+		return () => clearInterval(interval);
+	}, []);
 
-    fetchFriendRequests();
-  }, []);
+	const handleLimit = (userId, item) => {
+		if (!userProfile?.isSubscriber && sentFriendRequests.length >= 10) {
+			return Alert.alert(
+				"Free Plan Limit Reached",
+				"You have reached the limit of 10 friend requests on the free plan. Please upgrade to send more.",
+				[
+					{ text: "Cancel", style: "cancel" },
+					{ text: "Upgrade", onPress: () => navigation.navigate("MembershipScreen") },
+				]
+			);
+		}
+		sendFriendRequest(userId, item._id);
+	};
 
-  useEffect(() => {
-    // fetch user friends connected
-    const fetchUserFriends = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/user/friends/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+	const sendFriendRequest = async (currentUserId, selectedUserId) => {
+		setIsLoading(true);
+		try {
+			const response = await fetch(`${baseUrl}/user/friend-request`, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ currentUserId, selectedUserId }),
+			});
 
-        const data = await response.json();
+			if (response.ok) {
+				const updatedSentRequests = [...sentFriendRequests, { _id: selectedUserId }];
+				setSentFriendRequests(updatedSentRequests);
+			}
+		} catch (error) {
+			console.log("Error sending friend request", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-        if (response.ok) {
-          setUserFriends(data);
-        } else {
-          console.log("error retrieving user friends", response.status);
-        }
-      } catch (error) {
-        console.log("Error message", error);
-      }
-    };
+	const acceptRequest = async (friendRequestId) => {
+		try {
+			const response = await fetch(`${baseUrl}/user/friend-request/accept`, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ senderId: friendRequestId, recipientId: userId }),
+			});
 
-    fetchUserFriends();
-  }, []);
+			if (response.ok) {
+				setUserList(userList.filter((u) => u._id !== friendRequestId));
+				setUserFriends([...userFriends, friendRequestId]);
+			}
+		} catch (error) {
+			console.log("Error accepting request", error);
+		}
+	};
 
-  useEffect(() => {
-    // fetch user sent friend requests
-    const fetchUserSentRequest = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/user/sent-friend-request/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+	const handleGoChatRoom = () => {
+		const friend = {
+			friendId: item._id,
+			friendName: item.firstName,
+			friendImage: item.profileImg,
+		};
+		navigation.navigate("ChatRoom", { user: friend });
+	};
 
-        const data = await response.json();
+	const isFriend = useMemo(() => userFriends.includes(item._id), [userFriends]);
+	const isRequestReceived = useMemo(
+		() => friendRequests.some((f) => f._id === item._id),
+		[friendRequests]
+	);
+	const isRequestSent = useMemo(
+		() => sentFriendRequests.some((f) => f._id === item._id),
+		[sentFriendRequests]
+	);
 
-        if (response.ok) {
-          setSentFriendRequests(data);
-        } else {
-          console.log("error retrieving user friends", response.status);
-        }
-      } catch (error) {
-        console.log("Error message", error);
-      }
-    };
+	return (
+		<Pressable style={styles.container}>
+			<Image
+				style={styles.image}
+				source={{
+					uri: item.profileImg || "https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg",
+				}}
+			/>
 
-    fetchUserSentRequest();
+			<View style={{ marginLeft: 12, flex: 1 }}>
+				<Text style={{ fontWeight: "bold" }}>{item?.firstName}</Text>
+				<Text style={{ marginTop: 4, color: "gray" }}>{item?.emailAddress}</Text>
+			</View>
 
-    // call fetchUserSentRequest function after 10 seconds
-    const interval = setInterval(() => {
-      fetchUserSentRequest();
-    }, 10000);
-  }, []);
-
-  // handle send friend request
-  const sendFriendRequest = async (currentUserId, selectedUserId) => {
-    try {
-      const response = await fetch(`${baseUrl}/user/friend-request`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ currentUserId, selectedUserId }),
-      });
-
-      if (response.ok) {
-        setRequestSent(true);
-      }
-    } catch (error) {
-      console.log("error message", error);
-    }
-  };
-
-  // handle friends accept request
-  const acceptRequest = async (friendRequestId) => {
-    try {
-      const response = await fetch(`${baseUrl}/user/friend-request/accept`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          senderId: friendRequestId,
-          recipientId: userId,
-        }),
-      });
-      console.log(response);
-      if (response.ok) {
-        console.log("friend request accepted");
-        setUserList(
-          userList.filter((request) => request._id !== friendRequestId)
-        );
-      }
-    } catch (err) {
-      console.log("error accepting the friend request", err);
-    }
-  };
-
-  // handle go to chat room
-  const handleGoChatRoom = () => {
-    const user = {
-      friendId: item._id,
-      friendName: item.firstName,
-      friendImage: item.profileImg,
-    };
-    navigation.navigate("ChatRoom", { user });
-  };
-
-  return (
-    <Pressable
-      style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}
-    >
-      <View>
-        <Image
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            resizeMode: "cover",
-          }}
-          source={{
-            uri:
-              item.profileImg ||
-              "https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?t=st=1713381212~exp=1713384812~hmac=9db911ae74ca122c7bdd2eb2310c4a51f167567423c4aebcf59cf8b9a7c9f2f6&w=740",
-          }}
-        />
-      </View>
-
-      <View style={{ marginLeft: 12, flex: 1 }}>
-        <Text style={{ fontWeight: "bold" }}>{item?.firstName}</Text>
-        <Text style={{ marginTop: 4, color: "gray" }}>
-          {item?.emailAddress}
-        </Text>
-      </View>
-      {userFriends.includes(item._id) ? (
-        <Pressable
-          onPress={handleGoChatRoom}
-          style={{
-            backgroundColor: "#f9784b",
-            padding: 10,
-            width: 105,
-            borderRadius: 6,
-          }}
-        >
-          <Text style={{ textAlign: "center", color: "white" }}>Chat</Text>
-        </Pressable>
-      ) : requestSent ||
-        friendRequests.some((friend) => friend._id === item._id) ? (
-        <Pressable
-          onPress={() => acceptRequest(item._id)}
-          style={{
-            backgroundColor: "#FBCEB1",
-            padding: 10,
-            width: 105,
-            borderRadius: 6,
-          }}
-        >
-          <Text style={{ textAlign: "center", color: "gray", fontSize: 13 }}>
-            Accept
-          </Text>
-        </Pressable>
-      ) : sentFriendRequests.some((friend) => friend._id === item._id) ? (
-        <Pressable
-          style={{
-            backgroundColor: "#FEEEE8",
-            padding: 10,
-            width: 105,
-            borderRadius: 6,
-          }}
-        >
-          <Text style={{ textAlign: "center", color: "black", fontSize: 13 }}>
-            Request Sent
-          </Text>
-        </Pressable>
-      ) : (
-        <Pressable
-          onPress={() => sendFriendRequest(userId, item._id)}
-          style={{
-            backgroundColor: "#FBCEB1",
-            padding: 10,
-            borderRadius: 6,
-            width: 105,
-          }}
-        >
-          <Text style={{ textAlign: "center", color: "black", fontSize: 13 }}>
-            Connect
-          </Text>
-        </Pressable>
-      )}
-    </Pressable>
-  );
+			{/* Dynamic Button */}
+			{isFriend ? (
+				<Pressable onPress={handleGoChatRoom} style={styles.chatBtn}>
+					<Text style={styles.chatText}>Chat</Text>
+				</Pressable>
+			) : isRequestReceived ? (
+				<Pressable onPress={() => acceptRequest(item._id)} style={styles.acceptBtn}>
+					<Text style={styles.acceptText}>Accept</Text>
+				</Pressable>
+			) : isRequestSent ? (
+				<Pressable style={styles.sentBtn}>
+					<Text style={styles.sentText}>Request Sent</Text>
+				</Pressable>
+			) : (
+				<Pressable onPress={() => handleLimit(userId, item)} style={styles.connectBtn}>
+					{isLoading ? (
+						<ActivityIndicator color="#000" size="small" />
+					) : (
+						<Text style={styles.connectText}>Connect</Text>
+					)}
+				</Pressable>
+			)}
+		</Pressable>
+	);
 };
 
 export default User;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	container: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginVertical: 10,
+	},
+	image: {
+		width: 50,
+		height: 50,
+		borderRadius: 25,
+		resizeMode: "cover",
+	},
+	chatBtn: {
+		backgroundColor: "#f9784b",
+		padding: 10,
+		width: 105,
+		borderRadius: 6,
+	},
+	chatText: {
+		textAlign: "center",
+		color: "white",
+	},
+	acceptBtn: {
+		backgroundColor: "#FBCEB1",
+		padding: 10,
+		width: 105,
+		borderRadius: 6,
+	},
+	acceptText: {
+		textAlign: "center",
+		color: "gray",
+		fontSize: 13,
+	},
+	sentBtn: {
+		backgroundColor: "#FEEEE8",
+		padding: 10,
+		width: 105,
+		borderRadius: 6,
+	},
+	sentText: {
+		textAlign: "center",
+		color: "black",
+		fontSize: 13,
+	},
+	connectBtn: {
+		backgroundColor: "#FBCEB1",
+		padding: 10,
+		borderRadius: 6,
+		width: 105,
+		alignItems: "center",
+	},
+	connectText: {
+		color: "black",
+		fontSize: 13,
+	},
+});

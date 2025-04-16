@@ -74,7 +74,10 @@ const SingleEvent = ({ navigation, route }) => {
 		navigation.goBack();
 	};
 
-	const headlineText = eventDetails && eventDetails?.eventCategory ? `${eventDetails?.eventCategory.substring(0, 20)} Event` : "Event";
+	const headlineText =
+		eventDetails && eventDetails?.eventCategory
+			? `${eventDetails?.eventCategory.substring(0, 20)} Event`
+			: "Event";
 	const inDays = `In ${daysBetweenDates(eventDetails.eventDate)} days`;
 
 	// extract event details
@@ -106,7 +109,7 @@ const SingleEvent = ({ navigation, route }) => {
 			);
 
 			const data = await response.json();
-			console.log(data)
+			console.log(data);
 			if (response.ok) {
 				setIsProcessing(false);
 				setIsRequestSent(true);
@@ -197,6 +200,53 @@ const SingleEvent = ({ navigation, route }) => {
 		fetchMembership();
 	}, [isUserMember]);
 
+	// check if user is no a pro and has 5 event members already
+	const handleLimit = (acceptRequest) => {
+		// check if user is pro user
+		if (
+			!userProfile?.isSubscriber &&
+			eventDetails.eventMembers.length >= 5
+		) {
+			Alert.alert(
+				"Free Plan Limit Reached",
+				"You have reached the limit of 5 members/event on the free plan. Please upgrade to a pro plan to accept more members.",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
+					},
+					{
+						text: "Upgrade",
+						onPress: () => {
+							navigation.navigate("MembershipScreen");
+						},
+					},
+				],
+			);
+			return;
+		} else {
+			acceptRequest();
+		}
+	};
+	const acceptMembership = (item) => {
+		Alert.alert(`Accept ${item.firstName}`, "Are you sure?", [
+			{
+				text: "Cancel",
+				style: "cancel",
+			},
+			{
+				text: "OK",
+				onPress: () =>
+					handleAcceptMembershipRequest(
+						setIsProcessingMembership,
+						eventId,
+						item._id,
+						token,
+						fetchMembership,
+					),
+			},
+		]);
+	};
 	return (
 		<>
 			<ScrollView className="flex-1 px-6 pt-14 bg-white">
@@ -391,9 +441,10 @@ const SingleEvent = ({ navigation, route }) => {
 						{eventDetails.eventCreator == userProfile._id && (
 							<View>
 								{/* event members */}
-								{isFetchingMembership || isProcessingMembership && (
-									<LoadingSpinner text="" />
-								)}
+								{isFetchingMembership ||
+									(isProcessingMembership && (
+										<LoadingSpinner text="" />
+									))}
 								<View>
 									{membership &&
 										membership.eventMembers?.length > 0 && (
@@ -444,7 +495,7 @@ const SingleEvent = ({ navigation, route }) => {
 								</View>
 
 								{/* event members request */}
-								<View>
+								<View className="mt-4 mb-24">
 									{membership &&
 										membership.joinRequests?.length > 0 && (
 											<>
@@ -480,29 +531,18 @@ const SingleEvent = ({ navigation, route }) => {
 															user={item}
 															showActions
 															onView={(user) =>
-																handleViewMemberDetails(item._id, token, navigation)
+																handleViewMemberDetails(
+																	item._id,
+																	token,
+																	navigation,
+																)
 															}
 															onAccept={(user) =>
-																Alert.alert(
-																	`Accept ${item.firstName}`,
-																	"Are you sure?",
-																	[
-																		{
-																			text: "Cancel",
-																			style: "cancel",
-																		},
-																		{
-																			text: "OK",
-																			onPress: () =>
-																				handleAcceptMembershipRequest(
-																					setIsProcessingMembership,
-																					eventId,
-																					item._id,
-																					token,
-																					fetchMembership
-																				),
-																		},
-																	],
+																handleLimit(
+																	() =>
+																		acceptMembership(
+																			item,
+																		),
 																)
 															}
 															onDecline={(user) =>
@@ -516,14 +556,15 @@ const SingleEvent = ({ navigation, route }) => {
 																		},
 																		{
 																			text: "Decline",
-																			onPress: () =>
-																				handleDeclineMembershipRequest(
-																					setIsProcessingMembership,
-																					eventId,
-																					item._id,
-																					token,
-																					fetchMembership,
-																				),
+																			onPress:
+																				() =>
+																					handleDeclineMembershipRequest(
+																						setIsProcessingMembership,
+																						eventId,
+																						item._id,
+																						token,
+																						fetchMembership,
+																					),
 																		},
 																	],
 																)

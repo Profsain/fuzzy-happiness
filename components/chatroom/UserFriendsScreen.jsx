@@ -66,6 +66,12 @@ const UserFriendsScreen = ({ navigation }) => {
     Alert.alert("User card clicked");
   };
 
+  // Filtered user list based on searchTerm
+  const filteredUserList = userList.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
   // render user list
   const renderUser = ({ item }) => (
     <User item={item} setUserList={setUserList} userList={userList} />
@@ -112,16 +118,16 @@ const UserFriendsScreen = ({ navigation }) => {
             {loading && <LoadingSpinner />}
 
             {/* user list */}
-            {userList.length > 0 && (
-              <View>
-                <FlatList
-                  data={userList}
-                  renderItem={renderUser}
-                  keyExtractor={(item, index) => index.toString()}
-                  scroll={"vertical"}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View>
+            {filteredUserList.length > 0 ? (
+              <FlatList
+                data={filteredUserList}
+                renderItem={renderUser}
+                keyExtractor={(item, index) => index.toString()}
+                scroll={"vertical"}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : (
+              !loading && <Text>No users found</Text>
             )}
           </View>
         </ScrollView>

@@ -22,6 +22,52 @@ const AllEventMembers = ({ navigation, route }) => {
 	// handle back button
 	const handleBackBtn = () => navigation.goBack();
 
+	// handle limit
+	const handleLimit = (acceptRequest) => {
+		// check if user is pro user
+		if (!userProfile?.isSubscriber && memberList.eventMembers.length >= 5) {
+			Alert.alert(
+				"Free Plan Limit Reached",
+				"You have reached the limit of 5 members/event on the free plan. Please upgrade to a pro plan to accept more members.",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
+					},
+					{
+						text: "Upgrade",
+						onPress: () => {
+							navigation.navigate("MembershipScreen");
+						},
+					},
+				],
+			);
+			return;
+		} else {
+			acceptRequest();
+		}
+	};
+
+	const acceptMembership = (user) => {
+		Alert.alert(`Accept ${user.firstName}`, "Are you sure?", [
+			{
+				text: "Cancel",
+				style: "cancel",
+			},
+			{
+				text: "OK",
+				onPress: () =>
+					handleAcceptMembershipRequest(
+						setProcessing,
+						eventId,
+						user._id,
+						token,
+					),
+			},
+		]);
+	};
+
+
 	return (
 		<View className="flex-1 px-6 pt-14 bg-white">
 			<BackTopBar headline="Membership" icon2="" func={handleBackBtn} />
@@ -51,7 +97,11 @@ const AllEventMembers = ({ navigation, route }) => {
 										user={item}
 										showActions={false}
 										onView={(user) =>
-											handleViewMemberDetails(user.id, token, navigation)
+											handleViewMemberDetails(
+												user.id,
+												token,
+												navigation,
+											)
 										}
 									/>
 								)}
@@ -83,28 +133,15 @@ const AllEventMembers = ({ navigation, route }) => {
 										user={item}
 										showActions
 										onView={(user) =>
-											handleViewMemberDetails(user._id, token, navigation)
+											handleViewMemberDetails(
+												user._id,
+												token,
+												navigation,
+											)
 										}
 										onAccept={(user) =>
-											Alert.alert(
-												`Accept ${user.firstName}`,
-												"Are you sure?",
-												[
-													{
-														text: "Cancel",
-														style: "cancel",
-													},
-													{
-														text: "OK",
-														onPress: () =>
-															handleAcceptMembershipRequest(
-																setProcessing,
-																eventId,
-																user._id,
-																token,
-															),
-													},
-												],
+											handleLimit(() =>
+												acceptMembership(user),
 											)
 										}
 										onDecline={(user) =>
