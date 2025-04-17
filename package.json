@@ -1,6 +1,6 @@
 {
-  "name": "splinx Planet",
-  "version": "1.1.5",
+  "name": "Splinx Planet",
+  "version": "1.1.6",
   "main": "App.js",
   "scripts": {
     "start": "expo start --tunnel",

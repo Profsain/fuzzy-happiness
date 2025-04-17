@@ -121,43 +121,47 @@ const AddAddressScreen = ({ navigation }) => {
   };
 
   return (
-    <Box width="100%" justifyContent="center" p={24} pt={28}>
-      <CustomHeadings title="Country of Residence" />
-      <VStack space="xl" mt={5}>
-        <Text fontSize={16}>
-          Add your location to find nearby events and hangout.
-        </Text>
-        <Box>
-          <CountrySelector country={country} setCountry={setCountry} />
-        </Box>
-        <CustomInput
-          placeholder="City/Town"
-          type="text"
-          inputValue={city}
-          handleTextChange={handleCityChange}
-          error={cityError}
-        />
-        <CustomInput
-          placeholder="Your Address"
-          type="text"
-          inputValue={address}
-          handleTextChange={handleAddressChange}
-          error={addressError}
-        />
-        <View className="flex flex-row justify-center mt-28">
-          {loading && <LoadingSpinner />}
-          {!isValid ? (
-            <CustomButton
-              label="Next"
-              backgroundColor={secondaryColor}
-              color="#000"
-            />
-          ) : (
-            <CustomButton label="Next" buttonFunc={handleNext} />
-          )}
-        </View>
-      </VStack>
-    </Box>
+		<Box width="100%" justifyContent="center" p={24} pt={28}>
+			<CustomHeadings title="Country of Residence" />
+			<VStack space="xl" mt={5}>
+				<Text fontSize={16}>
+					Add your location to find nearby events and hangout.
+				</Text>
+				<Box>
+					<CountrySelector
+						country={country}
+						setCountry={setCountry}
+					/>
+				</Box>
+				<CustomInput
+					placeholder="City/Town"
+					type="text"
+					inputValue={city}
+					handleTextChange={handleCityChange}
+					error={cityError}
+				/>
+				<CustomInput
+					placeholder="Your Address"
+					type="text"
+					inputValue={address}
+					handleTextChange={handleAddressChange}
+					error={addressError}
+				/>
+
+				<View>{loading && <LoadingSpinner />}</View>
+				<View className="flex flex-row justify-center mt-28">
+					{!isValid ? (
+						<CustomButton
+							label="Next"
+							backgroundColor={secondaryColor}
+							color="#000"
+						/>
+					) : (
+						<CustomButton label="Next" buttonFunc={handleNext} />
+					)}
+				</View>
+			</VStack>
+		</Box>
   );
 };
 

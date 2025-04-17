@@ -103,7 +103,7 @@ const InviteFriendsScreen = ({ navigation }) => {
   const handleFinishInvite = () => {
     // send data to backend database
     // navigate to home Screen if login
-    navigationToScreen(navigation, "LoginScreen");
+    navigationToScreen(navigation, "LoginUser");
   };
 
   // render contact list
