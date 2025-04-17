@@ -2,9 +2,6 @@ import React, { useState, useRef } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../components";
 import PhoneInput from "react-native-phone-number-input";
-import { registerIndieID } from "native-notify";
-import sendPushNotification from "../utils/sendPushNotification";
-import { setItem } from "../utils/asyncStorage";
 import { secondaryColor } from "../utils/appstyle";
 import navigationToScreen from "../utils/navigationUtil";
 import { TouchableOpacity, Alert, View } from "react-native";
@@ -29,31 +26,31 @@ const SignUpScreen = ({ navigation }) => {
     navigationToScreen(navigation, "LoginScreen");
   };
 
-  const handleSubmit = async () => {
-    setError("");
-    setLoading(true);
+  // const handleSubmit = async () => {
+  //   setError("");
+  //   setLoading(true);
 
-    try {
-      // send otp to phone
-      sendPushNotification(
-        formattedValue,
-        "Splinx Planet",
-        `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
-      );
+  //   try {
+  //     // send otp to phone
+  //     sendPushNotification(
+  //       formattedValue,
+  //       "Splinx Planet",
+  //       `Your OTP is ${otp}. Use this code to verify your phone number. Thank you.`
+  //     );
 
-      // navigate to OTP screen
-      navigationToScreen(navigation, "OTPScreen", { phoneNumber: formattedValue });
-    } catch (error) {
-      setError("Failed to send OTP. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // navigate to OTP screen
+  //     navigationToScreen(navigation, "OTPScreen", { phoneNumber: formattedValue });
+  //   } catch (error) {
+  //     setError("Failed to send OTP. Please try again later.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handlePhoneChange = (phoneNumber) => {
-    setFormattedValue(phoneNumber);
-    handleChangeValue(phoneNumber);
-  };
+  // const handlePhoneChange = (phoneNumber) => {
+  //   setFormattedValue(phoneNumber);
+  //   handleChangeValue(phoneNumber);
+  // };
 
   const handleChangeValue = (text) => {
     setPhoneValue(text);
@@ -72,31 +69,57 @@ const SignUpScreen = ({ navigation }) => {
 
   const sendVerificationCode = async () => {
     setLoading(true);
-
     // data
     const data = {
       phoneNumber: formattedValue,
     };
 
-    sendSmsVerification(formattedValue).then((sent) => {
+    // check if user with this phone number already exists
+    try {
+      const response = await fetch(`${process.env.BASE_URL}/auth/check-phone`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-      if (sent.success) {
-        // navigate to OTP screen
-        navigationToScreen(navigation, "TokenScreen", data);
+      const checkData = await response.json();
+
+      if (checkData.exists) {
+        setError(checkData.message);
         setLoading(false);
-       
-      } else {
-        Alert.alert("Error", sent.error);
-        setLoading(false);
+        return;
       }
-    });
+      // send verification code
+
+      sendSmsVerification(formattedValue).then((sent) => {
+
+        if (sent.success) {
+          // navigate to OTP screen
+          navigationToScreen(navigation, "TokenScreen", data);
+          setLoading(false);
+        
+        } else {
+          Alert.alert("Error", sent.error);
+          setLoading(false);
+        }
+      });
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Network Error", "Please check your internet connection and try again later.");
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
 
   };
 
   const handleGetToken = () => {
     // Ensure formattedValue starts with '+' and is in E.164 format
     if (formattedValue.startsWith("+")) {
-      sendVerificationCode(formattedValue);
+      sendVerificationCode();
     } else {
       Alert.alert("Error", "Invalid phone number format.");
     }
