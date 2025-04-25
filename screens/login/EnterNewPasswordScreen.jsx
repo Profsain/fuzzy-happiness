@@ -141,6 +141,7 @@ const EnterNewPasswordScreen = () => {
 
         {/* form section */}
         <VStack space="xl" mt={15}>
+          <Text className="text-sm">Check your email for verification code</Text>
           <CustomInput
             placeholder="Enter 6 digit verification code"
             type="text"
