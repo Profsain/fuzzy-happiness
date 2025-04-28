@@ -76,14 +76,14 @@ const SignUpScreen = ({ navigation }) => {
 
     // check if user with this phone number already exists
     try {
-      const response = await fetch(`https://splinx-planet-backend.onrender.com/auth/check-phone`, {
+      const response = await fetch(`${process.env.BASE_URL}/auth/check-phone`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      console.log("Response:", response);
+
       const checkData = await response.json();
 
       if (checkData.exists) {
@@ -107,7 +107,7 @@ const SignUpScreen = ({ navigation }) => {
       });
 
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       Alert.alert("Network Error", "Please check your internet connection and try again later.");
       setLoading(false);
     } finally {

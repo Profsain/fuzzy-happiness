@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import * as Location from "expo-location";
-// import axios from "axios";
+import axios from "axios";
 import {
   CountrySelector,
   CustomButton,
@@ -73,41 +73,22 @@ const AddAddressScreen = ({ navigation }) => {
     }
   };
 
-  // const getCurrencyFromCountry = async (country) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://restcountries.com/v3.1/name/${country}`
-  //     );
-  //     const countryData = response.data[0];
-  //     const currencyCode = Object.keys(countryData.currencies)[0];
-  //     const currencySymbol = countryData.currencies[currencyCode].symbol;
-
-  //     setCurrency(currencyCode);
-  //     setCurrencySymbol(currencySymbol);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const getCurrencyFromCountry = async (country) => {
     try {
-      const response = await fetch(`https://restcountries.com/v3.1/name/${country}`);
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      
-      const countryData = await response.json();
-      const currencyCode = Object.keys(countryData[0].currencies)[0];
-      const currencySymbol = countryData[0].currencies[currencyCode].symbol;
-  
+      const response = await axios.get(
+        `https://restcountries.com/v3.1/name/${country}`
+      );
+      const countryData = response.data[0];
+      const currencyCode = Object.keys(countryData.currencies)[0];
+      const currencySymbol = countryData.currencies[currencyCode].symbol;
+
       setCurrency(currencyCode);
       setCurrencySymbol(currencySymbol);
     } catch (error) {
-      console.error('Error fetching country data:', error);
+      console.error(error);
     }
   };
-  
+
   const handleCityChange = (text) => {
     setCity(text);
     if (text.length === 0) {

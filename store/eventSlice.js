@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-// base url
-const baseUrl = process.env.BASE_URL;
+  // base url
+  const baseUrl = process.env.BASE_URL;
 
 const initialState = {
   events: [],
@@ -9,22 +10,11 @@ const initialState = {
   error: null,
 };
 
-// Thunk to fetch user events
 export const fetchUserEvents = createAsyncThunk(
   'events/fetchUserEvents',
   async (userId) => {
-    try {
-      const response = await fetch(`${baseUrl}/event/user-events/${userId}`);
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      return data.events;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    const response = await axios.get(`${baseUrl}/event/user-events/${userId}`);
+    return response.data.events;
   }
 );
 

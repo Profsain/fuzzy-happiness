@@ -140,15 +140,13 @@ const LoginInputScreen = () => {
 
     // login logic
     try {
-      const response = await fetch(`https://splinx-planet-backend.onrender.com/auth/login`, {
+      const response = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userInfo),
       });
-
-      console.log("Response:", response);
 
       if (response.ok) {
         // Login successful
@@ -171,18 +169,18 @@ const LoginInputScreen = () => {
         await AsyncStorage.setItem("isExplorer", "false");
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
+        setLoading(false);
       } else {
         // Login failed
+        setLoading(false);
         const errorData = await response.json();
         setLoginMsg(
           "Login failed: User not found or password is incorrect. Please try again."
         );
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setLoginMsg(error.message || "Network error, please try again.");
-    } finally {
       setLoading(false);
+      setLoginMsg(error.message || "Network error, please try again.");
     }
   };
 
