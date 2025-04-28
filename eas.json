@@ -2,15 +2,18 @@
   "build": {
     "production": {
       "env": {
-        "BASE_URL": "https://splinx-server.onrender.com",
+        "BASE_URL": "https://splinx-planet-backend.onrender.com",
+        "TEXTFLOW_API_KEY": "qChVP9mfTecjyWLo6VQRHJhIs8aS1CN7qq97a05rJTkSr8ms8QElBp4JeD1MX6EP",
+        "TWILLIO_BASE_URL": "https://verify-7099-pyzquc.twil.io",
         "FW_MERCHANT_ID": "200497545",
-        "FW_PUBLIC_KEY": "FLWPUBK_TEST-c4ca2c323db9052bb0ab49fdd278aec9-X",
+        "FW_PUBLIC_KEY": "FLWPUBK-6e7c360f5b6779e1539bf627ac13dd5e-X",
         "GOOGLE_MAP_API_KEY": "AIzaSyC6uFJWZ5jXScdhqYL0McBKAOt8zRurpO8",
         "GOOGLE_LOGIN_CLIENT_ID": "160598081089-7oikguh093k9pa4pvi7g52g90flv17a4.apps.googleusercontent.com",
         "GOOGLE_LOGIN_IOS_CLIENT_ID": "160598081089-kj7fs0ef2gg19nf90v7q03u4ujabtsmt.apps.googleusercontent.com",
         "GOOGLE_LOGIN_ANDROID_CLIENT_ID": "160598081089-6qk9uv9q3c190pl4c2jbniu0akhgulos.apps.googleusercontent.com",
         "EXCHANGE_RATE_API_KEY": "87617310c21dddb699fcc96a",
         "APP_DOWNLOAD_URL": "https://google.com",
+        "IOS_APP_DOWNLOAD_URL": "https://apps.apple.com/us/app/splinx-planet/id6446026482",
         "NATIVE_NOTIFY_TOKEN": "eDAGXfxY9yLdrWZHZD7Ar4"
       },
       "channel": "production"
@@ -24,7 +27,22 @@
     },
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "BASE_URL": "https://splinx-planet-backend.onrender.com",
+        "TEXTFLOW_API_KEY": "qChVP9mfTecjyWLo6VQRHJhIs8aS1CN7qq97a05rJTkSr8ms8QElBp4JeD1MX6EP",
+        "TWILLIO_BASE_URL": "https://verify-7099-pyzquc.twil.io",
+        "FW_MERCHANT_ID": "200497545",
+        "FW_PUBLIC_KEY": "FLWPUBK-6e7c360f5b6779e1539bf627ac13dd5e-X",
+        "GOOGLE_MAP_API_KEY": "AIzaSyC6uFJWZ5jXScdhqYL0McBKAOt8zRurpO8",
+        "GOOGLE_LOGIN_CLIENT_ID": "160598081089-7oikguh093k9pa4pvi7g52g90flv17a4.apps.googleusercontent.com",
+        "GOOGLE_LOGIN_IOS_CLIENT_ID": "160598081089-kj7fs0ef2gg19nf90v7q03u4ujabtsmt.apps.googleusercontent.com",
+        "GOOGLE_LOGIN_ANDROID_CLIENT_ID": "160598081089-6qk9uv9q3c190pl4c2jbniu0akhgulos.apps.googleusercontent.com",
+        "EXCHANGE_RATE_API_KEY": "87617310c21dddb699fcc96a",
+        "APP_DOWNLOAD_URL": "https://google.com",
+        "IOS_APP_DOWNLOAD_URL": "https://apps.apple.com/us/app/splinx-planet/id6446026482",
+        "NATIVE_NOTIFY_TOKEN": "eDAGXfxY9yLdrWZHZD7Ar4"
+      }
     },
     "preview": {
       "distribution": "internal"
