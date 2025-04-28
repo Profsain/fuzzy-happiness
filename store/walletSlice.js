@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 // base URL
-const baseUrl = process.env.BASE_URL; 
+const baseUrl = process.env.BASE_URL;
 
 const initialState = {
   wallet: {},
@@ -10,17 +9,27 @@ const initialState = {
   error: null,
 };
 
+// Thunk to fetch wallet data
 export const fetchWallet = createAsyncThunk(
-  'wallet/fetchWallet', // Updated to match the slice name
+  'wallet/fetchWallet',
   async (userId) => {
-    const response = await axios.get(`${baseUrl}/wallet/get-wallet/${userId}`);
-    alert("id", userId);
-    return response;
+    try {
+      const response = await fetch(`${baseUrl}/wallet/get-wallet/${userId}`);
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      return data;  // Return the wallet data
+    } catch (error) {
+      throw new Error(error.message);  // Propagate the error
+    }
   }
 );
 
 const walletSlice = createSlice({
-  name: 'wallet', // Updated to match the thunk name
+  name: 'wallet',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
