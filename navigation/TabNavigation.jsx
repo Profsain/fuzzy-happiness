@@ -24,31 +24,10 @@ const TabNavigation = ({ navigation }) => {
     // set isExplorer to false in async storage
     await AsyncStorage.setItem("isExplorer", "false");
   };
-  
-  const { isLocked } = useLogin(); // Check subscription status
 
   // Function to handle tab press and check if subscription is locked
   const handleTabPress = (navigation) => {
-    if (isExplorer === "true") {
-      Alert.alert(
-        "Explorer",
-        "You are not allowed to access this screen. Goto Login/Sign up",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Ok",
-            onPress: handleLogin,
-          },
-        ]
-      );
-    } else if (isLocked) {
-      Alert.alert("Subscription", "You are not allowed to access this screen");
-    } else {
       navigation(); // Proceed to the selected screen
-    }
   };
 
   return (

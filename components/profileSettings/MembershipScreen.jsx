@@ -19,8 +19,7 @@ import convertCurrency from "../../utils/convertCurrency";
 // import RevenueCatUI from "react-native-purchases-ui";
 
 const MembershipScreen = ({ navigation }) => {
-  const { userProfile, subscriptionPlans, isLocked } = useLogin();
-  // Alert.alert("Locked", isLocked ? "Locked" : "Not Locked");
+  const { userProfile, subscriptionPlans } = useLogin();
 
   const { currencySymbol, currency, subscriptionPlan, isSubscriber } = userProfile;
   const [subscriptionData, setSubscriptionData] = useState(subscriptionPlans);
@@ -47,11 +46,6 @@ const MembershipScreen = ({ navigation }) => {
 
   // handle back button
   const handleBackBtn = () => {
-    // isLocked return
-    if (isLocked) {
-      Alert.alert("Subscription", "You are not allowed to access this screen");
-      return;
-    }
     // navigate back
     navigation.goBack();
   };

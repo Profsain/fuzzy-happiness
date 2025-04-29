@@ -43,11 +43,6 @@ const HomeScreen = ({ navigation }) => {
     setSubscriptionPlans,
   } = useLogin();
 
-  const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
-
-  const { daysLeft, showTrialModal, isLocked, setShowTrialModal } =
-    useSubscription(userProfile); // Use the subscription hook
-
 
   const [notRead, setNotRead] = useState(null);
 
@@ -610,16 +605,6 @@ const HomeScreen = ({ navigation }) => {
 						</View>
 					</Box>
 				</ScrollView>
-			)}
-
-			{/* Subscription modal */}
-			{isLocked && isExplorer !== "true" && (
-				<SubscriptionModal
-					visible={showTrialModal}
-					daysLeft={daysLeft}
-					onSubscribe={handleSubscribe}
-					onClose={() => setShowTrialModal(false)}
-				/>
 			)}
 		</SafeAreaView>
   );

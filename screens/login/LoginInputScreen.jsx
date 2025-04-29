@@ -165,8 +165,6 @@ const LoginInputScreen = () => {
         // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
         // End of Native Notify Code
 
-        // set isExplorer to false in async storage
-        await AsyncStorage.setItem("isExplorer", "false");
         //navigate to TabNavigation Screen
         navigation.navigate("TabNavigation");
         setLoading(false);
@@ -200,6 +198,9 @@ const LoginInputScreen = () => {
           <CustomInput
             placeholder="Enter your email"
             type="email"
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
             inputValue={email}
             handleTextChange={handleEmailChange}
             error={emailError}

@@ -104,39 +104,41 @@ const ReportProblem = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <View className="px-6">
-         <BackTopBar headline="Report" icon2="" func={handleBackBtn} />
-      </View>
+		<SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+			<View className="px-6">
+				<BackTopBar headline="Report" icon2="" func={handleBackBtn} />
+			</View>
 
-      <View className="mt-14 flex px-6">
-        <TextInput
-          multiline={true}
-          numberOfLines={8}
-          placeholder="Briefly explain what occur or what is not working as expected"
-          className="border-b-2 border-slate-100 mt-2 text-lg"
-          value={reportProblem}
-          onChangeText={handleTextChange}
-        />
+			<View className="mt-14 flex px-6">
+				<TextInput
+					multiline={true}
+					numberOfLines={8}
+					placeholder="Briefly explain what occur or what is not working as expected"
+					className="border-b-2 border-slate-100 mt-2 text-lg"
+					value={reportProblem}
+					onChangeText={handleTextChange}
+				/>
 
-        {reportError !== "" && (
-          <Text className="text-red-500 text-sm">{reportError}</Text>
-        )}
+				{reportError !== "" && (
+					<Text className="text-red-500 text-sm">{reportError}</Text>
+				)}
 
-        <View className="mt-28 flex flex-row justify-center">
-          {reportSent && <LoadingSpinner />}
-
-          {isValid ? (
-            <CustomButton label="Submit Report" buttonFunc={handleSendReport} />
-          ) : (
-            <CustomButton
-              label="Submit Report"
-              backgroundColor={secondBgColor}
-            />
-          )}
-        </View>
-      </View>
-    </SafeAreaView>
+				<View>{reportSent && <LoadingSpinner />}</View>
+				<View className="mt-28 flex flex-row justify-center">
+					{isValid ? (
+						<CustomButton
+							label="Submit Report"
+							buttonFunc={handleSendReport}
+						/>
+					) : (
+						<CustomButton
+							label="Submit Report"
+							backgroundColor={secondBgColor}
+						/>
+					)}
+				</View>
+			</View>
+		</SafeAreaView>
   );
 };
 

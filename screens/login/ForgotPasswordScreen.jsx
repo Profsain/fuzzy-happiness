@@ -22,7 +22,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   const handleEmailChange = (text) => {
-    setEmailPhone(text);
+    setEmailPhone(text.trim().toLowerCase());
     if (text.length === 0) {
       setEmailError("Email or Phone Number is required");
     } else {
@@ -133,7 +133,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Text>
         <CustomInput
           placeholder="Your Email Address"
-          type="text"
+          type="email"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
           inputValue={emailPhone}
           handleTextChange={handleEmailChange}
           error={emailError}
