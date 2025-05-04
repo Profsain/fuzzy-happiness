@@ -18,7 +18,9 @@ const AddMoneyPayScreen = ({navigation, route}) => {
 
     return (
      <SafeAreaView className="flex-1 px-6 pt-16 bg-white">
+      
         <WebView
+          style={{ flex: 1, marginTop: 20 }}
           source={{ uri: paymentLink }}
           onNavigationStateChange={handleNavigationStateChange}
         />

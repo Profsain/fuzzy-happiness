@@ -25,23 +25,23 @@ const TransactionHistory = ({ navigation }) => {
   const [loading, setLoading] = useState(true); // Set initial loading state to true
 
   // fetch and process wallet data
-  useEffect(() => {
-    const fetchAndProcessWalletData = async () => {
-      setLoading(true);
-      try {
-        await fetchWallet(); // Await fetchWallet to ensure data is fetched
-        if (wallet) {
-          const sortedTransactionHistory = wallet?.transactions?.sort(
-            (a, b) => new Date(b.date) - new Date(a.date)
-          );
-          setTransactionHistory(sortedTransactionHistory);
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to fetch wallet data.");
-      } finally {
-        setLoading(false); // Set loading to false once processing is complete
+  const fetchAndProcessWalletData = async () => {
+    setLoading(true);
+    try {
+      // await fetchWallet(); // Await fetchWallet to ensure data is fetched
+      if (wallet) {
+        const sortedTransactionHistory = wallet?.transactions?.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setTransactionHistory(sortedTransactionHistory);
       }
-    };
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch wallet data.");
+    } finally {
+      setLoading(false); // Set loading to false once processing is complete
+    }
+  };
+  useEffect(() => {
 
     fetchAndProcessWalletData();
   }, [wallet, fetchWallet]);

@@ -273,66 +273,71 @@ const AddMoney = ({ navigation }) => {
 `;
 
   return (
-    <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-        <BackTopBar headline="Top up" func={handleBack} />
+		<>
+			<SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+				<View className="px-6">
+					<BackTopBar headline="Top up" func={handleBack} />
+				</View>
 
-        <Text className="font-semibold text-lg text-center my-8">
-          Balance {currencySymbol || "$"}
-          {wallet?.balance?.toFixed(2) || "0.00"}
-        </Text>
+				<Text className="font-semibold text-lg text-center my-8">
+					Balance {currencySymbol || "$"}
+					{wallet?.balance?.toFixed(2) || "0.00"}
+				</Text>
 
-        <View className="flex justify-center">
-          <CustomInput
-            mb={24}
-            placeholder="Amount"
-            error={amountError}
-            keyboardType="numeric"
-            inputValue={amount}
-            handleTextChange={handleAmount}
-          />
-          <CustomInput
-            placeholder="Note"
-            inputValue={note}
-            handleTextChange={handleNote}
-          />
+				<View className="flex justify-center px-6">
+					<CustomInput
+						mb={24}
+						placeholder="Amount"
+						error={amountError}
+						keyboardType="numeric"
+						inputValue={amount}
+						handleTextChange={handleAmount}
+					/>
+					<CustomInput
+						placeholder="Note"
+						inputValue={note}
+						handleTextChange={handleNote}
+					/>
 
-          <View className="mt-28 flex justify-center">
-            {processing && <LoadingSpinner />}
-            {isValid ? (
-              <CustomButton label="Add Money" buttonFunc={handleAddMoney} />
-            ) : (
-              <CustomButton
-                label="Add Money"
-                backgroundColor={secondaryColor}
-              />
-            )}
-          </View>
-        </View>
+					<View className="mt-28 flex justify-center flex-row">
+						{processing && <LoadingSpinner />}
+						{isValid ? (
+							<CustomButton
+								label="Add Money"
+								buttonFunc={handleAddMoney}
+							/>
+						) : (
+							<CustomButton
+								label="Add Money"
+								backgroundColor={secondaryColor}
+							/>
+						)}
+					</View>
+				</View>
 
-        <Modal visible={webViewVisible} animationType="slide">
-          <WebView
-            originWhitelist={["*"]}
-            source={{ html: flutterwaveHTML }}
-            onMessage={handleMessage}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-          />
-        </Modal>
-      </SafeAreaView>
+				<Modal visible={webViewVisible} animationType="slide">
+					<WebView
+						originWhitelist={["*"]}
+						source={{ html: flutterwaveHTML }}
+						onMessage={handleMessage}
+						javaScriptEnabled={true}
+						domStorageEnabled={true}
+					/>
+				</Modal>
+			</SafeAreaView>
 
-      {isModalVisible && (
-        <SuccessBottomSheet
-          isVisible={isModalVisible}
-          onClose={handleDone}
-          handleOk={handleDone}
-          heading="Transaction Completed"
-          message={`You have successfully fund your Wallet with: ${
-            currencySymbol || "$"
-          }${amount}. Enjoy your Splinx Wallet.`}
-        />
-      )}
-    </>
+			{isModalVisible && (
+				<SuccessBottomSheet
+					isVisible={isModalVisible}
+					onClose={handleDone}
+					handleOk={handleDone}
+					heading="Transaction Completed"
+					message={`You have successfully fund your Wallet with: ${
+						currencySymbol || "$"
+					}${amount}. Enjoy your Splinx Wallet.`}
+				/>
+			)}
+		</>
   );
 };
 
