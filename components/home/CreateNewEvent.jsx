@@ -41,6 +41,19 @@ const fetchData = async () => {
   }
 };
 
+const eventCategories = [
+  "Music & Concerts",
+  "Business & Professional",
+  "Arts & Culture",
+  "Sports & Fitness",
+  "Food & Drink",
+  "Technology & Innovation",
+  "Education & Learning",
+  "Social & Community",
+  "Fashion & Lifestyle",
+  "Travel & Outdoor"
+];
+
 const CreateNewEvent = ({ navigation }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
@@ -508,7 +521,8 @@ const CreateNewEvent = ({ navigation }) => {
               <DropdownSelectInput
                 value={eventCategory}
                 setValue={setEventCategory}
-                listItems={listItems}
+                listItems={eventCategories}
+                placeholder="Select event category"
               />
             </View>
 

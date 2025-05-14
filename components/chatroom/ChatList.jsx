@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Fab, Box, FabIcon, FabLabel, EditIcon } from "@gluestack-ui/themed";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -158,8 +159,9 @@ const ChatList = ({ navigation }) => {
             isPressed={false}
             onPress={handleFab}
           >
-            <FabIcon as={EditIcon} mr="$1" />
-            <FabLabel>Chat</FabLabel>
+            {/* <FabIcon as={EditIcon} mr="$1" /> */}
+            <FontAwesome5 name="user-friends" size={24} color="white" className="mr-2" />
+            <FabLabel>Find Friends</FabLabel>
           </Fab>
         </Box>
       </SafeAreaView>
