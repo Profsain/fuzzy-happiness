@@ -78,6 +78,9 @@ const MembershipScreen = ({ navigation }) => {
 			</View>
 			{/* ios or android plan view */}
 			<ScrollView className="mt-16 px-6">
+        <Text className="text-lg font-bold mb-4">
+          Upgrade to Pro Plan and enjoy exclusive features!
+        </Text>
 				<RadioGroup value={values} onChange={setValues}>
 					<VStack space="sm">
 						{subscriptionData.map((item) => (

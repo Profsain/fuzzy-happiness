@@ -1,12 +1,13 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  TouchableOpacity,
-  Alert
+	View,
+	Text,
+	SafeAreaView,
+	Image,
+	TouchableOpacity,
+	Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
 import OptionButton from "./component/OptionButton";
@@ -14,6 +15,7 @@ import { primeryColor } from "../../utils/appstyle";
 import { AntDesign } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+
 import { MaterialIcons } from "@expo/vector-icons";
 import handlePhoto from "../../utils/uploadImage";
 import LoadingSpinner from "../LoadingSpinner";
@@ -21,6 +23,7 @@ import LoadingSpinner from "../LoadingSpinner";
 const PersonalInfoScreen = ({ navigation }) => {
 	const [newProfileImg, setNewProfileImg] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [showProButton, setShowProButton] = useState(false);
 
 	// extract context
 	const { userProfile, setUserProfile, token } = useLogin();
@@ -113,6 +116,50 @@ const PersonalInfoScreen = ({ navigation }) => {
 		navigation.navigate("AddSocialHandle");
 	};
 
+	const handlePro = () => {
+		// navigate to MembershipScreen
+		navigation.navigate("MembershipScreen");
+	};
+
+	// pro controller
+	useEffect(() => {
+		const checkInstallTime = async () => {
+			try {
+				const storedTime = await AsyncStorage.getItem("installTime");
+
+				let installTime;
+
+				if (!storedTime) {
+					// First time app is opened, set the install time
+					installTime = Date.now();
+					await AsyncStorage.setItem(
+						"installTime",
+						installTime.toString(),
+					);
+				} else {
+					installTime = parseInt(storedTime, 10);
+				}
+
+				const now = Date.now();
+				const thirtyMinutes = 15 * 60 * 1000;
+
+				if (now - installTime >= thirtyMinutes) {
+					setShowProButton(true);
+				} else {
+					// Check again later if within 30 mins
+					const delay = thirtyMinutes - (now - installTime);
+					setTimeout(() => {
+						setShowProButton(true);
+					}, delay);
+				}
+			} catch (err) {
+				console.error("Failed to check install time:", err);
+			}
+		};
+
+		checkInstallTime();
+	}, []);
+
 	return (
 		<SafeAreaView className="flex-1 px-6 pt-14 bg-white">
 			<View className="px-6">
@@ -182,6 +229,22 @@ const PersonalInfoScreen = ({ navigation }) => {
 					}
 					iconRight=""
 				/>
+				{/* pro button */}
+				{showProButton && (
+					<OptionButton
+						btnFunc={handlePro}
+						btnText="Go Pro"
+						iconLeft={
+							<FontAwesome
+								name="money"
+								size={24}
+								color={primeryColor}
+								style={{ marginRight: 14 }}
+							/>
+						}
+					/>
+				)}
+
 				<OptionButton
 					btnFunc={handleUploadMoreProfileImages}
 					btnText="Upload Your Pictures"
@@ -198,8 +261,12 @@ const PersonalInfoScreen = ({ navigation }) => {
 					btnFunc={handleAddSocialMediaLinks}
 					btnText="Link Social Media"
 					iconLeft={
-						<AntDesign name="link" size={24} color={primeryColor}
-            style={{ marginRight: 14 }} />
+						<AntDesign
+							name="link"
+							size={24}
+							color={primeryColor}
+							style={{ marginRight: 14 }}
+						/>
 					}
 				/>
 				<OptionButton

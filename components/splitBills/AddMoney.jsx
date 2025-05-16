@@ -315,13 +315,18 @@ const AddMoney = ({ navigation }) => {
 					</View>
 				</View>
 
-				<Modal visible={webViewVisible} animationType="slide">
+				<Modal visible={webViewVisible} animationType="slide" transparent={true} className="flex-1">
+          <View className="pt-24 bg-white">
+        
+          </View>
 					<WebView
 						originWhitelist={["*"]}
 						source={{ html: flutterwaveHTML }}
 						onMessage={handleMessage}
 						javaScriptEnabled={true}
 						domStorageEnabled={true}
+            startInLoadingState={true}
+
 					/>
 				</Modal>
 			</SafeAreaView>

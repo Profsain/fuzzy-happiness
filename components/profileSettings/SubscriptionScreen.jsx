@@ -528,14 +528,12 @@ const SubscriptionScreen = ({ navigation, route }) => {
 											}
 										/>
 
-											<CustomButton
-												label="Apply"
-												width={70}
-												mt={4}
-												buttonFunc={
-													handleApplyPromoCode
-												}
-											/>
+										<CustomButton
+											label="Apply"
+											width={70}
+											mt={4}
+											buttonFunc={handleApplyPromoCode}
+										/>
 									</View>
 								</View>
 
@@ -692,6 +690,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
 				{/* modal screen */}
 				<Modal visible={webViewVisible} animationType="slide">
+					<View className="pt-24 bg-white"></View>
 					<WebView
 						originWhitelist={["*"]}
 						source={{ html: flutterwaveHTML }}

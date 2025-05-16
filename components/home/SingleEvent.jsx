@@ -247,6 +247,23 @@ const SingleEvent = ({ navigation, route }) => {
 			},
 		]);
 	};
+
+	const handleInviteFriends = () => {
+		// Base URL for deep linking
+		const deepLinkBaseUrl = "splinx://event/";
+
+		// URL to redirect to the app store if the app is not installed
+		const appStoreUrl = Platform.select({
+			ios: process.env.IOS_APP_DOWNLOAD_URL,
+			android: process.env.APP_DOWNLOAD_URL,
+		});
+
+		// Event URL with deep link
+		const eventUrl = `${deepLinkBaseUrl}${eventDetails._id}`;
+		const message = `${userProfile.firstName} has invited you to ${eventName} event. Download the Splinx app to register and join the event: ${appStoreUrl}`;
+		handleSocialShare(message);
+	}
+	
 	return (
 		<>
 			<ScrollView className="flex-1 px-6 pt-14 bg-white">
@@ -338,8 +355,9 @@ const SingleEvent = ({ navigation, route }) => {
 										<CustomButton
 											mr={14}
 											width={170}
-											label="Your Event Share"
+											label="Invite Friends"
 											backgroundColor={secondBgColor}
+											buttonFunc={handleInviteFriends}
 										/>
 									</View>
 								)}
