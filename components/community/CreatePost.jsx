@@ -7,6 +7,11 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLogin } from "../../context/LoginProvider";
@@ -29,17 +34,15 @@ const CreatePost = ({ navigation, route }) => {
   useEffect(() => {
     const showRespectAlert = async () => {
       try {
-        const lastShownDate = await AsyncStorage.getItem(
-          "lastRespectAlertDate"
-        );
-        const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+        const lastShownDate = await AsyncStorage.getItem("lastRespectAlertDate");
+        const today = new Date().toISOString().split("T")[0];
 
         if (lastShownDate !== today) {
           Alert.alert(
             "Community Guidelines",
             "Please be respectful and courteous. We have a zero-tolerance policy for objectionable content and abusive behavior."
           );
-          await AsyncStorage.setItem("lastRespectAlertDate", today); // Store today's date
+          await AsyncStorage.setItem("lastRespectAlertDate", today);
         }
       } catch (error) {
         console.log("Error showing respect alert:", error);
@@ -68,39 +71,11 @@ const CreatePost = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  // objectionable words should not be posted
   const objectionableWords = [
-    "fuck",
-    "shit",
-    "asshole",
-    "bitch",
-    "cunt",
-    "dick",
-    "faggot",
-    "gay",
-    "homo",
-    "jerk",
-    "kike",
-    "lesbian",
-    "motherfucker",
-    "nigger",
-    "piss",
-    "queer",
-    "retard",
-    "sex",
-    "shithead",
-    "slut",
-    "tits",
-    "twat",
-    "vagina",
-    "whore",
-    "yank",
-    "zombie",
-    "spam",
-    "scam",
-    "hate",
-    "rape",
-    "voilence",
+    "fuck", "shit", "asshole", "bitch", "cunt", "dick", "faggot", "gay", "homo", "jerk",
+    "kike", "lesbian", "motherfucker", "nigger", "piss", "queer", "retard", "sex", "shithead",
+    "slut", "tits", "twat", "vagina", "whore", "yank", "zombie", "spam", "scam", "hate",
+    "rape", "voilence"
   ];
 
   const isObjectionable = objectionableWords.some((word) =>
@@ -142,68 +117,75 @@ const CreatePost = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 pt-14 px-8 bg-white">
-      {/* top section */}
-      <View className="mb-3 border-b-2 border-gray-300 py-3 px-6">
-        <View className="flex flex-row justify-between items-center">
-          <TouchableOpacity onPress={handleCancel}>
-            <Text className="font-semibold text-lg">Cancel</Text>
-          </TouchableOpacity>
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView className="flex-1 pt-14 px-8 bg-white">
+          {/* top section */}
+          <View className="mb-3 border-b-2 border-gray-300 py-3 px-6">
+            <View className="flex flex-row justify-between items-center">
+              <TouchableOpacity onPress={handleCancel}>
+                <Text className="font-semibold text-lg">Cancel</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={handlePostSend}
-            style={{ backgroundColor: secondaryColor }}
-            className="py-2 px-3 rounded-2xl"
-          >
-            <Text className="font-semibold">Post</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* post preview */}
-      <View className="flex-1 border-b-2 border-gray-300 px-6">
-        <Text className="leading-5 font-medium text-lg">
-          {postText ? postText : "What's on your mind?"}
-        </Text>
-
-        {/* image preview */}
-        {postImage && (
-          <View className="mt-2">
-            <Image
-              source={{ uri: postImage }}
-              style={{ width: "100%", height: 200 }}
-            />
+              <TouchableOpacity
+                onPress={handlePostSend}
+                style={{ backgroundColor: secondaryColor }}
+                className="py-2 px-3 rounded-2xl"
+              >
+                <Text className="font-semibold">Post</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        )}
-      </View>
 
-      {/* post input */}
-      <View className="flex flex-row justify-between items-center px-6 py-4 bg-white">
-        <TouchableOpacity onPress={handleUpload}>
-          <AntDesign name="camerao" size={28} color="black" />
-        </TouchableOpacity>
-        <View className="flex-1 mx-3 mt-4">
-          <TextInput
-            placeholder="Write something..."
-            multiline={true}
-            className="h-10 border  px-4 py-2 rounded-2xl border-gray-300"
-            onChangeText={handleTextChange}
-          />
-
-          {/* character remaining */}
-          <View className="flex flex-row justify-between mt-1">
-            <Text className="text-red-500 text-xs pl-4">{postTextError}</Text>
-            <Text className="text-gray-500 text-right text-xs pr-2">
-              {textCharacterCount}/{textCharacterLimit}
+          {/* post preview */}
+          <ScrollView className="flex-1 border-b-2 border-gray-300 px-6">
+            <Text className="leading-5 font-medium text-lg">
+              {postText ? postText : "What's on your mind?"}
             </Text>
-          </View>
-        </View>
 
-        <TouchableOpacity onPress={handlePostSend}>
-          <Ionicons name="send" size={24} color={primeryColor} />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+            {/* image preview */}
+            {postImage && (
+              <View className="mt-2">
+                <Image
+                  source={{ uri: postImage }}
+                  style={{ width: "100%", height: 200 }}
+                />
+              </View>
+            )}
+          </ScrollView>
+
+          {/* post input */}
+          <View className="flex flex-row justify-between items-center px-6 py-4 bg-white">
+            <TouchableOpacity onPress={handleUpload}>
+              <AntDesign name="camerao" size={28} color="black" />
+            </TouchableOpacity>
+            <View className="flex-1 mx-3 mt-4">
+              <TextInput
+                placeholder="Write something..."
+                multiline
+                className="h-10 border px-4 py-2 rounded-2xl border-gray-300"
+                onChangeText={handleTextChange}
+                value={postText}
+              />
+              <View className="flex flex-row justify-between mt-1">
+                <Text className="text-red-500 text-xs pl-4">{postTextError}</Text>
+                <Text className="text-gray-500 text-right text-xs pr-2">
+                  {textCharacterCount}/{textCharacterLimit}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity onPress={handlePostSend}>
+              <Ionicons name="send" size={24} color={primeryColor} />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
