@@ -39,8 +39,8 @@
         "GOOGLE_LOGIN_IOS_CLIENT_ID": "160598081089-kj7fs0ef2gg19nf90v7q03u4ujabtsmt.apps.googleusercontent.com",
         "GOOGLE_LOGIN_ANDROID_CLIENT_ID": "160598081089-6qk9uv9q3c190pl4c2jbniu0akhgulos.apps.googleusercontent.com",
         "EXCHANGE_RATE_API_KEY": "87617310c21dddb699fcc96a",
-        "APP_DOWNLOAD_URL": "https://google.com",
-        "IOS_APP_DOWNLOAD_URL": "https://apps.apple.com/us/app/splinx-planet/id6446026482",
+        APP_DOWNLOAD_URL:"https://play.google.com/store/apps/details?id=com.splinxplanetapp",
+        IOS_APP_DOWNLOAD_URL:"https://apps.apple.com/app/id6743553358",
         "NATIVE_NOTIFY_TOKEN": "eDAGXfxY9yLdrWZHZD7Ar4"
       }
     },
