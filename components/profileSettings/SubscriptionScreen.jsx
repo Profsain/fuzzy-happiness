@@ -718,7 +718,6 @@ const SubscriptionScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
     paddingTop: 56,
     backgroundColor: "white",
   },

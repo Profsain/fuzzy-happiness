@@ -104,7 +104,7 @@ const ReportProblem = ({ navigation }) => {
   };
 
   return (
-		<SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+		<SafeAreaView className="flex-1 pt-14 bg-white">
 			<View className="px-6">
 				<BackTopBar headline="Report" icon2="" func={handleBackBtn} />
 			</View>

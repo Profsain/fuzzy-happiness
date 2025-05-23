@@ -204,7 +204,7 @@ const CommunityPage = ({ navigation, route }) => {
 
   return (
     <Provider>
-      <SafeAreaView className="flex-1 bg-white px-8">
+      <SafeAreaView className="flex-1 bg-white px-8 pt-14">
         {/* Top menu with vertical dots */}
         <View
           style={{

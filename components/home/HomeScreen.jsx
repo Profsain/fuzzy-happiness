@@ -613,7 +613,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1, // Equivalent to flex-1
-    paddingHorizontal: 24, // Equivalent to px-6 (6 * 4 = 24px)
+    // paddingHorizontal: 24, // Equivalent to px-6 (6 * 4 = 24px)
     paddingTop: 56, // Equivalent to pt-14 (14 * 4 = 56px)
     backgroundColor: '#ffffff', // Equivalent to bg-white
   },

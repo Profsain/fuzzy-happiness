@@ -128,7 +128,9 @@ const AllUsersList = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      <View className="px-6">
+        <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      </View>
 
       <View className="flex-row justify-between items-center mt-8 px-6">
         <TouchableOpacity>

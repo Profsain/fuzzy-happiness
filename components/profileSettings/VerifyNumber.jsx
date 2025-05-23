@@ -115,87 +115,104 @@ const VerifyNumber = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar
-        headline="Verify Number"
-        icon2=""
-        func={() => navigation.goBack()}
-      />
+		<SafeAreaView className="flex-1 pt-14 bg-white">
+			<View className="px-6">
+				<BackTopBar
+					headline="Verify Number"
+					icon2=""
+					func={() => navigation.goBack()}
+				/>
+			</View>
+			<View className="mt-14 flex items-center px-6">
+				<Text className="mt-6 text-center text-gray-500">
+					Enter the 6-digit code sent to {userProfile.emailAddress}
+				</Text>
 
-      <View className="mt-14 flex items-center">
-        <Text className="mt-6 text-center text-gray-500">
-          Enter the 6-digit code sent to {userProfile.emailAddress}
-        </Text>
+				{/* verification code input */}
+				<View className="my-8 flex items-center">
+					<Box width="100%">
+						<CodeInput
+							ref={codeInputRef}
+							codeLength={6}
+							// secureTextEntry
+							borderType={"underline"}
+							space={8}
+							size={40}
+							activeColor="#BDBDBD"
+							inactiveColor="#E5E5E5"
+							autoFocus={false}
+							inputPosition="center"
+							codeInputStyle={{
+								fontSize: 18,
+								fontWeight: "bold",
+								borderWidth: 1.5,
+								borderRadius: 5,
+								backgroundColor: "#E5E5E5",
+							}}
+							onFulfill={(code) => handleTokenValue(code)}
+						/>
+						{error && (
+							<Text
+								mt={48}
+								pl={16}
+								size="sm"
+								style={{ color: "#ea9977" }}
+							>
+								{error}
+							</Text>
+						)}
 
-        {/* verification code input */}
-        <View className="my-8 flex items-center">
-          <Box width="100%">
-            <CodeInput
-              ref={codeInputRef}
-              codeLength={6}
-              // secureTextEntry
-              borderType={"underline"}
-              space={8}
-              size={40}
-              activeColor="#BDBDBD"
-              inactiveColor="#E5E5E5"
-              autoFocus={false}
-              inputPosition="center"
-              codeInputStyle={{
-                fontSize: 18,
-                fontWeight: "bold",
-                borderWidth: 1.5,
-                borderRadius: 5,
-                backgroundColor: "#E5E5E5",
-              }}
-              onFulfill={(code) => handleTokenValue(code)}
-            />
-            {error && (
-              <Text mt={48} pl={16} size="sm" style={{ color: "#ea9977" }}>
-                {error}
-              </Text>
-            )}
+						{/* resend token after 1 minute */}
+						<Box mt={mt}>
+							<Text
+								pl={16}
+								size="sm"
+								style={{ color: "#000", textAlign: "center" }}
+							>
+								Didn't receive the code?{" "}
+								{!showResend ? (
+									<Text>Resend in 0:{timer}</Text>
+								) : (
+									<TouchableOpacity
+										onPress={() => {
+											// navigate back to the ChangePhoneNumber screen
+											navigation.navigate(
+												"ChangePhoneNumber",
+											);
+										}}
+									>
+										<Text
+											size="sm"
+											style={{
+												color: { primeryColor },
+												textAlign: "center",
+											}}
+										>
+											Resend
+										</Text>
+									</TouchableOpacity>
+								)}
+							</Text>
+						</Box>
+					</Box>
+				</View>
 
-            {/* resend token after 1 minute */}
-            <Box mt={mt}>
-              <Text
-                pl={16}
-                size="sm"
-                style={{ color: "#000", textAlign: "center" }}
-              >
-                Didn't receive the code?{" "}
-                {!showResend ? (
-                  <Text>Resend in 0:{timer}</Text>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      // navigate back to the ChangePhoneNumber screen
-                      navigation.navigate("ChangePhoneNumber");
-                    }}
-                  >
-                    <Text
-                      size="sm"
-                      style={{ color: { primeryColor }, textAlign: "center" }}
-                    >
-                      Resend
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </Text>
-            </Box>
-          </Box>
-        </View>
-
-        {/* verify button */}
-        <View className="mt-6">
-          {isValid ? (
-            <CustomButton label="Verify" buttonFunc={handleConfirmToken} />
-          ) : (
-            <CustomButton label="Verify" backgroundColor={secondaryColor} />
-          )}
-        </View>
-      </View>
-    </SafeAreaView>
+				{/* verify button */}
+				<View className="mt-6">
+					{isValid ? (
+						<CustomButton
+							label="Verify"
+							buttonFunc={handleConfirmToken}
+						/>
+					) : (
+						<CustomButton
+							label="Verify"
+							backgroundColor={secondaryColor}
+						/>
+					)}
+				</View>
+			</View>
+		</SafeAreaView>
   );
 };
 

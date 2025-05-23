@@ -163,7 +163,7 @@ const RequestMoney = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* Top bar */}
         <View className="px-6">
           <BackTopBar headline="Request Money" func={handleBack} />

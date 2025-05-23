@@ -119,7 +119,7 @@ const AddSocialHandle = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView className="flex-1 bg-white">
+		<SafeAreaView className="flex-1 pt-14 bg-white">
 			<View className="px-6">
 				<BackTopBar
 					headline="Add Social Handle"

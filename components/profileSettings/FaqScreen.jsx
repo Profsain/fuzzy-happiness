@@ -10,7 +10,7 @@ const FaqScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-16 bg-white">
+    <SafeAreaView className="flex-1 pt-16 bg-white">
       <View className="pb-8 px-6">
         <BackTopBar headline="FAQ" icon2="" func={handleBack} />
       </View>

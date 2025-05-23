@@ -14,7 +14,7 @@ const LiveChatSupport = ({ navigation }) => {
 
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-16 bg-white">
+    <SafeAreaView className="flex-1 pt-16 bg-white">
       <View className="pb-8 px-6">
         <BackTopBar headline="Live Chat Support" icon2="" func={handleBack} />
       </View>

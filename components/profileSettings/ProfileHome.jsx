@@ -94,8 +94,8 @@ const ProfileHome = ({ navigation }) => {
 
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <View>
+    <SafeAreaView className="flex-1 pt-14 bg-white">
+      <View className="px-6">
         <BackTopBar headline="Profile" icon2="" icon="" />
       </View>
 
