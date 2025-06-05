@@ -2,11 +2,11 @@ import {
   View,
   Text,
   SafeAreaView,
-  Alert,
   Pressable,
   ScrollView,
+  FlatList
 } from "react-native";
-import { Fab, Box, FabIcon, FabLabel, EditIcon } from "@gluestack-ui/themed";
+import { Fab, Box, FabLabel, } from "@gluestack-ui/themed";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import React, { useState, useEffect } from "react";
 import { useLogin } from "../../context/LoginProvider";
@@ -59,47 +59,12 @@ const ChatList = ({ navigation }) => {
 
   // component state
   const [searchTerm, setSearchTerm] = useState("");
-  const [userList, setUserList] = useState([]);
-
-  // handle fetch all users excluding logged in user
-  const fetchAllUsers = async () => {
-    const userId = userProfile._id;
-
-    try {
-      const response = await fetch(`${baseUrl}/user/all-users/${userId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response) {
-        const data = await response.json();
-        // update state
-        setUserList(data);
-      } else {
-        console.log("Failed to fetch users");
-      }
-    } catch (error) {
-      console.log("An error occurred while fetching users", error);
-    }
-  };
-
-  // call fetch
-  useEffect(() => {
-    fetchAllUsers();
-  }, []);
 
   // handle search input change
   const handleSearchChange = (text) => {
     setSearchTerm(text);
   };
 
-  // handle user card click
-  const handleUserCardClick = () => {
-    Alert.alert("User card clicked");
-  };
 
   // handle fab click
   const handleFab = () => {

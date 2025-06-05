@@ -197,20 +197,17 @@ const PersonalInfoScreen = ({ navigation }) => {
 			{/* profile details */}
 			<View className="px-6">
 				<OptionButton
-					btnText={
-						userProfile.firstName
-							? userProfile.firstName + " " + userProfile.lastName
-							: "username"
-					}
+					btnText="Edit Profile"
+					btnFunc={() => navigation.navigate("EditProfile")}
 					iconLeft={
 						<AntDesign
-							name="user"
+							name="edit"
 							size={24}
 							color={primeryColor}
 							style={{ marginRight: 14 }}
 						/>
 					}
-					iconRight=""
+				
 				/>
 				<OptionButton
 					btnFunc={handleChangeEmail}

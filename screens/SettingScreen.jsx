@@ -24,7 +24,8 @@ import {
   FaqScreen,
   PushNotification,
   AddSocialHandle,
-  UploadMorePictures
+  UploadMorePictures,
+  EditProfile
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -169,6 +170,12 @@ const SettingScreen = () => {
       <Stack.Screen
         name="UploadMorePictures"
         component={UploadMorePictures}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
         options={{ headerShown: false }}
         navigation={navigation}
       />
