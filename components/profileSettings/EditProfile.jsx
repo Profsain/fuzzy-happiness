@@ -23,7 +23,7 @@ const Label = ({ text }) => (
 );
 
 const EditProfile = ({ navigation }) => {
-  const { userProfile, token } = useLogin();
+  const { userProfile, setUserProfile, token } = useLogin();
   const baseUrl = process.env.BASE_URL;
 
   const handleBackBtn = () => navigation.goBack();
@@ -59,9 +59,9 @@ const EditProfile = ({ navigation }) => {
         homeAddress,
         city,
       };
-
+     
       const response = await fetch(
-        `${baseUrl}/user/update-profile/${userProfile._id}`,
+        `${baseUrl}/user/update-user/${userProfile._id}`,
         {
           method: "PUT",
           headers: {
@@ -75,12 +75,25 @@ const EditProfile = ({ navigation }) => {
       const result = await response.json();
       if (response.status === 200) {
         Alert.alert("Success", "Profile updated successfully");
+
+        // Update user profile in context
+        const updatedProfile = {
+          ...userProfile,
+          firstName,
+          lastName,
+          age: parseInt(age),
+          bio,
+          homeAddress,
+          city,
+        };
+        setUserProfile(updatedProfile);
+
         navigation.goBack();
       } else {
-        Alert.alert("Error", result.message || "Failed to update profile");
+        throw new Error(result.error || "Failed to update profile");
       }
     } catch (error) {
-      Alert.alert("Error", "An error occurred. Please try again.");
+      Alert.alert("Error", "Connection error occurred. Please try again.");
     } finally {
       setProcessing(false);
     }
@@ -158,12 +171,12 @@ const EditProfile = ({ navigation }) => {
         </View>
 
         <View className="flex items-center justify-center">
+            {processing && <LoadingSpinner />}
 
             <CustomButton
-            label={processing ? <LoadingSpinner /> : "Save Changes"}
-            handlePress={handleSaveChanges}
+            label= "Save Changes"
+            buttonFunc={handleSaveChanges}
             mt={32}
-            disabled={processing}
             />
         </View>
       </ScrollView>

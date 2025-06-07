@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLogin } from "../../context/LoginProvider";
+import { primeryColor } from "../../utils/appstyle";
 
 const UserChat = ({ item }) => {
   // base url
@@ -106,6 +107,11 @@ const UserChat = ({ item }) => {
         <Text style={{ fontSize: 11, fontWeight: "400", color: "#585858" }}>
           {lastMessage && formatTime(lastMessage?.createdAt)}
         </Text>
+        {item?.isOnline ? (
+          <Text style={{ fontSize: 11, color: primeryColor }}>Online</Text>
+        ) : (
+          <Text style={{ fontSize: 11, color: "gray" }}>Offline</Text>
+        )}
       </View>
     </Pressable>
   );

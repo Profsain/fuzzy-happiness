@@ -31,11 +31,44 @@ const ProfileHome = ({ navigation }) => {
     // navigate to AccountSettings
     navigation.navigate("AccountSettings");
   };
+
+  // update isOnline status
+  const updateIsOnlineStatus = async () => {
+    try {
+      const profileData = {
+        isOnline: false, // Set isOnline to false
+      };
+     
+      const response = await fetch(
+        `${baseUrl}/user/update-user/${userProfile._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
+
+      const result = await response.json();
+      if (response.status === 200) {
+        
+      } else {
+        throw new Error(result.error || "Failed to update profile");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Connection error occurred. Please try again.");
+    } 
+  };
   // handle log out
   const handleLogout = () => {
     // clear login context
     setIsLogin(false);
     setUserProfile({});
+
+    // update isOnline status
+    updateIsOnlineStatus();
     // navigate to login screen
     navigation.navigate("LoginUser");
   };
