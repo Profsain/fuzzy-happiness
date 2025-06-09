@@ -11,7 +11,10 @@ import {
   TransactionScreen,
   TransactionHistory,
   RequestPay,
-  TransferMoney
+  TransferMoney,
+  WithdrawalRequest,
+  WithdrawalHistory,
+  WithdrawalDetails,
 } from "../components/splitBills";
 import ProfileHome from "../components/profileSettings/ProfileHome";
 import FaqScreen from "../components/profileSettings/FaqScreen";
@@ -97,6 +100,24 @@ const BillsPayScreen = () => {
       <Stack.Screen
         name="FaqScreen"
         component={FaqScreen}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="WithdrawalRequest"
+        component={WithdrawalRequest}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="WithdrawalHistory"
+        component={WithdrawalHistory}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="WithdrawalDetails"
+        component={WithdrawalDetails}
         options={{ headerShown: false }}
         navigation={navigation}
       />

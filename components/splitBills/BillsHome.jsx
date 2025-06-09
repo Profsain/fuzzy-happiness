@@ -13,7 +13,7 @@ import useFetchWallet from "../../hooks/useFetchWallet";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
-import { primeryColor } from "../../utils/appstyle";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import GroupBillsCard from "./component/GroupBillsCard";
 import EventBillCard from "./component/EventBillCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
@@ -24,6 +24,7 @@ import formatDate from "../../utils/formatDate";
 import { ScrollView } from "react-native-virtualized-view";
 import calculateRequestMoney from "./methods/calculateRequestMoney";
 import fetchUserEvents from "../../utils/fetchUserEvents";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const BillsHome = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
@@ -140,6 +141,18 @@ const BillsHome = ({ navigation }) => {
   // handle request money
   const handleRequestMoney = () => {
     navigation.navigate("RequestPay");
+  };
+
+  // handle withdraw money
+  const handleWithdrawMoney = () => {
+    // navigate to WithdrawalRequest screen
+    navigation.navigate("WithdrawalRequest");
+  };
+
+  // handle withdraw history
+  const handleWithdrawHistory = () => {
+    // navigate to WithdrawalRequest screen
+    navigation.navigate("WithdrawalHistory");
   };
 
   // filter event where userProfile._id is eventMember.user
@@ -454,6 +467,20 @@ const BillsHome = ({ navigation }) => {
 								/>
 							}
 							func={handleRequestMoney}
+						/>
+						<BillsHorizontalBtn
+							text="Withdrawal Request"
+							iconLeft={
+								<FontAwesome5 name="money-bill-alt" size={24} color={primeryColor} />
+							}
+							func={handleWithdrawMoney}
+						/>
+						<BillsHorizontalBtn
+							text="My Withdrawal"
+							iconLeft={
+								<FontAwesome5 name="money-bill-alt" size={24} color={secondBgColor} />
+							}
+							func={handleWithdrawHistory}
 						/>
 					</View>
 				</View>
