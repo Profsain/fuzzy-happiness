@@ -2,7 +2,7 @@
   "build": {
     "production": {
       "env": {
-        "BASE_URL": "https://splinx-planet-backend.onrender.com",
+        "BASE_URL": "https://tc08ogg0c4osowgkss88oso0.158.220.85.73.sslip.io",
         "TEXTFLOW_API_KEY": "qChVP9mfTecjyWLo6VQRHJhIs8aS1CN7qq97a05rJTkSr8ms8QElBp4JeD1MX6EP",
         "TWILLIO_BASE_URL": "https://verify-7099-pyzquc.twil.io",
         "FW_MERCHANT_ID": "200497545",
