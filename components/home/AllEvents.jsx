@@ -1,5 +1,6 @@
 import { View, SafeAreaView, FlatList, Text, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import BackTopBar from "./BackTopBar";
 import EventCard from "./EventCard";
 
@@ -16,15 +17,38 @@ const AllEvents = ({ navigation, route }) => {
   // state for event details
   const [eventDetails, setEventDetails] = useState({});
 
-  // handle open event details
-  const handleOpenSingleEvent = (id) => {
-    // set event details
-    const event = eventList.find((event) => event.id === id);
-    setEventDetails(event);
+  // Reset eventDetails when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      setEventDetails({});
+    }, [])
+  );
+
+  // // handle open event details
+  // const handleOpenSingleEvent = (id) => {
+  //   // set event details
+  //   const event = eventList.find((event) => event.id === id);
+  //   setEventDetails(event);
   
-    // navigate to single event and pass event details
-    navigation.navigate("SingleEvent", { eventDetails: event });
-  };
+  //   // navigate to single event and pass event details
+  //   navigation.navigate("SingleEvent", { eventDetails: eventDetails });
+  // };
+
+   // handle open single event
+    const handleOpenSingleEvent = useCallback(
+      (id) => {
+      // find event by id
+      const event = eventList.find((event) => event._id === id);
+      
+      // check if event is not found
+      if (!event) {
+        Alert.alert("Event not found", "Please try again later");
+        return;
+      }
+      navigation.navigate("SingleEvent", { eventDetails: event, id: id });
+    },
+      [eventList]
+    );
 
   const renderEvents = ({ item }) => (
     <EventCard
@@ -38,7 +62,7 @@ const AllEvents = ({ navigation, route }) => {
       location={item.eventLocation}
       date={item.eventDate}
       time={item.eventTime}
-      func={() => handleOpenSingleEvent(item.id)}
+      func={() => handleOpenSingleEvent(item._id)}
     />
   );
 
