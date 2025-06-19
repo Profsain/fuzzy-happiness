@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, ScrollView } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -22,7 +22,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   const handleEmailChange = (text) => {
-    setEmailPhone(text);
+    setEmailPhone(text.trim().toLowerCase());
     if (text.length === 0) {
       setEmailError("Email or Phone Number is required");
     } else {
@@ -133,7 +133,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </Text>
         <CustomInput
           placeholder="Your Email Address"
-          type="text"
+          type="email"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
           inputValue={emailPhone}
           handleTextChange={handleEmailChange}
           error={emailError}
@@ -141,7 +144,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
         {/* next button */}
 
-        <Box mt={160}>
+        <View className="flex flex-row justify-center mt-24">
           {loading ? (
             <LoadingSpinner />
           ) : !isValid ? (
@@ -153,10 +156,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
 
         {/* remember password? Login */}
-        <Box mt={120}>
+        <View className="flex items-center justify-center mt-12 px-8">
           <TouchableOpacity
             onPress={() => navigationToScreen(navigation, "LoginUser")}
           >
@@ -172,7 +175,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
               </Text>
             </Text>
           </TouchableOpacity>
-        </Box>
+        </View>
       </VStack>
     </Box>
     </ScrollView>

@@ -14,17 +14,18 @@ import store from "./store";
 import { Provider } from "react-redux";
 
 // iap setups
+import { useEffect } from "react";
 import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
+// import Purchases from 'react-native-purchases';
 
 
 
 export default function App() {
-  // initialize revenueCat
-  const APIKeys = {
-    apple: process.env.REVENUECAT_IOS_KEY,
-    google: "your_revenuecat_google_api_key",
-  };
+  // Configure revenueCat
+  // const APIKeys = {
+  //   apple: process.env.REVENUECAT_IOS_KEY,
+  //   google: process.env.REVENUECAT_GOOGLE_KEY,
+  // };
 
   // useEffect(() => {
   //   const setup = async () => {
@@ -34,12 +35,12 @@ export default function App() {
   //       await Purchases.configure({ apiKey: APIKeys.google });
   //     }
       
+  //     // test fetching product
   //     const offerings = await Purchases.getOfferings();
-  //     setCurrentOffering(offerings.current);
+  //     console.log("RC Products", offerings);
   //   };
     
   //   // log
-  //   Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
   //   setup()
   //     .catch(console.log);
 

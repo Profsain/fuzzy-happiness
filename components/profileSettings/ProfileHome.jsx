@@ -31,11 +31,44 @@ const ProfileHome = ({ navigation }) => {
     // navigate to AccountSettings
     navigation.navigate("AccountSettings");
   };
+
+  // update isOnline status
+  const updateIsOnlineStatus = async () => {
+    try {
+      const profileData = {
+        isOnline: false, // Set isOnline to false
+      };
+     
+      const response = await fetch(
+        `${baseUrl}/user/update-user/${userProfile._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
+
+      const result = await response.json();
+      if (response.status === 200) {
+        
+      } else {
+        throw new Error(result.error || "Failed to update profile");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Connection error occurred. Please try again.");
+    } 
+  };
   // handle log out
   const handleLogout = () => {
     // clear login context
     setIsLogin(false);
     setUserProfile({});
+
+    // update isOnline status
+    updateIsOnlineStatus();
     // navigate to login screen
     navigation.navigate("LoginUser");
   };
@@ -94,23 +127,23 @@ const ProfileHome = ({ navigation }) => {
 
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <View>
+    <SafeAreaView className="flex-1 pt-14 bg-white">
+      <View className="px-6">
         <BackTopBar headline="Profile" icon2="" icon="" />
       </View>
 
       {/* option list */}
-      <ScrollView className="mt-6">
+      <ScrollView className="mt-6 px-6">
         <OptionButton
           btnText="Personal Information"
           iconLeft=""
           btnFunc={handlePersonalInfo}
         />
-        <OptionButton
+        {/* <OptionButton
           btnText="Membership"
           iconLeft=""
           btnFunc={handleMembership}
-        />
+        /> */}
         <OptionButton
           btnText="Notifications Preferences"
           iconLeft=""

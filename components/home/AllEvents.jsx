@@ -44,11 +44,12 @@ const AllEvents = ({ navigation, route }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* top bar  */}
-
-        <BackTopBar headline={headText} func={handleBack} />
-        <View className="mt-8">
+        <View className="px-6">
+          <BackTopBar headline={headText} func={handleBack} />
+        </View>
+        <View className="mt-8 px-6">
 
           {/* show message if no events */}
           {eventList.length === 0 && (

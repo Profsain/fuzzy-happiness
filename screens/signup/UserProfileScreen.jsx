@@ -170,46 +170,43 @@ const UserProfileScreen = () => {
   };
 
   const handleCreateAccount = async () => {
+
     setSubmitting(true);
+
     try {
-      const data = {
-        ...receivedData,
-        profileImg,
-        age,
-        bio,
-        interestList,
-        tagList,
-      };
+        const data = {
+            ...receivedData,
+            profileImg,
+            age,
+            bio,
+            interestList,
+            tagList,
+        };
+        const response = await fetch(`${baseUrl}/auth/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
 
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            // console.log(errorMessage);
+            Alert.alert("Error", "User already exists");
+            return;
+        }
 
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(data),
-        redirect: "follow",
-      };
-
-      const response = await fetch(
-        `${baseUrl}/auth/register`,
-        requestOptions
-      );
-
-      if (!response.ok) {
-        Alert.alert("Error", JSON.stringify(response.message));
         setSubmitting(false);
-        return;
-      }
-
-      const result = await response.text();
-      setSubmitting(false);
-      navigation.replace("InviteFriendsScreen");
+        navigation.replace("InviteFriendsScreen");
     } catch (error) {
-      Alert.alert("Error", "An error occurred, please try again");
-      setSubmitting(false);
+      // console.log(error.message);
+        Alert.alert("Network Error", "An error occurred, please try again later.");
+    } finally {
+        setSubmitting(false);
     }
-  };
+};
+
 
   return (
     <Box width="100%" justifyContent="center" p={24} pt={28}>
@@ -280,7 +277,7 @@ const UserProfileScreen = () => {
               <View style={styles.container}>{renderTags}</View>
             </Box>
 
-            <Box>
+            <View className="flex flex-row justify-center">
               {!isValid ? (
                 <CustomButton
                   label="Create Account"
@@ -298,7 +295,7 @@ const UserProfileScreen = () => {
                   )}
                 </Box>
               )}
-            </Box>
+            </View>
           </VStack>
         </VStack>
       </ScrollView>

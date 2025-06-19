@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { WebView } from "react-native-webview";
 
 const AddMoneyPayScreen = ({navigation, route}) => {
@@ -17,8 +17,12 @@ const AddMoneyPayScreen = ({navigation, route}) => {
   };
 
     return (
-     <SafeAreaView className="flex-1 px-6 pt-16 bg-white">
+     <SafeAreaView className="flex-1 px-6 pt-16 bg-black">
+                 <View className="pt-24 bg-white">
+                
+                  </View>
         <WebView
+          style={{ flex: 1, marginTop: 20 }}
           source={{ uri: paymentLink }}
           onNavigationStateChange={handleNavigationStateChange}
         />

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Alert, SafeAreaView } from "react-native";
+import {
+  Alert,
+  SafeAreaView,
+  View,
+  Dimensions,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import verifyTransaction from "../../utils/verifyTransaction";
 import { useLogin } from "../../context/LoginProvider";
@@ -10,47 +17,52 @@ const PaymentScreen = ({ navigation, route }) => {
   const { userProfile, token } = useLogin();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Handle bottom sheet done
   const handleDone = () => {
     toggleModal();
     navigation.navigate("ProfileHome");
   };
 
-  // Toggle modal visibility
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+  const handleCancelPayment = () => {
+    Alert.alert(
+      "Cancel Payment",
+      "Are you sure you want to cancel this payment?",
+      [
+        { text: "No" },
+        {
+          text: "Yes, Cancel",
+          onPress: () => navigation.goBack(),
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
   const handleNavigationStateChange = async (navState) => {
     const { url } = navState;
-    Alert.alert("URL Link", JSON.stringify(navState))
-    // Check if the WebView is redirected to the success URL
+    Alert.alert("URL Link", JSON.stringify(navState));
+
     if (url && url.startsWith("myapp://payment-success")) {
       toggleModal();
 
-      // Extract transaction_id and other params from the URL
       const urlParams = new URLSearchParams(url.split("?")[1]);
       const transactionId = urlParams.get("transaction_id");
       const txRef = urlParams.get("tx_ref");
 
       try {
         if (transactionId) {
-          // Verify the transaction using the transaction_id
           const verifyPayment = await verifyTransaction(transactionId);
           if (verifyPayment.status === "success") {
-            Alert.alert(
-              "Payment Successful",
-              `Transaction ID: ${transactionId}`
-            );
+            Alert.alert("Payment Successful", `Transaction ID: ${transactionId}`);
             navigation.navigate("PaymentSuccessScreen", {
               transactionId,
               txRef,
             });
           } else {
-            Alert.alert(
-              "Payment Verification Failed",
-              "Please contact support."
-            );
+            Alert.alert("Payment Verification Failed", "Please contact support.");
           }
         }
       } catch (error) {
@@ -61,14 +73,35 @@ const PaymentScreen = ({ navigation, route }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-16 bg-white">
-        <WebView
-          source={{ uri: paymentLink }}
-          onNavigationStateChange={handleNavigationStateChange}
-        />
+      <SafeAreaView className="flex-1 px-6 pt-16 bg-black">
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <WebView
+            source={{ uri: paymentLink }}
+            onNavigationStateChange={handleNavigationStateChange}
+            style={{
+              width: Dimensions.get("window").width * 0.9,
+              height: Dimensions.get("window").height * 0.7,
+            }}
+          />
+
+          {/* Cancel Payment Button */}
+          <TouchableOpacity
+            onPress={handleCancelPayment}
+            style={{
+              marginTop: 20,
+              backgroundColor: "#ff4d4d",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+              Cancel Payment
+            </Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
 
-      {/* Bottom sheet */}
       {isModalVisible && (
         <SuccessBottomSheet
           isVisible={isModalVisible}

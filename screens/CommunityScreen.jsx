@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { CommunityList, CommunityPage, CommunityTerms, CreateCommunity, CreatePost, QuickNote, AddComment } from "../components/community";
+import { CommunityList, CommunityPage, CommunityTerms, CreateCommunity, CreatePost, QuickNote, AddComment, ChatTerms } from "../components/community";
 
 const CommunityScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -51,6 +51,11 @@ const CommunityScreen = () => {
         options={{ headerShown: false }}
         navigation={navigation}
       />
+      <Stack.Screen 
+        name="ChatTerns"
+        component={ChatTerms}
+        options={{ headerShown: false }}
+        navigation={navigation}  />
     </Stack.Navigator>
   );
 };

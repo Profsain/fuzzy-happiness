@@ -11,7 +11,7 @@ import {
   Alert,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
+  View,
   Text,
   Share,
 } from "react-native";
@@ -103,7 +103,7 @@ const InviteFriendsScreen = ({ navigation }) => {
   const handleFinishInvite = () => {
     // send data to backend database
     // navigate to home Screen if login
-    navigationToScreen(navigation, "LoginScreen");
+    navigationToScreen(navigation, "LoginUser");
   };
 
   // render contact list
@@ -145,7 +145,7 @@ const InviteFriendsScreen = ({ navigation }) => {
             />
         
         {/* action button */}
-        <Box mt={20}>
+        <View className="flex items-center justify-center mt-28">
           <CustomButton
             label="Share"
             buttonFunc={handleSocialShare}
@@ -156,7 +156,7 @@ const InviteFriendsScreen = ({ navigation }) => {
             color={textColor}
             backgroundColor={secondBgColor}
           />
-        </Box>
+        </View>
         </Box>
       </Box>
 

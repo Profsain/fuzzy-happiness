@@ -163,12 +163,14 @@ const RequestMoney = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* Top bar */}
-        <BackTopBar headline="Request Money" func={handleBack} />
+        <View className="px-6">
+          <BackTopBar headline="Request Money" func={handleBack} />
+        </View>
 
         {/* Wallet balance */}
-        <View className="my-4 flex flex-row justify-between items-center">
+        <View className="my-4 px-6 flex flex-row justify-between items-center">
           <View className="flex content-center items-end">
             <Text className="font-semibold text-lg">Received</Text>
             <Text className="font-semibold text-xs">
@@ -186,29 +188,31 @@ const RequestMoney = ({ navigation }) => {
         </View>
 
         {/* Add money section */}
-        <Text className="font-xs text-orange-300">{errorMessages || ""}</Text>
+        <View className="px-6">
+          <Text className="font-xs text-orange-300">{errorMessages || ""}</Text>
 
-        <CustomInput
-          mb={24}
-          placeholder="Username"
-          inputValue={userName}
-          handleTextChange={handleUserName}
-        />
-        <CustomInput
-          mb={24}
-          placeholder="Amount"
-          keyboardType="numeric"
-          inputValue={amount}
-          handleTextChange={handleAmount}
-        />
-        <CustomInput
-          placeholder="Note"
-          inputValue={note}
-          handleTextChange={handleNote}
-        />
+          <CustomInput
+            mb={24}
+            placeholder="Username"
+            inputValue={userName}
+            handleTextChange={handleUserName}
+          />
+          <CustomInput
+            mb={24}
+            placeholder="Amount"
+            keyboardType="numeric"
+            inputValue={amount}
+            handleTextChange={handleAmount}
+          />
+          <CustomInput
+            placeholder="Note"
+            inputValue={note}
+            handleTextChange={handleNote}
+          />
+        </View>
 
         {/* Member list section */}
-        <View className="flex-1">
+        <View className="flex-1 px-6">
           <HorizontalTitle title="Select members" icon="" action="" />
           <FlatList
             data={userList}
@@ -219,7 +223,7 @@ const RequestMoney = ({ navigation }) => {
         </View>
 
         {/* Request money button */}
-        <View className="my-8">
+        <View className="my-8 flex flex-row justify-center">
           {processing && <LoadingSpinner />}
           {isAllFieldsFilled ? (
             <CustomButton label="Send Request" buttonFunc={handleRequest} />

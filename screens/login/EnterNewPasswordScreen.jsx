@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { getItem, removeItem } from "../../utils/asyncStorage";
-import { Alert, TouchableOpacity, ScrollView } from "react-native";
+import { Alert, TouchableOpacity, ScrollView, View } from "react-native";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
 import {
   CustomButton,
@@ -135,12 +135,13 @@ const EnterNewPasswordScreen = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView className="px-6">
       <Box width="100%" justifyContent="center" p={24}>
         <CustomHeadings title="Enter New Password?" />
 
         {/* form section */}
         <VStack space="xl" mt={15}>
+          <Text className="text-sm">Check your email for verification code</Text>
           <CustomInput
             placeholder="Enter 6 digit verification code"
             type="text"
@@ -168,7 +169,7 @@ const EnterNewPasswordScreen = () => {
           />
 
           {/* next button */}
-          <Box mt={160}>
+          <View className="flex flow-row justify-center mt-24">
             {loading ? (
               <LoadingSpinner />
             ) : !isAllValid ? (
@@ -183,7 +184,7 @@ const EnterNewPasswordScreen = () => {
                 buttonFunc={handlePasswordUpdate}
               />
             )}
-          </Box>
+          </View>
 
           {/* remember password? Login */}
           <Box mt={140}>

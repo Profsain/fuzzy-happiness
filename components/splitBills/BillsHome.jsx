@@ -13,7 +13,7 @@ import useFetchWallet from "../../hooks/useFetchWallet";
 import { AntDesign } from "@expo/vector-icons";
 import { BackTopBar, HorizontalTitle } from "../home";
 import CustomButton from "../CustomButton";
-import { primeryColor } from "../../utils/appstyle";
+import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import GroupBillsCard from "./component/GroupBillsCard";
 import EventBillCard from "./component/EventBillCard";
 import BillsHorizontalBtn from "./component/BillsHorizontalBtn";
@@ -24,6 +24,7 @@ import formatDate from "../../utils/formatDate";
 import { ScrollView } from "react-native-virtualized-view";
 import calculateRequestMoney from "./methods/calculateRequestMoney";
 import fetchUserEvents from "../../utils/fetchUserEvents";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const BillsHome = ({ navigation }) => {
   const { userProfile, setUserProfile, token } = useLogin();
@@ -142,24 +143,36 @@ const BillsHome = ({ navigation }) => {
     navigation.navigate("RequestPay");
   };
 
+  // handle withdraw money
+  const handleWithdrawMoney = () => {
+    // navigate to WithdrawalRequest screen
+    navigation.navigate("WithdrawalRequest");
+  };
+
+  // handle withdraw history
+  const handleWithdrawHistory = () => {
+    // navigate to WithdrawalRequest screen
+    navigation.navigate("WithdrawalHistory");
+  };
+
   // filter event where userProfile._id is eventMember.user
   const userEventBills = userEvents.filter((event) =>
     event.eventMembers.some((member) => member.user === _id)
-  
+
   );
 
   // render recent bill item
-   const renderRecentBill = ({ item }) => (
+  const renderRecentBill = ({ item }) => (
     <EventBillCard
       eventName={item?.eventName}
       eventDate={formatDate(item?.eventDate)}
-       splitCost={item?.eventMembers[0].splitCost}
-       status={item?.eventMembers[0].paymentStatus}
+      splitCost={item?.eventMembers[0].splitCost}
+      status={item?.eventMembers[0].paymentStatus}
       currency={currencySymbol}
-      // onPress={() => handleOpenBillDetails(item._id)}
+    // onPress={() => handleOpenBillDetails(item._id)}
     />
   );
-  
+
   // handle view all recent bills
   const handleRecentBills = () => {
     Alert.alert("View all recent bills");
@@ -311,180 +324,209 @@ const BillsHome = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      {/* top bar */}
-      <BackTopBar headline="Split Bills" icon="" />
+		<SafeAreaView className="flex-1 pt-14 bg-white">
+			{/* top bar */}
+			<View className="px-6">
+				<BackTopBar headline="Split Bills" icon="" />
+			</View>
 
-      {/* top card */}
-      <View
-        style={{ backgroundColor: primeryColor }}
-        className="p-3 pb-0 my-4 rounded-xl"
-      >
-        <Text className="text-xl font-semibold pb-2 text-slate-600">
-          Total Spent
-        </Text>
-        <Text className="text-2xl font-bold text-slate-600">
-          {currencySymbol || "$"}
-          {wallet?.totalSpent?.toFixed(2) || "0.00"}
-        </Text>
+			{/* top card */}
+			<View className="px-6">
+				<View
+					style={{ backgroundColor: primeryColor }}
+					className="p-3 pb-0 my-4 rounded-xl"
+				>
+					<Text className="text-xl font-semibold pb-2 text-slate-600">
+						Total Spent
+					</Text>
+					<Text className="text-2xl font-bold text-slate-600">
+						{currencySymbol || "$"}
+						{wallet?.totalSpent?.toFixed(2) || "0.00"}
+					</Text>
 
-        <View className="flex flex-row justify-end mt-6">
-          {isWalletCreated ? (
-            <CustomButton
-              color="black"
-              width={60}
-              height={34}
-              fSize={12}
-              mr={12}
-              backgroundColor="white"
-              label="Wallet"
-              buttonFunc={() => navigation.navigate("TransactionScreen")}
-            />
-          ) : !processing ? (
-            <CustomButton
-              color="black"
-              width={120}
-              height={34}
-              fSize={12}
-              mr={12}
-              backgroundColor="white"
-              label="Activate Wallet"
-              buttonFunc={handleActivateWallet}
-            />
-          ) : (
-            <LoadingSpinner text="" color="white" />
-          )}
+					<View className="flex flex-row justify-end mt-6">
+						{isWalletCreated ? (
+							<CustomButton
+								color="black"
+								width={60}
+								height={34}
+								fSize={12}
+								mr={12}
+								backgroundColor="white"
+								label="Wallet"
+								buttonFunc={() =>
+									navigation.navigate("TransactionScreen")
+								}
+							/>
+						) : !processing ? (
+							<CustomButton
+								color="black"
+								width={120}
+								height={34}
+								fSize={12}
+								mr={12}
+								backgroundColor="white"
+								label="Activate Wallet"
+								buttonFunc={handleActivateWallet}
+							/>
+						) : (
+							<LoadingSpinner text="" color="white" />
+						)}
 
-          <CustomButton
-            color="black"
-            width={120}
-            height={34}
-            fSize={12}
-            backgroundColor="white"
-            label="Transaction History"
-            buttonFunc={() => navigation.navigate("TransactionHistory")}
-          />
-        </View>
-      </View>
+						<CustomButton
+							color="black"
+							width={120}
+							height={34}
+							fSize={12}
+							backgroundColor="white"
+							label="Transaction History"
+							buttonFunc={() =>
+								navigation.navigate("TransactionHistory")
+							}
+						/>
+					</View>
+				</View>
+			</View>
 
-      <ScrollView>
-        {/* top group section, title header  */}
-        <HorizontalTitle
-          title="Groups"
-          action="View all"
-          func={handleOpenGroup}
-        />
-        <View className="flex flex-row">
-          <View className="h-24 w-24 bg-gray-200 rounded-2xl p-3 flex justify-center items-center">
-            <TouchableOpacity
-              onPress={handleCreateNewBill}
-              className="bg-white p-3 rounded-full h-9 w-9 text-center mb-4"
-            >
-              <AntDesign
-                name="plus"
-                size={14}
-                color="black"
-                style={{ textAlign: "center", fontWeight: 900 }}
-              />
-            </TouchableOpacity>
-            <Text style={{ fontSize: 10, fontWeight: 700 }}>
-              Create new bill
-            </Text>
-          </View>
+			<ScrollView className="px-6">
+				{/* top group section, title header  */}
+				<HorizontalTitle
+					title="Groups"
+					action="View all"
+					func={handleOpenGroup}
+				/>
+				<View className="flex flex-row">
+					<View className="h-24 w-24 bg-gray-200 rounded-2xl p-3 flex justify-center items-center">
+						<TouchableOpacity
+							onPress={handleCreateNewBill}
+							className="bg-white p-3 rounded-full h-9 w-9 text-center mb-4"
+						>
+							<AntDesign
+								name="plus"
+								size={10}
+								color="black"
+								style={{ textAlign: "center", fontWeight: 900 }}
+							/>
+						</TouchableOpacity>
+						<Text style={{ fontSize: 10, fontWeight: 700 }}>
+							Create New
+						</Text>
+					</View>
 
-          {/* group bills card flatlist */}
-          <View>
-            {loadingEvents ? (
-              <ActivityIndicator size="small" color={primeryColor} />
-            ) : (
-              <FlatList
-                data={userEvents}
-                renderItem={renderEventGroup}
-                keyExtractor={(item) => item?._id.toString()}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-              />
-            )}
-          </View>
-        </View>
+					{/* group bills card flatlist */}
+					<View>
+						{loadingEvents ? (
+							<ActivityIndicator
+								size="small"
+								color={primeryColor}
+							/>
+						) : (
+							<FlatList
+								data={userEvents}
+								renderItem={renderEventGroup}
+								keyExtractor={(item) => item?._id.toString()}
+								horizontal={true}
+								showsHorizontalScrollIndicator={false}
+							/>
+						)}
+					</View>
+				</View>
 
-        {/* friends own section */}
-        <View className="my-6 py-3 border rounded-md border-gray-300">
-          <View className="flex flex-row px-4 justify-between content-center">
-            <View>
-              <Text className="text-xs leading-4 font-medium text-slate-500">
-                Friends owe you
-              </Text>
-              <Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
-                {currencySymbol || "$"}
-                {receivedAmount.toFixed(2) || "0.00"}
-              </Text>
-            </View>
-            <View>
-              <Text className="text-xs leading-4 font-medium text-slate-500">
-                You own friends
-              </Text>
-              <Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
-                {currencySymbol || "$"}
-                {pendingAmount.toFixed(2) || "0.00"}
-              </Text>
-            </View>
-          </View>
-          {/* horizontal button section */}
-          <View>
-            <BillsHorizontalBtn func={handlePaySomeone} />
-            <BillsHorizontalBtn
-              text="Request money"
-              iconLeft={
-                <AntDesign name="arrowleft" size={24} color={primeryColor} />
-              }
-              func={handleRequestMoney}
-            />
-          </View>
-        </View>
+				{/* friends own section */}
+				<View className="my-6 py-3 border rounded-md border-gray-300">
+					<View className="flex flex-row px-4 justify-between content-center">
+						<View>
+							<Text className="text-xs leading-4 font-medium text-slate-500">
+								Friends owe you
+							</Text>
+							<Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
+								{currencySymbol || "$"}
+								{receivedAmount.toFixed(2) || "0.00"}
+							</Text>
+						</View>
+						<View>
+							<Text className="text-xs leading-4 font-medium text-slate-500">
+								You own friends
+							</Text>
+							<Text className="text-lg leading-7 font-medium -tracking-tighter text-slate-700">
+								{currencySymbol || "$"}
+								{pendingAmount.toFixed(2) || "0.00"}
+							</Text>
+						</View>
+					</View>
+					{/* horizontal button section */}
+					<View>
+						<BillsHorizontalBtn func={handlePaySomeone} />
+						<BillsHorizontalBtn
+							text="Request money"
+							iconLeft={
+								<AntDesign
+									name="arrowleft"
+									size={24}
+									color={primeryColor}
+								/>
+							}
+							func={handleRequestMoney}
+						/>
+						<BillsHorizontalBtn
+							text="Withdrawal Request"
+							iconLeft={
+								<FontAwesome5 name="money-bill-alt" size={24} color={primeryColor} />
+							}
+							func={handleWithdrawMoney}
+						/>
+						<BillsHorizontalBtn
+							text="My Withdrawal"
+							iconLeft={
+								<FontAwesome5 name="money-bill-alt" size={24} color={secondBgColor} />
+							}
+							func={handleWithdrawHistory}
+						/>
+					</View>
+				</View>
 
-        {/* recent bills section */}
-        <View>
-          <HorizontalTitle
-            title="Recent Bills"
-            action=""
-            // func={handleRecentBills}
-          />
-          <View className="mb-4 pb-2">
-            {userEventBills?.length === 0 && (
-              <Text className="text-center text-sm text-slate-500">
-                You have no recent bills
-              </Text>
-            )}
-            <FlatList
-              data={userEventBills}
-              renderItem={renderRecentBill}
-              keyExtractor={(item) => item?._id.toString()}
-            />
-          </View>
-        </View>
+				{/* recent bills section */}
+				<View>
+					<HorizontalTitle
+						title="Recent Bills"
+						action=""
+						// func={handleRecentBills}
+					/>
+					<View className="mb-4 pb-2">
+						{userEventBills?.length === 0 && (
+							<Text className="text-center text-sm text-slate-500">
+								You have no recent bills
+							</Text>
+						)}
+						<FlatList
+							data={userEventBills}
+							renderItem={renderRecentBill}
+							keyExtractor={(item) => item?._id.toString()}
+						/>
+					</View>
+				</View>
 
-        {/* recent money request section */}
-        <View>
-          <HorizontalTitle title="Recent Request" action="" />
-          {/* Render the FlatList only if not loading */}
-          {!loading && (
-            <View className="my-4">
-              {requestBills?.length === 0 && (
-                <Text className="text-center text-sm text-slate-500">
-                  You have no recent request
-                </Text>
-              )}
-              <FlatList
-                data={requestBills}
-                renderItem={renderItem}
-                keyExtractor={(item) => item._id.toString()}
-              />
-            </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+				{/* recent money request section */}
+				<View>
+					<HorizontalTitle title="Recent Request" action="" />
+					{/* Render the FlatList only if not loading */}
+					{!loading && (
+						<View className="my-4">
+							{requestBills?.length === 0 && (
+								<Text className="text-center text-sm text-slate-500">
+									You have no recent request
+								</Text>
+							)}
+							<FlatList
+								data={requestBills}
+								renderItem={renderItem}
+								keyExtractor={(item) => item._id.toString()}
+							/>
+						</View>
+					)}
+				</View>
+			</ScrollView>
+		</SafeAreaView>
   );
 };
 

@@ -125,9 +125,9 @@ const CreateCommunity = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+    <SafeAreaView className="flex-1 pt-14 bg-white">
       {/* top section */}
-      <View>
+      <View className="px-8">
         <BackTopBar
           headline="Create Community"
           icon2={<AntDesign name="close" size={24} color="black" />}
@@ -137,7 +137,7 @@ const CreateCommunity = ({ navigation }) => {
       </View>
 
       {/* create community form */}
-      <ScrollView>
+      <ScrollView className="px-8">
         {/* upload cover image */}
         <View className="mt-6">
           <TouchableOpacity onPress={handleImageUpload}>
@@ -204,7 +204,7 @@ const CreateCommunity = ({ navigation }) => {
             <Text className="text-red-500 text-center text-xs">{error}</Text>
           )}
 
-          <View>
+          <View className="px-8">
             {loading ? (
               <LoadingSpinner />
             ) : (

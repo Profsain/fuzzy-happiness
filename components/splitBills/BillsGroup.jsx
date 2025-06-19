@@ -64,11 +64,13 @@ const BillsGroup = ({ route, navigation }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* top bar */}
-        <BackTopBar headline="Groups" func={handleBack} />
+        <View className="px-6">
+          <BackTopBar headline="Groups" func={handleBack} />
+        </View>
 
-        <ScrollView>
+        <ScrollView className="px-6">
           {/* recent section */}
           <View className="mt-6">
             <HorizontalTitle title="Recent" action="" icon="" />

@@ -7,7 +7,7 @@ import {
   RadioIcon,
   CircleIcon,
 } from "@gluestack-ui/themed";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Alert, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLogin } from "../../context/LoginProvider";
 import { BackTopBar } from "../home";
@@ -15,9 +15,11 @@ import CustomButton from "../CustomButton";
 import { primeryColor, secondBgColor } from "../../utils/appstyle";
 import convertCurrency from "../../utils/convertCurrency";
 
+// revenueCat ui
+// import RevenueCatUI from "react-native-purchases-ui";
+
 const MembershipScreen = ({ navigation }) => {
-  const { userProfile, subscriptionPlans, isLocked } = useLogin();
-  // Alert.alert("Locked", isLocked ? "Locked" : "Not Locked");
+  const { userProfile, subscriptionPlans } = useLogin();
 
   const { currencySymbol, currency, subscriptionPlan, isSubscriber } = userProfile;
   const [subscriptionData, setSubscriptionData] = useState(subscriptionPlans);
@@ -34,7 +36,7 @@ const MembershipScreen = ({ navigation }) => {
             "USD",
             currency
           );
-          rates[item._id] = Math.ceil(convertedAmount) ;
+          rates[item._id] = Math.ceil(convertedAmount);
         }
       }
       setConvertedAmounts(rates);
@@ -44,11 +46,6 @@ const MembershipScreen = ({ navigation }) => {
 
   // handle back button
   const handleBackBtn = () => {
-    // isLocked return
-    if (isLocked) {
-      Alert.alert("Subscription", "You are not allowed to access this screen");
-      return;
-    }
     // navigate back
     navigation.goBack();
   };
@@ -65,70 +62,93 @@ const MembershipScreen = ({ navigation }) => {
       Alert.alert("Subscription", "Please select a subscription plan");
       return;
     }
-    
+
     // navigate to subscription screen and pass data
     navigation.navigate("SubscriptionScreen", { subscription });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <BackTopBar headline="Select Plan" icon2="" func={handleBackBtn} />
+		<SafeAreaView style={styles.container}>
+			<View className="px-6">
+				<BackTopBar
+					headline="Pro Plan"
+					icon2=""
+					func={handleBackBtn}
+				/>
+			</View>
+			{/* ios or android plan view */}
+			<ScrollView className="mt-16 px-6">
+        <Text className="text-lg font-bold mb-4">
+          Upgrade to Pro Plan and enjoy exclusive features!
+        </Text>
+				<RadioGroup value={values} onChange={setValues}>
+					<VStack space="sm">
+						{subscriptionData.map((item) => (
+							<Radio key={item._id} value={item.planName}>
+								<View
+									style={styles.radioItem}
+									className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
+								>
+									<View>
+										{/* Show active status */}
+										{isSubscriber &&
+											subscriptionPlan ===
+												item.planName && (
+												<View className="flex justify-start flex-row items-center">
+													<Text className="text-xs mr-4 font-bold text-orange-200">
+														Active
+													</Text>
+													<AntDesign
+														name="checkcircleo"
+														size={12}
+														color={primeryColor}
+													/>
+												</View>
+											)}
 
-      <ScrollView className="mt-16">
-        <RadioGroup value={values} onChange={setValues}>
-          <VStack space="sm">
-            {subscriptionData.map((item) => (
-              <Radio key={item._id} value={item.planName}>
-                <View
-                  style={styles.radioItem}
-                  className="flex justify-center border border-slate-300 w-full p-4 rounded-lg"
-                >
-                  <View>
-                    {/* Show active status */}
-                    {isSubscriber && subscriptionPlan === item.planName && (
-                      <View className="flex justify-start flex-row items-center">
-                        <Text className="text-xs mr-4 font-bold text-orange-200">
-                          Active
-                        </Text>
-                        <AntDesign
-                          name="checkcircleo"
-                          size={12}
-                          color={primeryColor}
-                        />
-                      </View>
-                    )}
+										<Text className="font-medium text-lg">
+											{item.title}
+										</Text>
+										<Text>{item.description}</Text>
+										<Text>
+											{currency !== "USD" &&
+											convertedAmounts[item._id]
+												? `${
+														currencySymbol || ""
+												  } ${convertedAmounts[
+														item._id
+												  ].toFixed(2)}`
+												: null}
+										</Text>
+									</View>
+									<RadioIndicator
+										style={styles.radioIndicator}
+									>
+										<RadioIcon
+											style={styles.radioIcon}
+											as={CircleIcon}
+										/>
+									</RadioIndicator>
+								</View>
+							</Radio>
+						))}
+					</VStack>
+				</RadioGroup>
 
-                    <Text className="font-medium text-lg">{item.title}</Text>
-                    <Text>{item.description}</Text>
-                    <Text>
-                      {currency !== "USD" && convertedAmounts[item._id]
-                        ? `${currencySymbol || ""} ${convertedAmounts[
-                            item._id
-                          ].toFixed(2)}`
-                        : null}
-                    </Text>
-                  </View>
-                  <RadioIndicator style={styles.radioIndicator}>
-                    <RadioIcon style={styles.radioIcon} as={CircleIcon} />
-                  </RadioIndicator>
-                </View>
-              </Radio>
-            ))}
-          </VStack>
-        </RadioGroup>
-
-        <View className="my-6">
-          <CustomButton label="Subscribe Now" buttonFunc={handleSubscription} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+				<View className="my-6 items-center">
+					<CustomButton
+						label="Subscribe Now"
+						buttonFunc={handleSubscription}
+					/>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
     paddingTop: 56,
     backgroundColor: "white",
   },

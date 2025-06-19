@@ -3,7 +3,7 @@ import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings } from "../../components";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Image, Alert, StyleSheet } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import useReceivedData from "../../hooks/useReceivedData";
 
 const EnableNotificationScreen = ({ navigation }) => {
@@ -47,7 +47,7 @@ const EnableNotificationScreen = ({ navigation }) => {
         <Image source={require("../../assets/stayconnected1.png")} />
 
         {/* action button */}
-        <Box mt={40}>
+        <View className="flex justify-center items-center mt-28">
           <CustomButton
             label="Enable push notifications"
             buttonFunc={handlePushNotification}
@@ -58,7 +58,7 @@ const EnableNotificationScreen = ({ navigation }) => {
             color="#000"
             buttonFunc={handleNotNow}
           />
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

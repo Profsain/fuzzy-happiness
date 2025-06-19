@@ -7,7 +7,7 @@ import useReceivedData from "../../hooks/useReceivedData";
 // functions
 import handlePasswordChange from "../../utils/handlePasswordChange";
 import handleConfirmPasswordChange from "../../utils/handleConfirmPassword";
-import { Alert } from "react-native";
+import { View } from "react-native";
 
 const CreatePasswordScreen = ({ navigation }) => {
   // received data from previous screen
@@ -76,7 +76,7 @@ const CreatePasswordScreen = ({ navigation }) => {
         />
 
         {/* next button */}
-        <Box mt={160}>
+        <View className="flex flex-row justify-center mt-28">
           {!isAllValid ? (
             <CustomButton
               label="Next"
@@ -86,7 +86,7 @@ const CreatePasswordScreen = ({ navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

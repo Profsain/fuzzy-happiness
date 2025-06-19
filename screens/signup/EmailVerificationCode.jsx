@@ -4,7 +4,7 @@ import { CustomButton, CustomHeadings, CustomInput } from "../../components";
 import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, View } from "react-native";
 
 const EmailVerificationCode = ({ navigation }) => {
   const [email, setEmail] = useState("pascaldestiny03@gmail.com");
@@ -130,7 +130,7 @@ const EmailVerificationCode = ({ navigation }) => {
         </Box>
 
         {/* next button */}
-        <Box mt={160}>
+        <View className="flex flex-row justify-center mt-28">
           {!isValid ? (
             <CustomButton
               label="Next"
@@ -140,7 +140,7 @@ const EmailVerificationCode = ({ navigation }) => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleNext} />
           )}
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

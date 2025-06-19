@@ -154,12 +154,14 @@ const EventRegistration = ({ navigation, route }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar icon="" headline={headlineText} func={handleBack} />
+        <View className="px-6">
+          <BackTopBar icon="" headline={headlineText} func={handleBack} />
+        </View>
 
         {/* form input section */}
-        <ScrollView className="mt-4">
+        <ScrollView className="mt-4 px-6">
           {/* top section */}
           <View className="mb-8">
             <Image
@@ -224,7 +226,7 @@ const EventRegistration = ({ navigation, route }) => {
           </View>
 
           {/* register event button */}
-          <View className="mt-8 mb-16">
+          <View className="flex flex-row justify-center mt-8 mb-16">
             {!isAllValid ? (
               <CustomButton label="Register" backgroundColor={secondBgColor} />
             ) : isSubmitting ? (

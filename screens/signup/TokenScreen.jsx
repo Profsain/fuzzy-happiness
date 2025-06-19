@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { getItem, removeItem } from "../../utils/asyncStorage";
 import { Box, set, Text, VStack } from "@gluestack-ui/themed";
 import { CustomButton, CustomHeadings, LoadingSpinner } from "../../components";
-import CodeInput from "react-native-code-input";
 import { secondaryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
-import { TouchableOpacity, Alert, StyleSheet, Platform } from "react-native";
+import { TouchableOpacity, Alert, StyleSheet, Platform, View } from "react-native";
 // hooks
 import useReceivedData from "../../hooks/useReceivedData";
 import {
@@ -16,10 +14,12 @@ import {
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
 
+import { checkVerification } from "../../utils/twillioApi";
+
 const TokenScreen = () => {
   // data from signUp screen
   const receivedData = useReceivedData();
-  const phoneNumber = receivedData.phone;
+  const phoneNumber = receivedData.phoneNumber;
 
   // navigation
   const navigation = useNavigation();
@@ -34,22 +34,6 @@ const TokenScreen = () => {
 
   // sent timeout for 3 minutes
   useEffect(() => {
-    const fetchOtp = async () => {
-      try {
-        const otp = await getItem("otp");
-        if (otp) {
-          Alert.alert("Splinx OTP", `Your OTP is ${otp}`);
-
-          //setting state which doesn't exist
-          //setAutoFillOtp(otp);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // fetch otp
-    fetchOtp();
     const interval = setInterval(() => {
       setTimer((timer) => {
         // Check if the timer is greater than 0 before decrementing
@@ -93,28 +77,42 @@ const TokenScreen = () => {
   // handle confirm token
   const handleConfirmToken = async () => {
     setProcessing(true);
-    try {
-      const otp = await getItem("otp");
-
-      if (otp == tokenValue) {
-        // const data = {
-        //   phoneNumber: phoneNumber,
-        // };
-
-        // Alert.alert("Token", JSON.stringify(data));
+    // verify that the token is valid
+    checkVerification(phoneNumber, tokenValue).then((success) =>{
+      if (success) {
+        // navigate to add email screen
         navigation.replace("AddEmailScreen", { phoneNumber: phoneNumber });
-
-        // remove otp
-        await removeItem("otp");
         setProcessing(false);
       } else {
-        setError("Invalid Token Code");
+        setError(" Incorrect token. Please try again.");
         setProcessing(false);
+        setIsValid(true);
       }
-    } catch (error) {
-      setError("Invalid Token Code");
-      setProcessing(false);
-    }
+
+    })
+    // try {
+    //   const otp = await getItem("otp");
+
+    //   if (otp == tokenValue) {
+    //     // const data = {
+    //     //   phoneNumber: phoneNumber,
+    //     // };
+
+    //     // Alert.alert("Token", JSON.stringify(data));
+    //     navigation.replace("AddEmailScreen", { phoneNumber: phoneNumber });
+
+    //     // remove otp
+    //     await removeItem("otp");
+    //     setProcessing(false);
+    //   } else {
+    //     setError("Invalid Token Code");
+    //     setProcessing(false);
+    //   }
+    // } catch (error) {
+    //   setError("Invalid Token Code");
+    //   setProcessing(false);
+    // }
+
   };
 
   // handle token resend
@@ -144,26 +142,6 @@ const TokenScreen = () => {
         </Text>
 
         {
-          //this package is too old and had comptibility issues
-          /* <CodeInput
-          codeLength={6}
-          // secureTextEntry
-          borderType={"underline"}
-          space={8}
-          size={40}
-          activeColor="#BDBDBD"
-          inactiveColor="#E5E5E5"
-          autoFocus={false}
-          inputPosition="center"
-          codeInputStyle={{
-            fontSize: 18,
-            fontWeight: "bold",
-            borderWidth: 1.5,
-            borderRadius: 5,
-            backgroundColor: "#E5E5E5",
-          }}
-          onFulfill={(code) => handleTokenValue(code)}
-        /> */
 
           <CodeField
             ref={ref}
@@ -190,15 +168,17 @@ const TokenScreen = () => {
             )}
           />
         }
-        {error && (
-          <Text mt={48} pl={16} size="sm" style={{ color: "#ea9977" }}>
-            {error}
-          </Text>
-        )}
+       
 
         {/* resend token after 1 minute */}
-        <Box mt={mt}>
-          <Text pl={16} size="sm" style={{ color: "#000", textAlign: "left" }}>
+        <View>
+          {error && (
+            <Text style={{ color: "#ea9977", fontSize: 12, marginVertical: 18, textAlign: "center" }}>
+              {error}
+            </Text>
+          )}
+
+          <Text pl={16} size="sm" style={{ color: "#000", textAlign: "center", marginTop: 10 }}>
             Didn't receive the code?{" "}
             {!showResend ? (
               <Text>Resend in 0:{timer}</Text>
@@ -212,11 +192,13 @@ const TokenScreen = () => {
               </Text>
             )}
           </Text>
-        </Box>
+        </View>
 
         {/* next button */}
-        <Box mt={110}>
-          {processing && <LoadingSpinner />}
+          <View>
+            {processing && <LoadingSpinner />}
+          </View>
+        <View className="flex flex-row justify-center mt-8">
           {!isValid ? (
             <CustomButton
               label="Next"
@@ -226,7 +208,7 @@ const TokenScreen = () => {
           ) : (
             <CustomButton label="Next" buttonFunc={handleConfirmToken} />
           )}
-        </Box>
+        </View>
 
         {/* remember password? Login */}
         <Box mt={70}>

@@ -22,6 +22,9 @@ export const LoginProvider = ({ children }) => {
     const [showTrialModal, setShowTrialModal] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
 
+    // pro access
+    const [proAccess, setProAccess] = useState(false);
+
     return (
         <LoginContext.Provider
             value={{
@@ -40,6 +43,7 @@ export const LoginProvider = ({ children }) => {
                 daysLeft, setDaysLeft,
                 showTrialModal, setShowTrialModal,
                 isLocked, setIsLocked,
+                proAccess, setProAccess,
             }}>
             {children}
         </LoginContext.Provider>

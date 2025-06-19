@@ -9,6 +9,8 @@ import {
   SingleEvent,
   SearchResult,
   EventRegistration,
+  MemberDetails,
+  AllEventMembers,
 } from "../components/home";
 // import MembershipScreen from "../components/profileSettings/MembershipScreen";
 import { MembershipScreen, SubscriptionScreen } from "../components/profileSettings";
@@ -76,6 +78,18 @@ const HomeNavigator = () => {
       <Stack.Screen
         name="PushNotification"
         component={PushNotification}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="MemberDetails"
+        component={MemberDetails}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AllEventMembers"
+        component={AllEventMembers}
         options={{ headerShown: false }}
         navigation={navigation}
       />

@@ -23,6 +23,9 @@ import {
   LiveChatSupport,
   FaqScreen,
   PushNotification,
+  AddSocialHandle,
+  UploadMorePictures,
+  EditProfile
 } from "../components/profileSettings";
 
 const SettingScreen = () => {
@@ -155,6 +158,24 @@ const SettingScreen = () => {
       <Stack.Screen
         name="PushNotification"
         component={PushNotification}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="AddSocialHandle"
+        component={AddSocialHandle}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="UploadMorePictures"
+        component={UploadMorePictures}
+        options={{ headerShown: false }}
+        navigation={navigation}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
         options={{ headerShown: false }}
         navigation={navigation}
       />

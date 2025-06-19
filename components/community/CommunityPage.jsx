@@ -14,7 +14,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useLogin } from "../../context/LoginProvider";
 import { Fab, FabIcon } from "@gluestack-ui/themed";
 import { EditIcon } from "lucide-react-native";
-import { Provider, Menu, IconButton } from "react-native-paper"; // Import Provider here
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Provider, Menu, IconButton,  } from "react-native-paper"; // Import Provider here
 import TopComPageCard from "./TopComPageCard";
 import PostCom from "./PostCom";
 import { primeryColor } from "../../utils/appstyle";
@@ -91,7 +92,7 @@ const CommunityPage = ({ navigation, route }) => {
   };
 
   const renderPost = ({ item }) => {
-    return <PostCom post={item} />;
+    return <PostCom post={item} fetchAllPosts={fetchAllPosts}/>;
   };
 
   // Toggle menu visibility
@@ -203,15 +204,23 @@ const CommunityPage = ({ navigation, route }) => {
 
   return (
     <Provider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white px-8 pt-14">
         {/* Top menu with vertical dots */}
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             padding: 10,
           }}
         >
+          {/* back button */}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ paddingHorizontal: 10 }}
+          >
+            <Text>close</Text>
+          </TouchableOpacity>
+          
           <Menu
             visible={menuVisible}
             onDismiss={toggleMenu}

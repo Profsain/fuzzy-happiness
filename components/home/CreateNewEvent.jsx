@@ -41,6 +41,19 @@ const fetchData = async () => {
   }
 };
 
+const eventCategories = [
+  "Music & Concerts",
+  "Business & Professional",
+  "Arts & Culture",
+  "Sports & Fitness",
+  "Food & Drink",
+  "Technology & Innovation",
+  "Education & Learning",
+  "Social & Community",
+  "Fashion & Lifestyle",
+  "Travel & Outdoor"
+];
+
 const CreateNewEvent = ({ navigation }) => {
   // base url
   const baseUrl = process.env.BASE_URL;
@@ -74,7 +87,7 @@ const CreateNewEvent = ({ navigation }) => {
   // form data
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
-  const [eventCategory, setEventCategory] = useState("");
+  const [eventCategory, setEventCategory] = useState("General");
   const [eventImage, setEventImage] = useState("");
   const [eventImageUrl, setEventImageUrl] = useState("");
   const [isAllValid, setIsAllValid] = useState(false);
@@ -193,6 +206,43 @@ const CreateNewEvent = ({ navigation }) => {
   };
 
   // handle create new event
+  // create event community if event create is successful
+  const handleCreateCommunity = async () => {
+      // community data object
+    const communityData = {
+      communityCreator: userProfile._id,
+      coverImage: eventImageUrl,
+      communityName: eventData.eventName,
+      communityDescription: eventData.eventDescription,
+      communityGuidelines: eventData.eventUserRules,
+      // communityMembers,
+    };
+
+    // create community in database
+    try {
+      const response = await fetch(`${baseUrl}/community/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(communityData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // display alert
+        Alert.alert("Community", "A new community has been created for this event.");
+      } else {
+        console.log("Failed to create community");
+      }
+    } catch (error) {
+      console.log("An error occurred while creating community", error);
+    }
+  }
+
+  // handle create new event
   const handleCreateNewEvent = () => {
     // set submitting to true
     setSubmitting(true);
@@ -225,6 +275,12 @@ const CreateNewEvent = ({ navigation }) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
+
+        // create community
+        if (result) {
+          // call create community function
+          handleCreateCommunity();
+        }
 
         setNewEvent(result);
 
@@ -288,12 +344,14 @@ const CreateNewEvent = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+      <SafeAreaView className="flex-1 pt-14 bg-white">
         {/* top bar  */}
-        <BackTopBar headline={headlineText} func={handleBack} />
+        <View className="px-6">
+          <BackTopBar headline={headlineText} func={handleBack} />
+        </View>
 
         {/* form input section */}
-        <ScrollView className="mt-4">
+        <ScrollView className="mt-4 px-6">
           {/* image upload */}
           <View className="mt-8 mb-12">
             <Image
@@ -463,7 +521,8 @@ const CreateNewEvent = ({ navigation }) => {
               <DropdownSelectInput
                 value={eventCategory}
                 setValue={setEventCategory}
-                listItems={listItems}
+                listItems={eventCategories}
+                placeholder="Select event category"
               />
             </View>
 
@@ -472,7 +531,7 @@ const CreateNewEvent = ({ navigation }) => {
           </View>
 
           {/* create event button */}
-          <View className="mt-14 mb-16">
+          <View className="flex flex-row justify-center mt-14 mb-16">
             {!isAllValid ? (
               <CustomButton
                 label="Create Event"

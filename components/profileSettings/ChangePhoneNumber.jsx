@@ -143,7 +143,7 @@ const ChangePhoneNumber = ({ navigation }) => {
           )}
         </Box>
 
-        <Box mt={160}>
+        <View className="flex flex-row justify-center mt-28">
           {!isValid ? (
             <CustomButton
               label="Get OTP Code"
@@ -163,7 +163,7 @@ const ChangePhoneNumber = ({ navigation }) => {
               )}
             </Box>
           )}
-        </Box>
+        </View>
       </VStack>
     </Box>
   );

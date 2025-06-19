@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  TextInput,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { BackTopBar } from "../home";
@@ -23,14 +24,15 @@ const AllUsersList = ({ navigation }) => {
   const baseUrl = process.env.BASE_URL;
 
   // extract from useLogin context
-    const { userProfile, token } = useLogin();
-    
+  const { userProfile, token } = useLogin();
+
   // restricted accounts list
-    const restrictedAccounts = userProfile.restrictedAccount || [];
+  const restrictedAccounts = userProfile.restrictedAccount || [];
 
   // component state
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // handle fetch all users excluding logged in user
   const fetchAllUsers = async () => {
@@ -109,13 +111,7 @@ const AllUsersList = ({ navigation }) => {
 
   // render user item
   const renderItem = ({ item }) => (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 10,
-      }}
-    >
+    <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
       <Text>
         {item.firstName} {item.lastName}
       </Text>
@@ -125,15 +121,18 @@ const AllUsersList = ({ navigation }) => {
     </View>
   );
 
+  // filter user list based on search query
+  const filteredUserList = userList.filter((user) =>
+    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
-      <BackTopBar
-        headline="My Connections"
-        icon2=""
-        func={handleBackBtn}
-      />
+      <View className="px-6">
+        <BackTopBar headline="My Connections" icon2="" func={handleBackBtn} />
+      </View>
 
-      <View className="flex-row justify-between items-center mt-8">
+      <View className="flex-row justify-between items-center mt-8 px-6">
         <TouchableOpacity>
           <Text className="text-slate-500 font-bold"></Text>
         </TouchableOpacity>
@@ -143,14 +142,29 @@ const AllUsersList = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={{ marginTop: 56, flex: 1 }}>
+      <View className="px-6 mt-5">
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search users..."
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            padding: 10,
+            borderRadius: 8,
+            marginBottom: 16,
+          }}
+        />
+      </View>
+
+      <View style={{ flex: 1 }} className="px-6">
         {loading ? (
           <LoadingSpinner />
-        ) : userList.length === 0 ? (
-          <Text>No connections</Text>
+        ) : filteredUserList.length === 0 ? (
+          <Text>No connections found</Text>
         ) : (
           <FlatList
-            data={userList}
+            data={filteredUserList}
             renderItem={renderItem}
             keyExtractor={(item) => item._id}
           />

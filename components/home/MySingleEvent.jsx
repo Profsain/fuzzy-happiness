@@ -80,7 +80,7 @@ const MySingleEvent = ({
 
   // handle share event
   const handleShare = () => {
-    const appUrl = "https://www.google.com";
+    const appUrl = process.env.APP_DOWNLOAD_URL;
     const message = `Join me at ${eventName} event. Download the app to register and join the event ${appUrl}`;
     handleSocialShare(message);
   };
@@ -98,9 +98,10 @@ const MySingleEvent = ({
       ) : (
         <ScrollView className="flex-1 px-6 pt-14 bg-white">
           {/* top bar  */}
-
-          <BackTopBar headline={headlineText} func={setBack} />
-          <View className="mt-8">
+          <View className="px-6">
+             <BackTopBar headline={headlineText} func={setBack} />
+          </View>
+          <View className="mt-8 px-6">
             <Image
               source={{
                 uri: event.eventImage
@@ -189,7 +190,7 @@ const MySingleEvent = ({
                   <FontAwesome5 name="rocketchat" size={18} color="black" />
                 </View>
                 <TouchableOpacity className="ml-4">
-                  <Text>Register to Join Chat</Text>
+                  <Text>Event Group Chat</Text>
                 </TouchableOpacity>
               </View>
             </View>

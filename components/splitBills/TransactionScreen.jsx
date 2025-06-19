@@ -55,10 +55,12 @@ const TransactionScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 px-6 pt-14 bg-white">
+    <SafeAreaView className="flex-1 pt-14 bg-white">
+      <View className="px-6">
       <BackTopBar headline="Wallet" func={handleBack} />
+      </View>
       <View
-        className="h-40 rounded-lg my-6"
+        className="h-40 rounded-lg my-6 mx-6"
         style={{ backgroundColor: primeryColor }}
       >
         <ImageBackground
@@ -111,7 +113,7 @@ const TransactionScreen = ({ navigation }) => {
           </View>
         </ImageBackground>
       </View>
-      <View className="mt-6">
+      <View className="mt-6 px-6">
         <BillsHorizontalBtn
           text="Transaction History"
           iconLeft={

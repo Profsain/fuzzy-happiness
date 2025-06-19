@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { registerIndieID } from "native-notify";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, Text, VStack } from "@gluestack-ui/themed";
-import { Alert, Image, TouchableOpacity, ScrollView } from "react-native";
+import { Alert, View, TouchableOpacity, ScrollView } from "react-native";
 import {
   CustomButton,
   CustomHeadings,
@@ -11,7 +11,7 @@ import {
   PasswordInput,
   LoadingSpinner,
 } from "../../components";
-import { secondaryColor } from "../../utils/appstyle";
+import { secondaryColor, primeryColor } from "../../utils/appstyle";
 import navigationToScreen from "../../utils/navigationUtil";
 import { useLogin } from "../../context/LoginProvider";
 import { useNavigation } from "@react-navigation/native";
@@ -69,10 +69,12 @@ const LoginInputScreen = () => {
     useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+
   const handleState = () => {
-    setShowPassword((showState) => {
-      return !showState;
-    });
+		setShowPassword((showState) => {
+			return !showState;
+		});
   };
 
   const [isAllValid, setIsAllValid] = useState(false); // to check if all inputs are valid
@@ -84,165 +86,254 @@ const LoginInputScreen = () => {
   const [passwordError, setPasswordError] = useState("");
 
   const handleEmailChange = (text) => {
-    setEmail(text.trim().toLowerCase());
-    const emailRegex = /\S+@\S+\.\S+/;
-    // validate email
-    if (text.length === 0) {
-      setEmailError("Email is required");
-    } else if (!emailRegex.test(text)) {
-      setEmailError("Please enter a valid email");
-    } else {
-      setEmailError("");
-    }
+		setEmail(text.trim().toLowerCase());
+		const emailRegex = /\S+@\S+\.\S+/;
+		// validate email
+		if (text.length === 0) {
+			setEmailError("Email is required");
+		} else if (!emailRegex.test(text)) {
+			setEmailError("Please enter a valid email");
+		} else {
+			setEmailError("");
+		}
   };
 
   // handle password
   const handlePasswordChange = (text) => {
-    setPassword(text.trim());
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+		setPassword(text.trim());
+		// const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
-    // validate password
-    if (text.length === 0) {
-      setPasswordError("Password is required");
-    } else if (text.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-    } else {
-      setPasswordError("");
-      setIsAllValid(true);
-    }
+		// validate password
+		if (text.length === 0) {
+			setPasswordError("Password is required");
+		} else if (text.length < 6) {
+			setPasswordError("Password must be at least 6 characters");
+		} else {
+			setPasswordError("");
+			setIsAllValid(true);
+		}
   };
 
   // handle social login
   const handleFacebookLogin = () => {
-    Alert.alert("Warning", "Facebook login is not available at the moment.");
+		Alert.alert(
+			"Warning",
+			"Facebook login is not available at the moment.",
+		);
   };
 
   const handleGoogleLogin = () => {
-    // Alert.alert("Social Login");
-    // call promptAsync
-    promptAsync();
+		// Alert.alert("Social Login");
+		// call promptAsync
+		promptAsync();
   };
 
   const handleAppleLogin = () => {
-    Alert.alert("Warning", "Apple login is not available at the moment.");
+		Alert.alert("Warning", "Apple login is not available at the moment.");
   };
 
   // handle user Login
   const handleLogin = async () => {
-    // set loading to true
-    setLoading(true);
+		// set loading to true
+		setLoading(true);
 
-    // login info
-    const userInfo = {
-      emailAddress: email,
-      password,
-    };
+		// login info
+		const userInfo = {
+			emailAddress: email,
+			password,
+		};
 
-    // login logic
-    try {
-      const response = await fetch(`${baseUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userInfo),
-      });
+		// login logic
+		try {
+			const response = await fetch(`${baseUrl}/auth/login`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(userInfo),
+			});
 
-      if (response.ok) {
-        // Login successful
-        setLoginMsg("");
-        const data = await response.json();
-        // store user data in context, navigate to the next home screen.
-        setUserProfile(data.userProfile);
-        setIsLogin(true);
-        setToken(data.token);
+			if (response.ok) {
+				// Login successful
+				setLoginMsg("");
+				const data = await response.json();
+				// store user data in context, navigate to the next home screen.
+				setUserProfile(data.userProfile);
+				setIsLogin(true);
+				setToken(data.token);
 
-        // set user id and call handleRegisterIndieID
-        // set user id
-        const userId = data.userProfile._id;
+				// set user id and call handleRegisterIndieID
+				// set user id
+				const userId = data.userProfile._id;
 
-        await registerIndieID(`${userId}`, 22245, notifyToken);
-        // sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
-        // End of Native Notify Code
+				await registerIndieID(`${userId}`, 22245, notifyToken);
+				// sendPushNotification(userId, "Splinx Planet", "Welcome back! You have successfully logged in.");
+				// End of Native Notify Code
 
-        // set isExplorer to false in async storage
-        await AsyncStorage.setItem("isExplorer", "false");
-        //navigate to TabNavigation Screen
-        navigation.navigate("TabNavigation");
-        setLoading(false);
-      } else {
-        // Login failed
-        setLoading(false);
-        const errorData = await response.json();
-        setLoginMsg(
-          "Login failed: User not found or password is incorrect. Please try again."
-        );
-      }
-    } catch (error) {
-      setLoading(false);
-      setLoginMsg("An error occurred while logging in. Please try again.");
-    }
+				// save email and password to async storage
+				if (rememberMe) {
+					await AsyncStorage.setItem(
+						"user_credentials",
+						JSON.stringify({ email, password }),
+					);
+				}
+
+				//navigate to TabNavigation Screen
+				navigation.navigate("TabNavigation");
+				setLoading(false);
+			} else {
+				// Login failed
+				setLoading(false);
+				const errorData = await response.json();
+				setLoginMsg(
+					"Login failed: User not found or password is incorrect. Please try again.",
+				);
+			}
+		} catch (error) {
+			setLoading(false);
+			setLoginMsg(error.message || "Network error, please try again.");
+		}
   };
 
+  // load save email and password
+  useEffect(() => {
+		const loadSavedCredentials = async () => {
+			try {
+				const storedCredentials = await AsyncStorage.getItem(
+					"user_credentials",
+				);
+				if (storedCredentials) {
+					const { email, password } = JSON.parse(storedCredentials);
+					setEmail(email);
+					setPassword(password);
+					setIsAllValid(true); // Enable the login button
+				}
+			} catch (error) {
+				console.error("Failed to load saved credentials:", error);
+			}
+		};
+
+		loadSavedCredentials();
+  }, []);
+
   return (
-    <ScrollView>
-      <Box width="100%" justifyContent="center" p={24}>
-        <CustomHeadings title="Welcome Back!" />
+		<ScrollView>
+			<Box width="100%" justifyContent="center" p={24}>
+				<CustomHeadings title="Welcome Back!" />
 
-        <Box>
-          <Text size="sm" style={{ color: "red", textAlign: "left" }}>
-            {loginMsg}
-          </Text>
-        </Box>
+				<Box>
+					<Text size="sm" style={{ color: "red", textAlign: "left" }}>
+						{loginMsg}
+					</Text>
+				</Box>
 
-        {/* form section */}
-        <VStack space="xl" mt={25}>
-          <CustomInput
-            placeholder="Enter your email"
-            type="email"
-            inputValue={email}
-            handleTextChange={handleEmailChange}
-            error={emailError}
-            keyboardType={"email-address"}
-          />
-          <PasswordInput
-            showPassword={showPassword}
-            handleState={handleState}
-            placeholder="Enter your password"
-            inputValue={password}
-            handleTextChange={handlePasswordChange}
-            error={passwordError}
-          />
+				{/* form section */}
+				<VStack space="xl" mt={25}>
+					<CustomInput
+						placeholder="Enter your email"
+						type="email"
+						autoCapitalize="none"
+						autoComplete="email"
+						autoCorrect={false}
+						inputValue={email}
+						handleTextChange={handleEmailChange}
+						error={emailError}
+						keyboardType={"email-address"}
+					/>
+					<PasswordInput
+						showPassword={showPassword}
+						handleState={handleState}
+						placeholder="Enter your password"
+						inputValue={password}
+						handleTextChange={handlePasswordChange}
+						error={passwordError}
+					/>
+					<View>
+						{/* remember me */}
+						<TouchableOpacity
+							onPress={() => setRememberMe(!rememberMe)}
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								marginTop: 10,
+							}}
+						>
+							<View
+								style={{
+									height: 20,
+									width: 20,
+									borderRadius: 4,
+									borderWidth: 1,
+									borderColor: "#000",
+									alignItems: "center",
+									justifyContent: "center",
+									marginRight: 8,
+								}}
+							>
+								{rememberMe ? (
+									<View
+										style={{
+											height: 12,
+											width: 12,
+											backgroundColor: primeryColor,
+										}}
+									/>
+								) : null}
+							</View>
+							<Text size="sm" style={{ color: "#000" }}>
+								Remember Me
+							</Text>
+						</TouchableOpacity>
 
-          {/* forgot password */}
-          <TouchableOpacity
-            onPress={() => navigationToScreen(navigation, "ForgotPasswordScreen")}
-          >
-            <Text
-              size="sm"
-              style={{ color: "#000", textAlign: "right", marginTop: 6 }}
-            >
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
+					</View>
+						{/* forgot password */}
+						<TouchableOpacity
+							onPress={() =>
+								navigationToScreen(
+									navigation,
+									"ForgotPasswordScreen",
+								)
+							}
+						>
+							<Text
+								size="sm"
+								style={{
+									color: "#000",
+									textAlign: "right",
+									marginTop: 6,
+								}}
+							>
+								Forgot Password?
+							</Text>
+						</TouchableOpacity>
 
-          {/* horizontal line */}
-          <Box
-            mt={20}
-            width="100%"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
-            <Text mb={5} size="sm" style={{ color: "#000", textAlign: "center" }}>
-              Or Login with
-            </Text>
-            <Box borderBottomWidth={1.4} borderBottomColor="#000" width="30%" />
-          </Box>
+					{/* horizontal line */}
+					<Box
+						mt={20}
+						width="100%"
+						flexDirection="row"
+						justifyContent="space-between"
+						alignItems="center"
+					>
+						<Box
+							borderBottomWidth={1.4}
+							borderBottomColor="#000"
+							width="40%"
+						/>
+						<Text
+							mb={5}
+							size="sm"
+							style={{ color: "#000", textAlign: "center" }}
+						></Text>
+						<Box
+							borderBottomWidth={1.4}
+							borderBottomColor="#000"
+							width="40%"
+						/>
+					</Box>
 
-          {/* social login */}
-          {/* <Box
+					{/* social login */}
+					{/* <Box
             mt={38}
             width="100%"
             flexDirection="row"
@@ -262,39 +353,47 @@ const LoginInputScreen = () => {
             </TouchableOpacity>
           </Box> */}
 
-          {/* login button */}
-          <Box mt={60}>
-            {!isAllValid ? (
-              <CustomButton
-                label="Log in"
-                backgroundColor={secondaryColor}
-                color="#000"
-              />
-            ) : (
-              <Box>
-                {!loading ? (
-                  <CustomButton label="Log in" buttonFunc={handleLogin} />
-                ) : (
-                  <LoadingSpinner />
-                )}
-              </Box>
-            )}
-          </Box>
+					{/* login button */}
+					<View className="flex items-center justify-center mt-12 w-full">
+						{!isAllValid ? (
+							<CustomButton
+								label="Log in"
+								backgroundColor={secondaryColor}
+								color="#000"
+							/>
+						) : (
+							<Box>
+								{!loading ? (
+									<CustomButton
+										label="Log in"
+										buttonFunc={handleLogin}
+									/>
+								) : (
+									<LoadingSpinner />
+								)}
+							</Box>
+						)}
+					</View>
 
-          {/* signup text at the bottom*/}
-          <Box mt={20} mb={20}>
-            <TouchableOpacity
-              onPress={() => navigationToScreen(navigation, "SignUpScreen")}
-            >
-              <Text size="sm" style={{ color: "#000", textAlign: "center" }}>
-                Don't have an account?{"   "}
-                <Text size="sm">Sign up</Text>
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        </VStack>
-      </Box>
-    </ScrollView>
+					{/* signup text at the bottom*/}
+					<Box mt={20} mb={20}>
+						<TouchableOpacity
+							onPress={() =>
+								navigationToScreen(navigation, "SignUpScreen")
+							}
+						>
+							<Text
+								size="sm"
+								style={{ color: "#000", textAlign: "center" }}
+							>
+								Don't have an account?{"   "}
+								<Text size="sm">Sign up</Text>
+							</Text>
+						</TouchableOpacity>
+					</Box>
+				</VStack>
+			</Box>
+		</ScrollView>
   );
 };
 
