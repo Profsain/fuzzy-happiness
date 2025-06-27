@@ -124,8 +124,8 @@ const ChatScreen = () => {
 				},
 			);
 			if (response.ok) {
-        // Optionally, you can refetch messages to update the UI
-        // fetchMessages();
+				// Optionally, you can refetch messages to update the UI
+				// fetchMessages();
 			} else {
 				console.log("Error marking messages as read", response.status);
 			}
@@ -136,32 +136,41 @@ const ChatScreen = () => {
 
 	useEffect(() => {
 		fetchMessages();
+
+		// Poll for new messages every 30 seconds
+		const intervalId = setInterval(fetchMessages, 30000);
+
+		return () => clearInterval(intervalId); // Cleanup on unmount
 	}, []);
 
 	// fetch recipient data
-	useEffect(() => {
-		const fetchRecipientData = async () => {
-			try {
-				const response = await fetch(
-					`${baseUrl}/message/user/${recipientId}`,
-					{
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${token}`,
-						},
+	const fetchRecipientData = async () => {
+		try {
+			const response = await fetch(
+				`${baseUrl}/message/user/${recipientId}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
 					},
-				);
+				},
+			);
 
-				const data = await response.json();
+			const data = await response.json();
 
-				setRecipientData(data);
-			} catch (error) {
-				console.log("error retrieving details", error);
-			}
-		};
-
+			setRecipientData(data);
+		} catch (error) {
+			console.log("error retrieving details", error);
+		}
+	};
+	useEffect(() => {
 		fetchRecipientData();
+
+		// Poll for recipient data (like online status) every 35 seconds
+		const intervalId = setInterval(fetchRecipientData, 35000);
+
+		return () => clearInterval(intervalId); // Cleanup on unmount
 	}, []);
 
 	// handle send message
@@ -543,8 +552,16 @@ const ChatScreen = () => {
 															marginTop: 5,
 														}}
 													>
-														<AntDesign name="check" size={12} color="black" />
-                            <AntDesign name="check" size={12} color="black" />
+														<AntDesign
+															name="check"
+															size={12}
+															color="black"
+														/>
+														<AntDesign
+															name="check"
+															size={12}
+															color="black"
+														/>
 													</Text>
 												) : (
 													<Text
@@ -552,7 +569,11 @@ const ChatScreen = () => {
 															marginTop: 5,
 														}}
 													>
-														<AntDesign name="check" size={12} color="black" />
+														<AntDesign
+															name="check"
+															size={12}
+															color="black"
+														/>
 													</Text>
 												)}
 											</View>
@@ -697,4 +718,3 @@ const ChatScreen = () => {
 };
 
 export default ChatScreen;
-

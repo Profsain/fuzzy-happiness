@@ -1,6 +1,6 @@
 {
   "name": "Splinx Planet",
-  "version": "1.2.4",
+  "version": "1.2.6",
   "main": "App.js",
   "scripts": {
     "start": "expo start --tunnel",
@@ -32,7 +32,7 @@
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "deprecated-react-native-prop-types": "^5.0.0",
-    "expo": "~52.0.42",
+    "expo": "~52.0.47",
     "expo-apple-authentication": "~7.1.3",
     "expo-auth-session": "~6.0.3",
     "expo-build-properties": "~0.13.2",

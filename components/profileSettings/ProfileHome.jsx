@@ -58,7 +58,7 @@ const ProfileHome = ({ navigation }) => {
         throw new Error(result.error || "Failed to update profile");
       }
     } catch (error) {
-      Alert.alert("Error", "Connection error occurred. Please try again.");
+      throw error;
     } 
   };
   // handle log out
@@ -70,7 +70,7 @@ const ProfileHome = ({ navigation }) => {
     // update isOnline status
     updateIsOnlineStatus();
     // navigate to login screen
-    navigation.navigate("LoginUser");
+    navigation.replace("LoginUser");
   };
 
   // handle faq

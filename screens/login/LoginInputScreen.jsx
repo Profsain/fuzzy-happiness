@@ -143,6 +143,7 @@ const LoginInputScreen = () => {
 			password,
 		};
 
+		console.log("Url", `${baseUrl}/auth/login`)
 		// login logic
 		try {
 			const response = await fetch(`${baseUrl}/auth/login`, {
@@ -191,6 +192,8 @@ const LoginInputScreen = () => {
 			}
 		} catch (error) {
 			setLoading(false);
+			console.log("Catch Error", error)
+			console.log("Url", `${baseUrl}/auth/login`)
 			setLoginMsg(error.message || "Network error, please try again.");
 		}
   };

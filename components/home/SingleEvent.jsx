@@ -44,7 +44,7 @@ const SingleEvent = ({ navigation, route }) => {
 	const isExplorer = useExplorerStatus(); // Use the custom hook to get explorer status
 
 	// extract event details
-	const { eventDetails } = route.params;
+	const { eventDetails, id } = route.params;
 
 	// check if login user is an event members
 	const [isEventMember, setIsEventMember] = useState(false);

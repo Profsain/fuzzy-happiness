@@ -148,7 +148,7 @@ const WithdrawaRequest = ({ navigation }) => {
 				<View className="flex justify-center items-center mt-8">
                     {/* remove not ! */}
 
-					{!selectedEvent || !balanceAmount === 0 ? (
+					{!selectedEvent || balanceAmount === 0 ? (
 						<CustomButton
 							label="Proceed"
 							backgroundColor={secondaryColor}

@@ -32,7 +32,8 @@ const TransferMoney = ({ navigation }) => {
   useFocusEffect(fetchWalletData);
 
   const userList = useFetchAllUsers();
-  const { userProfile, token, currencySymbol, currency } = useLogin();
+  const { userProfile, token } = useLogin();
+   const { currency, currencySymbol } = userProfile;
   // base url
   const baseUrl = process.env.BASE_URL;
 
@@ -208,7 +209,7 @@ const TransferMoney = ({ navigation }) => {
 						Balance{" "}
 						{wallet
 							? `${
-									currencySymbol || "$"
+									currencySymbol || ""
 							  }${wallet?.balance?.toFixed(2)}`
 							: "0.00"}
 					</Text>
