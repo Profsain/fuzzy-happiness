@@ -70,7 +70,7 @@ const ProfileHome = ({ navigation }) => {
     // update isOnline status
     updateIsOnlineStatus();
     // navigate to login screen
-    navigation.navigate("LoginUser");
+    navigation.replace("LoginUser");
   };
 
   // handle faq
