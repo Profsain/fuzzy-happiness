@@ -91,7 +91,12 @@ const ProfileHome = ({ navigation }) => {
   // handle delete account
   const deleteAcc = async () => {
     try {
-      const response = await fetch(`${baseUrl}/user/delete-user/${userProfile._id}`);
+      const response = await fetch(`${baseUrl}/user/delete-user/${userProfile._id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         // After deletion, navigate to the login screen
