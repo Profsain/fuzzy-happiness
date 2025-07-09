@@ -86,14 +86,60 @@ const SingleEvent = ({ navigation, route }) => {
 		eventLocation,
 		eventDate,
 		eventTime,
+		eventBy,
 		eventDescription,
 		_id: eventId,
 	} = eventDetails;
+	console.log(eventDetails);
+
+	// admin event registration handler
+	const handleAdminEventRegistration = async () => {
+		setIsProcessing(true);
+		const userId = userProfile._id;
+		const eventId = eventDetails._id;
+		const isAllowReminder = true; // default value for admin
+
+		try {
+			const response = await fetch(`${baseUrl}/event/${eventId}/register`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({
+					userId,
+					isAllowReminder,
+				}),
+			});
+
+			const data = await response.json();
+			if (response.ok) {
+				Alert.alert(
+					"Registration Successful",
+					"You have successfully registered for the event.",
+				);
+				setIsProcessing(false);
+				// navigate to event list screen
+				navigation.navigate("HomeScreen");
+			} else {
+				console.error("Error registering for event:", data);
+			}
+
+		} catch (error) {
+			console.log("Network error:", error.message);
+		}
+	}
 
 	// handle event registration
 	const handleRegistration = async () => {
 		// send request to join the event
 		setIsProcessing(true);
+		if (eventBy === "admin") {
+			handleAdminEventRegistration();
+			setIsProcessing(false);
+			return;
+		}
+
 		try {
 			const requestBody = { userId: _id };
 			const response = await fetch(
@@ -113,7 +159,6 @@ const SingleEvent = ({ navigation, route }) => {
 			if (response.ok) {
 				setIsProcessing(false);
 				setIsRequestSent(true);
-				console.log("Event registration successful:", data);
 				Alert.alert(
 					"Request Sent",
 					"Your request to join the event has been sent successfully.",
@@ -289,9 +334,14 @@ const SingleEvent = ({ navigation, route }) => {
 						</View>
 
 						{/* event name */}
-						<View className="mt-4">
+						<View className="mt-4 flex flex-row items-center justify-between">
 							<Text className="text-xl font-semibold">
-								{eventName}
+								{eventName.slice(0, 23)}....
+							</Text>
+							<Text className="text-sm text-gray-500 px-2 rounded" style={{ backgroundColor: secondBgColor }}>
+								{eventBy === "admin"
+									? "Splinx Event"
+									: `By ${eventBy}`}
 							</Text>
 							{isProcessing && (
 								<LoadingSpinner text="Processing..." />
