@@ -46,8 +46,7 @@
             "useFrameworks": "static"
           }
         }
-      ],
-      "expo-web-browser"
+      ]
     ],
     "description": "Splinx Planet is your ultimate companion for discovering and managing events, seamlessly splitting bills, and staying connected with friends and fellow event-goers. Designed with a user-centric approach, Splinx Planet simplifies event planning and cost management, making it easier than ever to organize and enjoy memorable experiences with others.",
     "platforms": [
@@ -61,7 +60,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.splinxplanetapp",
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSContactsUsageDescription": "Splinx-App needs access to your contacts to help you easily invite friends, connect with contacts, and enhance your event planning experience.",
         "NSLocationWhenInUseUsageDescription": "Splinx Planet needs location access to show you events happening near you and improve recommendations.",
@@ -79,7 +78,7 @@
       }
     },
     "android": {
-      "jsEngine": "hermes",
+      "jsEngine": "jsc",
       "versionCode": 8,
       "permissions": [
         "android.permission.READ_CONTACTS",
