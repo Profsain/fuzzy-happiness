@@ -2,7 +2,7 @@
   "expo": {
     "name": "Splinx Planet",
     "slug": "splinxPlanetApp",
-    "version": "1.2.8",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/playstore.png",
     "userInterfaceStyle": "light",
@@ -69,17 +69,12 @@
         "NSCameraUsageDescription": "This app requires access to your camera to allow users to capture and upload pictures",
         "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to allow users upload photos",
         "NSMicrophoneUsageDescription": "This app requires access to the microphone for voice calls and voice messages",
-        "UIRequiredDeviceCapabilities": [
-          "arm64",
-          "camera",
-          "location-services",
-          "microphone"
-        ]
+        "UIRequiredDeviceCapabilities": []
       }
     },
     "android": {
       "jsEngine": "jsc",
-      "versionCode": 8,
+      "versionCode": 10,
       "permissions": [
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS",
