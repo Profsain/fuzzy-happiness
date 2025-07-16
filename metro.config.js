@@ -5,7 +5,4 @@ const { withNativeWind } = require("nativewind/metro");
 
 const config = getDefaultConfig(__dirname);
 
-// Fix Hermes + exports compatibility
-config.resolver.unstable_enablePackageExports = false;
-
 module.exports = withNativeWind(config, { input: "./global.css" });

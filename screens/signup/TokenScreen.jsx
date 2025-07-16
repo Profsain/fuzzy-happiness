@@ -52,8 +52,6 @@ const TokenScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const codeInputRef = useRef(null);
-
   // handle token code change
   const handleTokenValue = (code) => {
     // set token value

@@ -49,6 +49,7 @@ const AddAddressScreen = ({ navigation }) => {
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.GOOGLE_MAP_API_KEY}`
       );
       const data = await response.json();
+      console.log("Response from Google Maps API:", data);
       if (data.results.length > 0) {
         const addressComponents = data.results[0].address_components;
         const country =
@@ -164,5 +165,6 @@ const AddAddressScreen = ({ navigation }) => {
 		</Box>
   );
 };
+
 
 export default AddAddressScreen;
